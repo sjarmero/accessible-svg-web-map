@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Mapa accesible de la Universidad de Alicante</title>
+        
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="bootstrap.min.css" />
+        
+        <link rel="stylesheet" href="map.css" />
+    </head>
+    <body>
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand" href="/">SVG Accesible</a>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-8">
+                    <div id="map">
+                        <!-- viewBox="0 100 1000 1000" preserveAspectRatio="xMidYMin meet" -->
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div id="controls">
+                        <h2>Navegación</h2>
+                        <div id="pad">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
+                                            <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                        <div class="row">
+                                                <div class="col-sm-12 col-md-12">
+                                                    <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-12">
+                                                    <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="data-panel" aria-live="polite">
+                                <h2 id="data-status">Ningún elemento seleccionado</h2>
+                                <table id="data-table" tabindex="0"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="jquery.js"></script>
+        <script src="popper.js"></script>
+        <script src="bootstrap.min.js"></script>
+        <script type="text/javascript" src="/svg.js/dist/svg.min.js"></script>
+        <script src="map.js"></script>
+    </body>
+</html>
