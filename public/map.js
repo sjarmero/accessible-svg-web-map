@@ -2,13 +2,21 @@ const ZOOM_LEVEL_BASE = 0.000246153846;
 const ZOOM_LEVEL_STEP = 0.4514682741;
 
 var zoomlevel = 5;
+var gsvg;
+var marker_groups = Array.apply(null, Array(20)).map(element => []);
 
 $(document).ready(function() {
+    var mapdata;
+    
     const svg = SVG('map');
+    gsvg = svg; // FOR DEBUG
+
     var dragging = false;
     var {initx, inity} = 0;
 
     $.get('/map/data', function(data) {
+        console.log(data);
+        mapdata = data;
         drawWithAccData(svg, data);
     }).done(function() {
         $(".map-dragable").mousedown(function(e) {
@@ -90,12 +98,17 @@ $(document).ready(function() {
                     zoomlevel = (zoomlevel == 20) ? zoomlevel : zoomlevel + 1;
                     resizeToLevel(svg, zoomlevel);
 
-                    break;
+                    groupMarkers(svg, mapdata, zoomlevel);
+
+                    return;
 
                 case 'zoom-out':
                     zoomlevel = (zoomlevel == 1) ? zoomlevel : zoomlevel - 1;
                     resizeToLevel(svg, zoomlevel);
-                    break;
+
+                    groupMarkers(svg, mapdata, zoomlevel);
+
+                    return;
             }
 
             vbx += xdif;
@@ -111,12 +124,19 @@ async function drawWithAccData(svg, data) {
     svg.attr('preserveAspectRatio', 'xMidYMid slice');
     svg.attr('class', 'map-dragable');
     svg.attr('tabindex', 0);
-
-    resizeToLevel(svg, zoomlevel);
+    
+    // Zoom and move (0, 0) to center
+    resizeToLevel(svg, zoomlevel, false);
+    moveTo(svg, -svg.viewbox().width/2, -svg.viewbox().width/2, false);
 
     const main = svg.group().attr('id', 'SVG_MAIN');
 
-    for (feature of data.buildings) {
+    for (const feature of data.buildings) {
+        // We save this marker in its group for further hiding
+        for (const group of feature.groups) {
+            marker_groups[group].push(feature.properties.id.value);
+        }
+
         const g = main.group();
 
         const a = g.link('#');
@@ -126,12 +146,14 @@ async function drawWithAccData(svg, data) {
         rect.attr('id', feature.properties.id.value);
         rect.attr('class', 'building');
 
-        const img = a.image('/building_marker.svg', 14, 14);
+        const marker = a.group().attr('id', 'marker-' + feature.properties.id.value).attr('class', 'map-marker');
+
+        const img = marker.image('/building_marker.svg', 14, 14);
         img.attr('class', 'marker');
         img.attr('x', feature.centerx - 15);
         img.attr('y', feature.centery - 7);
 
-        const text = a.plain(feature.properties.name.value);
+        const text = marker.plain(feature.properties.name.value);
         text.attr('x' , feature.centerx);
         text.attr('y', feature.centery);
         text.attr('text-anchor', 'start');
@@ -143,18 +165,46 @@ async function drawWithAccData(svg, data) {
     }
 }
 
-function resizeToLevel(svg, level) {
-    console.log('Resize to ' + level);
-
+function resizeToLevel(svg, level, raisedbyuser = true) {
     var vbx = $("#map").width();
     vbx /= ZOOM_LEVEL_BASE + ((level - 1) * ZOOM_LEVEL_STEP);
 
-    console.log(vbx + "(" + svg.viewbox().x + "," + svg.viewbox().y + ")");
-    svg.viewbox(svg.viewbox().x, svg.viewbox().y, vbx, vbx);
+    var wdiff = (raisedbyuser) ? (svg.viewbox().width - vbx) / 2 : 0;
+    var handler = (raisedbyuser) ? svg.animate({ duration: 250 }) : svg;
+    handler.viewbox(svg.viewbox().x + wdiff, svg.viewbox().y + wdiff, vbx, vbx);
+
+    window.location.href = "#z" + zoomlevel;
 }
 
-function moveTo(svg, x, y) {
-    svg.viewbox(x, y, svg.viewbox().width, svg.viewbox().height);
+function moveTo(svg, x, y, raisedbyuser = true) {
+    var handler = (raisedbyuser) ? svg.animate({ duration: 250 }) : svg;
+    handler.viewbox(x, y, svg.viewbox().width, svg.viewbox().height);
+}
+
+function groupMarkers(svg, data, level) {
+    var i = 0;
+    for (const group of marker_groups) {
+        for (const marker of group) {
+            if (i == level) {
+                svg.select('#marker-' + marker).hide();
+            } else {
+                svg.select('#marker-' + marker).show();
+            }
+        }
+
+        for (const gmarker of data.groups[i]) {
+            if (i == level) {
+                const gm = svg.group().attr('id', 'gmarker-' + gmarker.id);
+                gm.circle().fill('red').radius(10).cx(gmarker.lat).cy(gmarker.long);
+            } else {
+                for (const member of svg.select('#gmarker-' + gmarker.id).members) {
+                    member.remove();
+                }
+            }
+        }
+
+        i++;
+    }
 }
 
 function moveViewBox(svg, initx, inity, e) {

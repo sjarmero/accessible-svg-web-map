@@ -72,10 +72,11 @@ const allData = async function() {
 }
 
 const allGroups = async function() {
-    const data = await client.query('SELECT * from groups;');
-    const groups = [];
+    const data = await client.query('SELECT * from groups ORDER BY zoom_level ASC;');
+    const groups = Array.apply(null, Array(20)).map(element => []);
+
     for (const group of data.rows) {
-        groups.push({
+        groups[group.zoom_level].push({
             id: group.id,
             name: group.g_name,
             lat: group.lat,
@@ -114,7 +115,7 @@ const all = async function() {
 
 const dataByBuilding = async function(id) {
     const data = await client.query('SELECT feature_property.p_code, p_name, val, userinterest from feature_property join property on (property.p_code = feature_property.p_code) where feature_property.code = ' + id + ';');
-    const properties_array = [];
+    const properties_array = {};
     for (const property of data.rows) {
         properties_array[property['p_code']] = propertyParser(property);
     }
