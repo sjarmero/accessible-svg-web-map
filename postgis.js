@@ -46,7 +46,7 @@ const allData = async function() {
     const geo = await client.query('SELECT gid, ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');
     var buildings = [];
     for (const row of geo.rows) {
-        const data = await client.query('SELECT property.p_code, p_name, val, userinterest from feature_property join property on property.p_code = feature_property.p_code where feature_property.code = ' + row['gid'] + ';');
+        const data = await client.query('SELECT property.p_code, p_name, val, userinterest from accessibility.feature_property join accessibility.property on property.p_code = feature_property.p_code where feature_property.code = ' + row['gid'] + ';');
         const properties_array = {};
         for (const property of data.rows) {
             properties_array[property['p_code']] = propertyParser(property);
@@ -72,7 +72,7 @@ const allData = async function() {
 }
 
 const allGroups = async function() {
-    const data = await client.query('SELECT * from groups ORDER BY zoom_level ASC;');
+    const data = await client.query('SELECT * from accessibility.groups ORDER BY zoom_level ASC;');
     const groups = Array.apply(null, Array(20)).map(element => []);
 
     for (const group of data.rows) {
@@ -90,7 +90,7 @@ const allGroups = async function() {
 }
 
 const groupsForFeature = async function(id) {
-    const data = await client.query("SELECT groups.zoom_level from groups join edificios on (edificios.geom <-> ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ' 0)') <= groups.radius and edificios.gid = "+ id +");");
+    const data = await client.query("SELECT groups.zoom_level from accessibility.groups join edificios on (edificios.geom <-> ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ' 0)') <= groups.radius and edificios.gid = "+ id +");");
     const groups = [];
     for (const group of data.rows) {
         groups.push(group.zoom_level);
@@ -114,7 +114,7 @@ const all = async function() {
 }
 
 const dataByBuilding = async function(id) {
-    const data = await client.query('SELECT feature_property.p_code, p_name, val, userinterest from feature_property join property on (property.p_code = feature_property.p_code) where feature_property.code = ' + id + ';');
+    const data = await client.query('SELECT feature_property.p_code, p_name, val, userinterest from accessibility.feature_property join accessibility.property on (property.p_code = feature_property.p_code) where feature_property.code = ' + id + ';');
     const properties_array = {};
     for (const property of data.rows) {
         properties_array[property['p_code']] = propertyParser(property);
