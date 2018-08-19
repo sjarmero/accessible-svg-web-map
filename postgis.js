@@ -10,8 +10,16 @@ const client = new Client({
     port: 5432,
 });
 
-client.connect();
-console.log("Connected to PostGIS Database");
+try {
+    (async () => {
+        await client.connect();
+        console.log("Connected to PostGIS Database");
+    })();
+} catch (e) {
+    console.log("Error connecting to PostGIS Database:");
+    console.log(e);
+    return;
+}
 
 const allGeo = async function() {
     const geo = await client.query('SELECT gid, ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');
@@ -76,13 +84,15 @@ const allGroups = async function() {
     const groups = Array.apply(null, Array(20)).map(element => []);
 
     for (const group of data.rows) {
+        const affects_raw = await client.query("SELECT count(*) from accessibility.groups join edificios on (edificios.geom <-> ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ' 0)') <= groups.radius and groups.id = "+ group.id +");")
         groups[group.zoom_level].push({
             id: group.id,
             name: group.g_name,
             lat: group.lat,
             long: group.long,
             zoom: group.zoom_level,
-            radius: group.radius
+            radius: group.radius,
+            affects: affects_raw.rows[0].count
         });
     }
 

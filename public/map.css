@@ -10,24 +10,24 @@ body {
         background-color: #ECEFF1;
     }
 
-    #map > svg > #SVG_MAIN {
+    #map > svg > #SVG_MAIN_CONTENT {
         transform: translate(0, 0);
     }
 
-        #map > svg > #SVG_MAIN  text {
+        #map > svg > #SVG_MAIN_CONTENT .map-marker text {
             fill: #212121;
             background-color: black;
             text-shadow: 0px 0px 0px black;
             font-size: 0.3em;
         }
 
-        #map > svg > #SVG_MAIN .building {
+        #map > svg > #SVG_MAIN_CONTENT .building {
             fill: #90A4AE;
             stroke: #455A64;
             stroke-width: 0.05em;
         }
 
-        #map > svg > #SVG_MAIN a:focus .building, #map > svg > #SVG_MAIN a:hover .building,  #map > svg > #SVG_MAIN a.active .building {
+        #map > svg > #SVG_MAIN_CONTENT a:focus .building, #map > svg > #SVG_MAIN_CONTENT a:hover .building,  #map > svg > #SVG_MAIN a.active .building, #map > svg > #SVG_MAIN_CONTENT a:focus .gmarker-circle, #map > svg > #SVG_MAIN_CONTENT a:hover .gmarker-circle,  #map > svg > #SVG_MAIN a.active .gmarker-circle {
             stroke: blue;
         }
 

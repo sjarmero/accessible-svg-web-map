@@ -129,17 +129,12 @@ async function drawWithAccData(svg, data) {
     resizeToLevel(svg, zoomlevel, false);
     moveTo(svg, -svg.viewbox().width/2, -svg.viewbox().width/2, false);
 
-    const main = svg.group().attr('id', 'SVG_MAIN');
+    const main = svg.group().attr('id', 'SVG_MAIN_CONTENT');
 
     for (const feature of data.buildings) {
-        // We save this marker in its group for further hiding
-        for (const group of feature.groups) {
-            marker_groups[group].push(feature.properties.id.value);
-        }
-
         const g = main.group();
 
-        const a = g.link('#');
+        const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link');
         a.attr('data-building', feature.properties.id.value);
         
         const rect = a.path().attr('d', feature.path);
@@ -162,7 +157,14 @@ async function drawWithAccData(svg, data) {
         text.attr('aria-hidden', 'true');
 
         a.attr('aria-labelledby', 'label-' + feature.properties.id.value);
+
+        // We save this marker in its group for further hiding
+        for (const group of feature.groups) {
+            marker_groups[group].push(feature.properties.id.value);
+        }
     }
+
+    groupMarkers(svg, data, zoomlevel);
 }
 
 function resizeToLevel(svg, level, raisedbyuser = true) {
@@ -194,8 +196,17 @@ function groupMarkers(svg, data, level) {
 
         for (const gmarker of data.groups[i]) {
             if (i == level) {
-                const gm = svg.group().attr('id', 'gmarker-' + gmarker.id);
-                gm.circle().fill('red').radius(10).cx(gmarker.lat).cy(gmarker.long);
+                const fit = (gmarker.affects.toString().length == 1) ? 1 : gmarker.affects.toString().length / 2;
+                const a = svg.select('#SVG_MAIN_CONTENT').members[0].link('#gmarker-' + gmarker.id).attr('class', 'non-link').attr('id', 'gmarker-' + gmarker.id);;
+                const gm = a.group();
+                const circle = gm.circle().fill('red').radius(10).cx(gmarker.lat).cy(gmarker.long);
+                circle.attr('class', 'gmarker-circle')
+                const text = gm.plain(gmarker.affects).attr('text-anchor', 'middle');
+                text.font({ size: 16 / fit });
+                text.move(gmarker.long, gmarker.lat - (8 / fit));
+
+                // Accessibility
+                a.attr('aria-label', gmarker.name);
             } else {
                 for (const member of svg.select('#gmarker-' + gmarker.id).members) {
                     member.remove();
