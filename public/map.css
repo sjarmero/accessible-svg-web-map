@@ -21,14 +21,26 @@ body {
             font-size: 0.3em;
         }
 
+        #map > svg > #SVG_MAIN_CONTENT .gmarker circle {
+            fill: #C51162;
+        }
+
+        #map > svg > #SVG_MAIN_CONTENT .gmarker text {
+            fill: white;
+        }
+
         #map > svg > #SVG_MAIN_CONTENT .building {
             fill: #90A4AE;
             stroke: #455A64;
             stroke-width: 0.05em;
         }
 
-        #map > svg > #SVG_MAIN_CONTENT a:focus .building, #map > svg > #SVG_MAIN_CONTENT a:hover .building,  #map > svg > #SVG_MAIN a.active .building, #map > svg > #SVG_MAIN_CONTENT a:focus .gmarker-circle, #map > svg > #SVG_MAIN_CONTENT a:hover .gmarker-circle,  #map > svg > #SVG_MAIN a.active .gmarker-circle {
+        #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building,  #map > svg > #SVG_MAIN a.active .building, #map > svg > #SVG_MAIN_CONTENT a:focus .gmarker circle, #map > svg > #SVG_MAIN_CONTENT a:hover .gmarker circle,  #map > svg > #SVG_MAIN a.active .gmarker circle {
             stroke: blue;
+        }
+
+        #map > svg > #SVG_MAIN_CONTENT a.non-clickable {
+            
         }
 
 #controls {

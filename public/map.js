@@ -1,9 +1,27 @@
 const ZOOM_LEVEL_BASE = 0.000246153846;
 const ZOOM_LEVEL_STEP = 0.4514682741;
 
-var zoomlevel = 5;
+var zoomlevel = 3;
 var gsvg;
 var marker_groups = Array.apply(null, Array(20)).map(element => []);
+var altk = false;
+
+// title plugin
+SVG.Title = SVG.invent({
+    create: 'title',
+    inherit: SVG.Element,
+    extend: {
+       text: function(text) {
+            this.node.insertBefore(document.createTextNode(text), this.node.firstChild);
+            return this
+        } 
+    },
+    construct: {
+        title: function(text) {
+            return this.put(new SVG.Title).text(text)
+        }
+    }
+})
 
 $(document).ready(function() {
     var mapdata;
@@ -13,6 +31,16 @@ $(document).ready(function() {
 
     var dragging = false;
     var {initx, inity} = 0;
+
+    const parameters = window.location.href.split("#");
+    for (const parameter of parameters) {
+        const key = parameter.split("=")[0];
+        const value = parameter.split("=")[1];
+
+        if (key == "zoom" && value != undefined) {
+            zoomlevel = parseInt(value);
+        }
+    }
 
     $.get('/map/data', function(data) {
         console.log(data);
@@ -36,85 +64,90 @@ $(document).ready(function() {
         });
 
         // Building info
-        $("#map svg a").on('keypress click', function(e) {
-            if (e.type == "click" || e.keyCode == 0 || e.keyCode == 13) {
-                console.log("Building " + $(this).attr("data-building"));
+        $("#map svg a.building-wrapper").click(function(e) {
+            if ($(this).hasClass('non-clickable')) return;
 
-                $.get('/map/data/b/' + $(this).attr('data-building'), properties => {
-                    $("#data-table").empty();
+            console.log("Building " + $(this).attr("data-building"));
 
-                    for (var property in properties) {
-                        if (properties[property]['userinterest']) {
-                            var row = document.createElement("tr");
-                            
-                            var headerCol = document.createElement("th");
-                            var valueCol = document.createElement("td");
-                            $(headerCol).html(properties[property]['display']);
-                            $(valueCol).html(properties[property]['value']);
+            $.get('/map/data/b/' + $(this).attr('data-building'), properties => {
+                $("#data-table").empty();
 
-                            $(row).append(headerCol);
-                            $(row).append(valueCol);
+                for (var property in properties) {
+                    if (properties[property]['userinterest']) {
+                        var row = document.createElement("tr");
+                        
+                        var headerCol = document.createElement("th");
+                        var valueCol = document.createElement("td");
+                        $(headerCol).html(properties[property]['display']);
+                        $(valueCol).html(properties[property]['value']);
 
-                            $("#data-table").prepend(row);
-                            $("#data-status").html("Edificio seleccionado");
-                        }
+                        $(row).append(headerCol);
+                        $(row).append(valueCol);
+
+                        $("#data-table").prepend(row);
+                        $("#data-status").html("Edificio seleccionado");
                     }
-                });
-            }
+                }
+            });
         });
 
         // Navigation buttons
         $("#controls #pad .btn").click(function(e) {
             e.preventDefault();
-            const mode = $(this).attr("data-map-nav");
-            const STEP = 15 + (20 - zoomlevel);
+            navigationCallback($(this).attr("data-map-nav"), svg, mapdata);
+        });
 
-            var vbox = svg.viewbox();
-            var vbx = vbox.x;
-            var vby = vbox.y;
-            var vbzx = vbox.width;
-            var vbzy = vbox.height;
-        
-            var xdif = 0, ydif = 0;
+        // Navigation keyboard shortcuts
+        $("body").not("input").not("textarea").keydown(function(e) {
+            altk = altk || (e.which == 18);
 
-            switch (mode) {
-                case 'up': 
-                    ydif = -STEP;
+            console.log(altk);
+
+            if (!altk) return;
+
+            console.log(e.which);
+
+            var mode = '';
+            switch (e.which) {
+                case 189:
+                case 171: // +
+                    mode = 'zoom-in';
                     break;
 
-                case 'down':
-                    ydif = STEP;
+                case 187:
+                case 173: // -
+                    mode = 'zoom-out';
                     break;
 
-                case 'left': 
-                    xdif = -STEP;
+                case 38: // Up arrow
+                    mode = 'up';
                     break;
 
-                case 'right':
-                    xdif = STEP;
+                case 40: // Down arrow
+                    mode = 'down';
                     break;
 
-                case 'zoom-in':
-                    zoomlevel = (zoomlevel == 20) ? zoomlevel : zoomlevel + 1;
-                    resizeToLevel(svg, zoomlevel);
+                case 37:
+                    mode = 'left';
+                    break;
 
-                    groupMarkers(svg, mapdata, zoomlevel);
-
-                    return;
-
-                case 'zoom-out':
-                    zoomlevel = (zoomlevel == 1) ? zoomlevel : zoomlevel - 1;
-                    resizeToLevel(svg, zoomlevel);
-
-                    groupMarkers(svg, mapdata, zoomlevel);
-
-                    return;
+                case 39:
+                    mode = 'right';
+                    break;
             }
 
-            vbx += xdif;
-            vby += ydif;
-        
-            moveTo(svg, vbx, vby);
+            navigationCallback(mode, svg, mapdata);
+        });
+
+        // Alt key release
+        $("body").not("input").not("textarea").keyup(function(e) {
+            if (e.which == 18) {
+                altk = false;
+            }
+        });
+
+        $("a.non-link").click(function(e) {
+            e.preventDefault();
         })
     });
 });
@@ -134,7 +167,7 @@ async function drawWithAccData(svg, data) {
     for (const feature of data.buildings) {
         const g = main.group();
 
-        const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link');
+        const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link building-wrapper').attr('id', 'link-feature-' + feature.properties.id.value);
         a.attr('data-building', feature.properties.id.value);
         
         const rect = a.path().attr('d', feature.path);
@@ -153,8 +186,6 @@ async function drawWithAccData(svg, data) {
         text.attr('y', feature.centery);
         text.attr('text-anchor', 'start');
         text.attr('id', 'label-' + feature.properties.id.value);
-        text.attr('role', 'presentation');
-        text.attr('aria-hidden', 'true');
 
         a.attr('aria-labelledby', 'label-' + feature.properties.id.value);
 
@@ -175,7 +206,7 @@ function resizeToLevel(svg, level, raisedbyuser = true) {
     var handler = (raisedbyuser) ? svg.animate({ duration: 250 }) : svg;
     handler.viewbox(svg.viewbox().x + wdiff, svg.viewbox().y + wdiff, vbx, vbx);
 
-    window.location.href = "#z" + zoomlevel;
+    window.location.href = "#zoom=" + zoomlevel;
 }
 
 function moveTo(svg, x, y, raisedbyuser = true) {
@@ -189,7 +220,13 @@ function groupMarkers(svg, data, level) {
         for (const marker of group) {
             if (i == level) {
                 svg.select('#marker-' + marker).hide();
+
+                $("#link-feature-" + marker).attr("tabindex", "-1");
+                $("#link-feature-" + marker).addClass("non-clickable");
             } else {
+                $("#link-feature-" + marker).removeAttr("tabindex");
+                $("#link-feature-" + marker).removeClass("non-clickable");
+
                 svg.select('#marker-' + marker).show();
             }
         }
@@ -197,16 +234,18 @@ function groupMarkers(svg, data, level) {
         for (const gmarker of data.groups[i]) {
             if (i == level) {
                 const fit = (gmarker.affects.toString().length == 1) ? 1 : gmarker.affects.toString().length / 2;
-                const a = svg.select('#SVG_MAIN_CONTENT').members[0].link('#gmarker-' + gmarker.id).attr('class', 'non-link').attr('id', 'gmarker-' + gmarker.id);;
-                const gm = a.group();
-                const circle = gm.circle().fill('red').radius(10).cx(gmarker.lat).cy(gmarker.long);
-                circle.attr('class', 'gmarker-circle')
+                const a = svg.select('#SVG_MAIN_CONTENT').members[0].link('#gmarker-' + gmarker.id).attr('class', 'non-link gmarker').attr('id', 'gmarker-' + gmarker.id);;
+                const gm = a.group().attr('class', 'gmarker');
+                const circle = gm.circle().radius(10).cx(gmarker.lat).cy(gmarker.long);
                 const text = gm.plain(gmarker.affects).attr('text-anchor', 'middle');
                 text.font({ size: 16 / fit });
                 text.move(gmarker.long, gmarker.lat - (8 / fit));
 
                 // Accessibility
-                a.attr('aria-label', gmarker.name);
+                a.title(gmarker.name).attr('id', 'gmarker-' + gmarker.id + '-title');
+                a.attr('aria-labelledby', 'gmarker-' + gmarker.id + '-title');
+                text.attr('aria-hidden', 'true');
+                text.attr('role', 'presentation');
             } else {
                 for (const member of svg.select('#gmarker-' + gmarker.id).members) {
                     member.remove();
@@ -216,6 +255,14 @@ function groupMarkers(svg, data, level) {
 
         i++;
     }
+
+    $("#map svg a.gmarker").click(function(e) {
+        e.preventDefault();
+
+        zoomlevel += 2;
+        resizeToLevel(svg, zoomlevel);
+        groupMarkers(svg, data, zoomlevel);
+    });
 }
 
 function moveViewBox(svg, initx, inity, e) {
@@ -230,4 +277,53 @@ function moveViewBox(svg, initx, inity, e) {
     vby += ydif;
 
     svg.viewbox(vbx, vby, svg.viewbox().width, svg.viewbox().height);
+}
+
+function navigationCallback(mode, svg, mapdata) {
+    const STEP = 15 + (20 - zoomlevel);
+
+    var vbox = svg.viewbox();
+    var vbx = vbox.x;
+    var vby = vbox.y;
+    var vbzx = vbox.width;
+    var vbzy = vbox.height;
+
+    var xdif = 0, ydif = 0;
+
+    switch (mode) {
+        case 'up': 
+            ydif = -STEP;
+            break;
+
+        case 'down':
+            ydif = STEP;
+            break;
+
+        case 'left': 
+            xdif = -STEP;
+            break;
+
+        case 'right':
+            xdif = STEP;
+            break;
+
+        case 'zoom-in':
+            zoomlevel = (zoomlevel == 20) ? zoomlevel : zoomlevel + 1;
+            resizeToLevel(svg, zoomlevel);
+            groupMarkers(svg, mapdata, zoomlevel);
+
+            return;
+
+        case 'zoom-out':
+            zoomlevel = (zoomlevel == 1) ? zoomlevel : zoomlevel - 1;
+            resizeToLevel(svg, zoomlevel);
+            groupMarkers(svg, mapdata, zoomlevel);
+
+            return;
+    }
+
+    vbx += xdif;
+    vby += ydif;
+
+    moveTo(svg, vbx, vby);
 }
