@@ -32,7 +32,7 @@ $(document).ready(function() {
             $(this).css("cursor", "move");
         }).mousemove(function(e) {
             if (dragging) {
-                moveViewBox(svg, initx, inity, e);
+                SVGMap.moveViewBox(svg, initx, inity, e);
             }
         }).mouseup(function(e) {
             dragging = false;
@@ -74,14 +74,9 @@ $(document).ready(function() {
         });
 
         // Navigation keyboard shortcuts
-        $("body").not("input").not("textarea").keydown(function(e) {
+        $("body").not("input").not("textarea").keydown(function(e) {            
             altk = altk || (e.which == 18);
-
-            console.log(altk);
-
             if (!altk) return;
-
-            console.log(e.which);
 
             var mode = '';
             switch (e.which) {
