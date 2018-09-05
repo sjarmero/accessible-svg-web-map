@@ -1,32 +1,27 @@
+import { SVGMap } from './SVGMap.js';
+import { SVGBridge } from "./SVGBridge.js";
+import { Message } from './messages/Message.js';
+
 const ZOOM_LEVEL_BASE = 0.000246153846;
 const ZOOM_LEVEL_STEP = 0.4514682741;
 
 export class SVGControls {
-    constructor(map) {
+    constructor() {
+        var bridge = new SVGBridge();
         this.altk = false;
-        this.map = map;
+
+        this.getBride = () => bridge;
     }
 
-    resizeToLevel(level, raisedbyuser = true) {
-        var vbx = $("#map").width();
-        vbx /= ZOOM_LEVEL_BASE + ((level - 1) * ZOOM_LEVEL_STEP);
-
-        var wdiff = (raisedbyuser) ? (this.map.svg.viewbox().width - vbx) / 2 : 0;
-        var handler = (raisedbyuser) ? this.map.svg.animate({ duration: 250 }) : this.map.svg;
-        handler.viewbox(this.map.svg.viewbox().x + wdiff, this.map.svg.viewbox().y + wdiff, vbx, vbx);
-
-        window.location.href = "#zoom=" + level;
+    pageLoad() {
+        let msg = new Message('data-general', '');
+        this.getBride().tell(msg);
     }
 
-    moveTo(x, y, raisedbyuser = true) {
-        var handler = (raisedbyuser) ? this.map.svg.animate({ duration: 250 }) : this.map.svg;
-        handler.viewbox(x, y, this.map.svg.viewbox().width, this.map.svg.viewbox().height);
-    }
+    navigationHandler(mode) {
+        const STEP = 15 + (20 - SVGMap.instance.zoomlevel);
 
-    async navigationHandler(mode) {
-        const STEP = 15 + (20 - this.map.zoomlevel);
-
-        var vbox = this.map.svg.viewbox();
+        var vbox = SVGMap.instance.svg.viewbox();
         var vbx = vbox.x;
         var vby = vbox.y;
         var vbzx = vbox.width;
@@ -52,14 +47,14 @@ export class SVGControls {
                 break;
 
             case 'zoom-in':
-                this.map.zoomlevel = (this.map.zoomlevel == 20) ? this.map.zoomlevel : this.map.zoomlevel + 1;
-                this.resizeToLevel(this.map.zoomlevel);
+                SVGMap.instance.zoomlevel = (SVGMap.instance.zoomlevel == 20) ? SVGMap.instance.zoomlevel : SVGMap.instance.zoomlevel + 1;
+                SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel);
 
                 return;
 
             case 'zoom-out':
-                this.map.zoomlevel = (this.map.zoomlevel == 1) ? this.map.zoomlevel : this.map.zoomlevel - 1;
-                this.resizeToLevel(this.map.zoomlevel);
+                SVGMap.instance.zoomlevel = (SVGMap.instance.zoomlevel == 1) ? SVGMap.instance.zoomlevel : SVGMap.instance.zoomlevel - 1;
+                SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel);
 
                 return;
         }
@@ -67,6 +62,6 @@ export class SVGControls {
         vbx += xdif;
         vby += ydif;
 
-        this.moveTo(vbx, vby);
+        SVGMap.instance.moveTo(vbx, vby);
     }
 }

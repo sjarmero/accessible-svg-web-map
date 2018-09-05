@@ -1,23 +1,16 @@
-import { SVGMap } from './SVGMap.js';
 import { SVGControls } from './SVGControls.js';
+import { SVGMap } from './SVGMap.js';
 
 $(document).ready(function() {
     var altk = false;
 
-    let map = new SVGMap();
-    map.draw();
-    map.groupMarkers(map.zoomlevel);
-
-    console.log(map.svg);
-
-    let controls = new SVGControls(map);
+    let controls = new SVGControls();
+    controls.pageLoad();
 
     // Navigation buttons
     $("#controls #pad .btn").click(function(e) {
         e.preventDefault();
         controls.navigationHandler($(this).attr("data-map-nav"));
-
-        map.groupMarkers(map.zoomlevel);
     });
 
     // Navigation keyboard shortcuts
@@ -67,4 +60,51 @@ $(document).ready(function() {
     $("a.non-link").click(function(e) {
         e.preventDefault();
     });
+
+    /*
+        Cuando se añade un nuevo elemento SVG, se notifica
+        al observer, que recorre los elementos añadidos
+        agregando el listener si no estaba ya escuchando.
+    */
+    let observer = new MutationObserver((list) => {
+        for (const elements of list) {
+            for (const element of elements.addedNodes) {
+
+                if($(element).find("a.building-wrapper").attr("data-listened") != true) {
+                    $(element).find("a.building-wrapper").click(function(e) {
+                        console.log($(this).attr("data-listened"));
+                        if ($(this).hasClass('non-clickable')) return;
+                        console.log("Building " + $(this).attr("data-building"));
+
+                        if ($(this).hasClass("non-clickable")) return;
+
+                        $.get('/map/data/b/' + $(this).attr('data-building'), properties => {
+                            $("#data-table").empty();
+
+                            for (var property in properties) {
+                                if (properties[property]['userinterest']) {
+                                    var row = document.createElement("tr");
+                                    
+                                    var headerCol = document.createElement("th");
+                                    var valueCol = document.createElement("td");
+                                    $(headerCol).html(properties[property]['display']);
+                                    $(valueCol).html(properties[property]['value']);
+
+                                    $(row).append(headerCol);
+                                    $(row).append(valueCol);
+
+                                    $("#data-table").prepend(row);
+                                    $("#data-status").html("Edificio seleccionado");
+                                }
+                            }
+                        });
+                    });
+
+                    $(element).find("a.building-wrapper").attr("data-listened", true);
+                }
+            }
+        }
+    });
+
+    observer.observe($(SVGMap.instance.container).get(0), { attributes: false, childList: true, subtree: false });
 });
