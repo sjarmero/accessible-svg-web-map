@@ -150,11 +150,13 @@ export class SVGMap {
         }
 
         var self = this;
-        $(this.container + "a.gmarker").click(function(e) {
-            e.preventDefault();
-    
-            self.zoomlevel += 2;
-            self.resizeToLevel(self.zoomlevel);
+        $(this.container + "a.gmarker").on('keydown click', function(e) {
+            if (e.type == "click" || e.which == 13) {
+                e.preventDefault();
+        
+                self.zoomlevel += 2;
+                self.resizeToLevel(self.zoomlevel);
+            }
         });
     }
 

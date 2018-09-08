@@ -56,11 +56,6 @@ $(document).ready(function() {
             altk = false;
         }
     });
-
-    $("a.non-link").click(function(e) {
-        e.preventDefault();
-    });
-
     /*
         Cuando se añade un nuevo elemento SVG, se notifica
         al observer, que recorre los elementos añadidos
@@ -69,14 +64,9 @@ $(document).ready(function() {
     let observer = new MutationObserver((list) => {
         for (const elements of list) {
             for (const element of elements.addedNodes) {
-
                 if($(element).find("a.building-wrapper").attr("data-listened") != true) {
                     $(element).find("a.building-wrapper").click(function(e) {
-                        console.log($(this).attr("data-listened"));
                         if ($(this).hasClass('non-clickable')) return;
-                        console.log("Building " + $(this).attr("data-building"));
-
-                        if ($(this).hasClass("non-clickable")) return;
 
                         $.get('/map/data/b/' + $(this).attr('data-building'), properties => {
                             $("#data-table").empty();
