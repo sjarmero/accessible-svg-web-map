@@ -5,6 +5,7 @@
 let _instance = null;
 const ZOOM_LEVEL_BASE = 0.000246153846;
 const ZOOM_LEVEL_STEP = 0.4514682741;
+const MAX_GROUP_LEVEL = 5;
 
 export class SVGMap {
     constructor() {
@@ -72,21 +73,32 @@ export class SVGMap {
     }
 
     drawGuides() {
-        $(this.container + ".jails").remove();
+        if (this.zoomlevel >= MAX_GROUP_LEVEL) return;
 
-        const canvasw = $(this.container).width();
-        const canvash = $(this.container).height();
+        $(this.container + ".jails").remove();
 
         let map_line_guides = this.svg.group().addClass('jails');
 
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                map_line_guides.rect(canvasw / 3, canvash / 3).move((-canvasw/2) + (i * (canvasw/3)), (-canvash/2) + (j * (canvash/3))).fill('transparent').stroke({width: 0});
+        const steps = 5;
+        const {x, y} = this.svg.viewbox();
+
+        let tmp = this.svg.rect('100%', '100%').hide().attr('id', 'tmp');
+        const w = $(this.container + "#tmp").width() / steps;
+        const h = $(this.container + "#tmp").height() / steps;
+        tmp.hide(); tmp.remove();
+
+        for (let i = 0; i < steps; i++) {
+            for (let j = 0; j < steps; j++) {
+                map_line_guides.rect('20%', '20%').move(x + (i * w), y + (j * h)).fill('transparent').stroke({ width: 1 });
             }
         }
     }
 
     calculateAutoGroups() {
+        if (this.zoomlevel >= MAX_GROUP_LEVEL) return;
+
+        this.drawGuides();
+
         for (const jail of this.svg.select('.jails rect').members) {
             let already_grouped = false;
             for (const gmarker of this.data.groups[this.zoomlevel]) {
@@ -111,21 +123,21 @@ export class SVGMap {
                 }
             }
 
+            if (affects == 0) { continue; }
+
             let {cx, cy} = jail.bbox();
             this.data.groups[this.zoomlevel].push({
-                id: cx.toString() + cy.toString(),
+                id: parseInt(cx).toString() + parseInt(cy).toString(),
                 affects: affects,
                 lat: cx,
                 long: cy,
-                name: "Grupo " + cx.toString() + cy.toString(),
+                name: "Grupo " + parseInt(cx).toString() + parseInt(cy).toString(),
                 radius: jail.width() / 2
-            })
+            });
         }
     }
 
     draw() {
-        this.drawGuides();
-
         this.svg.attr('id', 'this.svg_MAIN');
         this.svg.attr('preserveAspectRatio', 'xMidYMid slice');
         this.svg.attr('class', 'map-dragable');
@@ -150,11 +162,11 @@ export class SVGMap {
             img.attr('x', feature.centerx - 15);
             img.attr('y', feature.centery - 7);
 
-            const text = marker.plain(feature.properties.name.value);
+            const text = marker.plain((feature.properties.name ? feature.properties.name.value : ""));
             text.attr('x' , feature.centerx);
             text.attr('y', feature.centery);
             text.attr('text-anchor', 'start');
-            text.attr('id', 'label-' + feature.properties.id.value);
+            text.attr('id', 'label-' + (feature.properties.id ? feature.properties.id.value : ""));
 
             a.attr('aria-labelledby', 'label-' + feature.properties.id.value);
 
@@ -166,7 +178,7 @@ export class SVGMap {
 
         // Zoom and move (0, 0) to center
         this.resizeToLevel(this.zoomlevel, false);
-        this.moveTo(-this._svg.viewbox().width/2, -this._svg.viewbox().width/2, false);
+        this.moveTo(this.data.buildings[0].centerx, this.data.buildings[0].centery);
     }
 
     groupMarkers(level) {        
@@ -229,6 +241,8 @@ export class SVGMap {
     }
 
     resizeToLevel(level, raisedbyuser = true) {
+        $(this.container + ".jails").remove();
+
         var vbx = $("#map").width();
         vbx /= ZOOM_LEVEL_BASE + ((level - 1) * ZOOM_LEVEL_STEP);
 
@@ -238,19 +252,17 @@ export class SVGMap {
 
         window.location.href = "#zoom=" + level;
 
-        if (raisedbyuser) {
+        setTimeout(() => {
             this.groupMarkers(level);
-        } else {
-            // Sin esto, firefox se agobia
-            var self = this;
-            setTimeout(function() {
-                self.groupMarkers(level);
-            }, 1);
-        }
+        }, 300);
     }
 
     moveTo(x, y, raisedbyuser = true) {
         var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
         handler.viewbox(x, y, this.svg.viewbox().width, this.svg.viewbox().height);
+
+        setTimeout(() => {
+            this.drawGuides();
+        }, 300);
     }
 }

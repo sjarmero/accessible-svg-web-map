@@ -22,7 +22,7 @@ try {
 }
 
 const allGeo = async function() {
-    const geo = await client.query('SELECT gid, ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');
+    const geo = await client.query('SELECT gid, ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.sigua;');
 
     var buildings = [];
     for (const row of geo.rows) {
@@ -51,7 +51,7 @@ const allGeo = async function() {
 }
 
 const allData = async function() {
-    const geo = await client.query('SELECT gid, ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');
+    const geo = await client.query('SELECT gid, ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.sigua;');
     var buildings = [];
     for (const row of geo.rows) {
         const data = await client.query('SELECT property.p_code, p_name, val, userinterest from accessibility.feature_property join accessibility.property on property.p_code = feature_property.p_code where feature_property.code = ' + row['gid'] + ';');
