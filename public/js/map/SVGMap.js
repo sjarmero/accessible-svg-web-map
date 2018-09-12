@@ -15,7 +15,10 @@ export class SVGMap {
         this._svg = SVG('map');
         this._zoomlevel = 3;
         this._container = "#map svg ";
+        this.guides_drawn = false;
         this.marker_groups = Array.apply(null, Array(20)).map(element => []);
+        this.auto_marker_groups = Array.apply(null, Array(20)).map(element => []);
+        this.auto_grouped_buildings = [];
 
         return _instance;
     }
@@ -60,7 +63,69 @@ export class SVGMap {
         this._data = v;
     }
 
+    get guidesDrawn() {
+        return this.guides_drawn;
+    }
+
+    set guidesDrawn(v) {
+        this.guides_drawn = v;
+    }
+
+    drawGuides() {
+        $(this.container + ".jails").remove();
+
+        const canvasw = $(this.container).width();
+        const canvash = $(this.container).height();
+
+        let map_line_guides = this.svg.group().addClass('jails');
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                map_line_guides.rect(canvasw / 3, canvash / 3).move((-canvasw/2) + (i * (canvasw/3)), (-canvash/2) + (j * (canvash/3))).fill('transparent').stroke({width: 0});
+            }
+        }
+    }
+
+    calculateAutoGroups() {
+        for (const jail of this.svg.select('.jails rect').members) {
+            let already_grouped = false;
+            for (const gmarker of this.data.groups[this.zoomlevel]) {
+                if (jail.inside(gmarker.lat, gmarker.long)) {
+                    already_grouped = true;
+                    break;
+                }
+            }
+
+            if (already_grouped) { continue; }
+
+            let affects = 0;
+
+            for (const feature of this.svg.select('.building').members) {
+                let {cx, cy} = feature.bbox();
+                if (jail.inside(cx, cy)) {
+                    affects++;
+                    
+                    if (this.marker_groups[this.zoomlevel].indexOf(parseInt(feature.attr('id'))) != -1) {
+                        this.marker_groups[this.zoomlevel].push(parseInt(feature.attr('id')));
+                    }
+                }
+            }
+
+            let {cx, cy} = jail.bbox();
+            this.data.groups[this.zoomlevel].push({
+                id: cx.toString() + cy.toString(),
+                affects: affects,
+                lat: cx,
+                long: cy,
+                name: "Grupo " + cx.toString() + cy.toString(),
+                radius: jail.width() / 2
+            })
+        }
+    }
+
     draw() {
+        this.drawGuides();
+
         this.svg.attr('id', 'this.svg_MAIN');
         this.svg.attr('preserveAspectRatio', 'xMidYMid slice');
         this.svg.attr('class', 'map-dragable');
@@ -107,6 +172,8 @@ export class SVGMap {
     groupMarkers(level) {        
         console.log("Gropung markers for level " + level);
         var i = 0;
+
+        this.calculateAutoGroups();
         
         for (const group of this.marker_groups) {
             for (const marker of group) {
@@ -126,13 +193,14 @@ export class SVGMap {
             for (const gmarker of this.data.groups[i]) {
                 if (i == level) {
                     const fit = (gmarker.affects.toString().length == 1) ? 1 : gmarker.affects.toString().length / 2;
+                    
                     const a = this.svg.select('#SVG_MAIN_CONTENT').members[0].link('#gmarker-' + gmarker.id).attr('class', 'non-link gmarker').attr('id', 'gmarker-' + gmarker.id);;
                     const gm = a.group().attr('class', 'gmarker');
                     const circle = gm.circle().radius(10);
                     circle.cx(gmarker.lat).cy(gmarker.long);
                     const text = gm.plain(gmarker.affects).attr('text-anchor', 'middle');
                     text.font({ size: 16 / fit });
-                    text.move(gmarker.long, gmarker.lat - (8 / fit));
+                    text.move(gmarker.lat, gmarker.long - (8 / fit));
 
                     // Accessibility
                     a.title(gmarker.name).attr('id', 'gmarker-' + gmarker.id + '-title');

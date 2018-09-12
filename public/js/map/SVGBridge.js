@@ -8,12 +8,11 @@ import '/subworkers/subworkers.js';
 */
 
 
-var worker;
 export class SVGBridge {
     constructor() {
-        worker = (typeof worker == 'undefined') ? new Worker('/js/map/MainWorker.js', {type: 'module'}) : worker;
-    
-        worker.addEventListener('message', function(e) {            
+        SVGBridge.startWorker();
+        
+        SVGBridge.worker.addEventListener('message', function(e) {            
             if (typeof e.data.json != 'undefined') {
                 let message = new Message(e.data);
                 if (message instanceof Message) {
@@ -28,19 +27,23 @@ export class SVGBridge {
             }
         });
 
-        worker.addEventListener('error', function(e) {
+        SVGBridge.worker.addEventListener('error', function(e) {
             console.log("[BRIDGE] Error on Main Worker");
             console.log(e);
             throw e;
         });
+    }
 
-        console.log(worker);
+    static get worker() {
+        return this._worker;
+    }
 
-        this.getWorker = () => worker;
+    static startWorker() {
+        this._worker = (typeof this._worker == 'undefined') ? new Worker('/js/map/MainWorker.js', {type: 'module'}) : this._worker;
     }
 
     tell(message) {
         console.log("Telling " + JSON.stringify(message));
-        this.getWorker().postMessage(message);
+        SVGBridge.worker.postMessage(message);
     }
 }

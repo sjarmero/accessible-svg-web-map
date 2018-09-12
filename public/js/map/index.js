@@ -2,6 +2,10 @@ import { SVGControls } from './SVGControls.js';
 import { SVGMap } from './SVGMap.js';
 
 $(document).ready(function() {
+
+    // DEBUG
+    window.gsvg = SVGMap.instance.svg;
+
     var altk = false;
 
     let controls = new SVGControls();

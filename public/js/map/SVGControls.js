@@ -2,20 +2,17 @@ import { SVGMap } from './SVGMap.js';
 import { SVGBridge } from "./SVGBridge.js";
 import { Message } from './messages/Message.js';
 
-const ZOOM_LEVEL_BASE = 0.000246153846;
-const ZOOM_LEVEL_STEP = 0.4514682741;
-
 export class SVGControls {
     constructor() {
         var bridge = new SVGBridge();
         this.altk = false;
 
-        this.getBride = () => bridge;
+        this.getBridge = () => bridge;
     }
 
     pageLoad() {
         let msg = new Message('data-general', '');
-        this.getBride().tell(msg);
+        this.getBridge().tell(msg);
     }
 
     navigationHandler(mode) {
@@ -24,9 +21,6 @@ export class SVGControls {
         var vbox = SVGMap.instance.svg.viewbox();
         var vbx = vbox.x;
         var vby = vbox.y;
-        var vbzx = vbox.width;
-        var vbzy = vbox.height;
-
         var xdif = 0, ydif = 0;
 
         switch (mode) {
