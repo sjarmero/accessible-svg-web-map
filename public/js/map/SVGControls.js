@@ -17,10 +17,6 @@ export class SVGControls {
 
     navigationHandler(mode) {
         const STEP = 15 + (20 - SVGMap.instance.zoomlevel);
-
-        var vbox = SVGMap.instance.svg.viewbox();
-        var vbx = vbox.x;
-        var vby = vbox.y;
         var xdif = 0, ydif = 0;
 
         switch (mode) {
@@ -53,9 +49,6 @@ export class SVGControls {
                 return;
         }
 
-        vbx += xdif;
-        vby += ydif;
-
-        SVGMap.instance.moveTo(vbx, vby);
+        SVGMap.instance.move(xdif, ydif);
     }
 }

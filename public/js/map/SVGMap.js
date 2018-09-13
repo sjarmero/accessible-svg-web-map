@@ -72,20 +72,26 @@ export class SVGMap {
         this.guides_drawn = v;
     }
 
-    drawGuides() {
+    get fullw() {
+        return this.svg.viewbox().width;
+    }
+
+    get fullh() {
+        return this.svg.viewbox().height;
+    }
+
+    drawGuides() {  
         if (this.zoomlevel >= MAX_GROUP_LEVEL) return;
 
         $(this.container + ".jails").remove();
 
-        let map_line_guides = this.svg.group().addClass('jails');
+        let map_line_guides = this.svg.group().addClass('jails').back();
 
         const steps = 5;
         const {x, y} = this.svg.viewbox();
 
-        let tmp = this.svg.rect('100%', '100%').hide().attr('id', 'tmp');
-        const w = $(this.container + "#tmp").width() / steps;
-        const h = $(this.container + "#tmp").height() / steps;
-        tmp.hide(); tmp.remove();
+        const w = this.fullw / steps;
+        const h = this.fullh / steps;
 
         for (let i = 0; i < steps; i++) {
             for (let j = 0; j < steps; j++) {
@@ -117,8 +123,8 @@ export class SVGMap {
                 if (jail.inside(cx, cy)) {
                     affects++;
                     
-                    if (this.marker_groups[this.zoomlevel].indexOf(parseInt(feature.attr('id'))) != -1) {
-                        this.marker_groups[this.zoomlevel].push(parseInt(feature.attr('id')));
+                    if (this.marker_groups[this.zoomlevel].indexOf(parseInt(feature.attr('id').split('feature-shape-')[1])) == -1) {
+                        this.marker_groups[this.zoomlevel].push(parseInt(feature.attr('id').split('feature-shape-')[1]));
                     }
                 }
             }
@@ -143,16 +149,16 @@ export class SVGMap {
         this.svg.attr('class', 'map-dragable');
         this.svg.attr('tabindex', 0);
         
-        const main = this.svg.group().attr('id', 'SVG_MAIN_CONTENT');
+        const main = this.svg.group().attr('id', 'SVG_MAIN_CONTENT').front();
 
-        for (const feature of this._data.buildings) {
+        for (const feature of this.data.buildings) {
             const g = main.group();
 
             const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link building-wrapper').attr('id', 'link-feature-' + feature.properties.id.value);
             a.attr('data-building', feature.properties.id.value);
             
             const rect = a.path().attr('d', feature.path);
-            rect.attr('id', feature.properties.id.value);
+            rect.attr('id', 'feature-shape-' + feature.properties.id.value);
             rect.attr('class', 'building');
 
             const marker = a.group().attr('id', 'marker-' + feature.properties.id.value).attr('class', 'map-marker');
@@ -178,7 +184,7 @@ export class SVGMap {
 
         // Zoom and move (0, 0) to center
         this.resizeToLevel(this.zoomlevel, false);
-        this.moveTo(this.data.buildings[0].centerx, this.data.buildings[0].centery);
+        this.moveTo(this.data.buildings[0].centerx, this.data.buildings[0].centery, false);
     }
 
     groupMarkers(level) {        
@@ -186,10 +192,14 @@ export class SVGMap {
         var i = 0;
 
         this.calculateAutoGroups();
+
+        console.log(this.marker_groups);
+        console.log(this.data.groups);
         
         for (const group of this.marker_groups) {
             for (const marker of group) {
                 if (i == level) {
+                    console.log('#marker-' + marker);
                     this.svg.select('#marker-' + marker).hide();
 
                     $("#link-feature-" + marker).attr("tabindex", "-1");
@@ -217,6 +227,7 @@ export class SVGMap {
                     // Accessibility
                     a.title(gmarker.name).attr('id', 'gmarker-' + gmarker.id + '-title');
                     a.attr('aria-labelledby', 'gmarker-' + gmarker.id + '-title');
+                    a.attr('data-coords', circle.cx() + "#" + circle.cy());
                     text.attr('aria-hidden', 'true');
                     text.attr('role', 'presentation');
                 } else {
@@ -235,18 +246,23 @@ export class SVGMap {
                 e.preventDefault();
         
                 self.zoomlevel += 2;
-                self.resizeToLevel(self.zoomlevel);
+                let [x, y] = $(this).attr('data-coords').split('#');
+
+                self.zoomAndMove(x, y, self.zoomlevel);
             }
         });
+    }
+
+    getZoomValues(level, raisedbyuser) {
+        var vbx = $("#map").width();
+        vbx /= ZOOM_LEVEL_BASE + ((level - 1) * ZOOM_LEVEL_STEP);
+        return { vbx: vbx, wdiff: (raisedbyuser) ? (this.svg.viewbox().width - vbx) / 2 : 0};
     }
 
     resizeToLevel(level, raisedbyuser = true) {
         $(this.container + ".jails").remove();
 
-        var vbx = $("#map").width();
-        vbx /= ZOOM_LEVEL_BASE + ((level - 1) * ZOOM_LEVEL_STEP);
-
-        var wdiff = (raisedbyuser) ? (this.svg.viewbox().width - vbx) / 2 : 0;
+        let {vbx, wdiff} = this.getZoomValues(level, raisedbyuser);
         var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
         handler.viewbox(this.svg.viewbox().x + wdiff, this.svg.viewbox().y + wdiff, vbx, vbx);
 
@@ -257,12 +273,40 @@ export class SVGMap {
         }, 300);
     }
 
-    moveTo(x, y, raisedbyuser = true) {
+    /*
+        Increases viewbox in value of x and y.
+    */
+    move(x, y, raisedbyuser = true) {
         var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
-        handler.viewbox(x, y, this.svg.viewbox().width, this.svg.viewbox().height);
+        handler.viewbox(this.svg.viewbox().x + x, this.svg.viewbox().y + y, this.svg.viewbox().width, this.svg.viewbox().height);
 
         setTimeout(() => {
             this.drawGuides();
+        }, 300);
+    }
+
+    /*
+        Centers viewbox on the (x, y) given coordinates
+    */
+    moveTo(x, y, raisedbyuser = true) {
+        var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
+        handler.viewbox(x - (this.fullw / 2), y - (this.fullh / 2), this.svg.viewbox().width, this.svg.viewbox().height);
+
+        setTimeout(() => {
+            this.drawGuides();
+        }, 300);
+    }
+
+    zoomAndMove(x, y, level) {
+        $(this.container + ".jails").remove();
+
+        let {vbx, wdiff} = this.getZoomValues(level, true);
+        this.svg.animate({ duration: 300 }).viewbox(x - (this.fullw / 2) + wdiff, y - (this.fullh / 2) + wdiff, vbx, vbx);
+
+        window.location.href = "#zoom=" + level;
+
+        setTimeout(() => {
+            this.groupMarkers(level);
         }, 300);
     }
 }
