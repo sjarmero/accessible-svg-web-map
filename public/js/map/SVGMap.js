@@ -80,7 +80,7 @@ export class SVGMap {
         return this.svg.viewbox().height;
     }
 
-    drawGuides() {  
+    drawGuides() {
         if (this.zoomlevel >= MAX_GROUP_LEVEL) return;
 
         $(this.container + ".jails").remove();
@@ -299,6 +299,7 @@ export class SVGMap {
 
     zoomAndMove(x, y, level) {
         $(this.container + ".jails").remove();
+        this.zoomlevel = level;
 
         let {vbx, wdiff} = this.getZoomValues(level, true);
         this.svg.animate({ duration: 300 }).viewbox(x - (this.fullw / 2) + wdiff, y - (this.fullh / 2) + wdiff, vbx, vbx);

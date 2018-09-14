@@ -139,6 +139,14 @@ const dataByBuilding = async function(id) {
     return properties_array;
 }
 
+const searchByName = async function(name) {
+    const data = await client.query("select gid as id, feature_property.val as name, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery from public.edificios join accessibility.feature_property on (edificios.gid = feature_property.code) where feature_property.p_code = 'name' and lower(feature_property.val) like '%"+ name.toLowerCase() +"%';");
+    return {
+        code: 200,
+        results: data.rows
+    }
+}
+
 const propertyParser = property => {
     return {
         "display": property['p_name'],
@@ -151,5 +159,6 @@ module.exports = {
     all: all,
     allData: allData,
     allGeo: allGeo,
-    dataByBuilding: dataByBuilding
+    dataByBuilding: dataByBuilding,
+    searchByName: searchByName
 }

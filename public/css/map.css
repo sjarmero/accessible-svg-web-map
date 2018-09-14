@@ -94,3 +94,15 @@ table th {
     font-size: 16px;
     user-select: none;
 }
+
+#results-table {
+    width: 100%;
+}
+
+#results-table tr th {
+    width: 100%;
+}
+
+#results-table tr td {
+    text-align: right;
+}

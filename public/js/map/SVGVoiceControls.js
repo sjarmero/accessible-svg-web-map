@@ -68,7 +68,7 @@ export class SVGVoiceControls {
                     break;
             }
 
-            return mode;
+            return {action: 'move', mode: mode};
         }
 
         // Probamos zoom
@@ -77,7 +77,15 @@ export class SVGVoiceControls {
 
         if (parsed != null) {
             let [, action] = parsed;
-            return (action == 'acercar') ? 'zoom-in' : 'zoom-out'; 
+            return {action: 'zoom', mode: (action == 'acercar') ? 'zoom-in' : 'zoom-out'}; 
+        }
+
+        // Probamos búsqueda
+        const search = /(buscar)/i;
+        var parsed = sentence.match(zoom);
+        if (parsed != null) {
+            let [action, query] = parsed;
+            return {action: 'search', query: query};
         }
     }
 }

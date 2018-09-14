@@ -60,6 +60,69 @@ $(document).ready(function() {
             altk = false;
         }
     });
+
+    // Búsqueda
+    $("#searchform").on('submit', function(e) {
+        e.preventDefault();
+
+        let query = $("#queryTxt").val();
+        console.log(query);
+
+        $.getJSON('/map/data/s/name/' + query, (data) => {
+            let results = data.results;
+            console.log(results);
+
+            $("#data-table").css("display", "none");
+            $("#results-table").css("display", "block");
+
+            $("#results-table").empty();
+            for (const result of results) {
+                var row = document.createElement("tr");
+                                    
+                var headerCol = document.createElement("th");
+                var valueCol = document.createElement("td");
+                var visitBtn = document.createElement("button");
+                $(visitBtn).addClass("btn btn-success result-view").html("Ir").attr("aria-label", "Ver en el mapa");
+                $(visitBtn).attr("data-centerx", result.centerx).attr("data-centery", result.centery);
+
+                $(valueCol).append(visitBtn);
+
+                $(headerCol).html(result.name);
+
+                $(row).append(headerCol);
+                $(row).append(valueCol);
+
+                $("#results-table").append(row);
+            }
+
+            $("#data-status").html("Búsqueda de '"+ query +"'");
+
+            $("button.result-view").on('click', function(e) {
+                e.preventDefault();
+                let centerx = $(this).attr('data-centerx');
+                let centery = $(this).attr('data-centery');
+
+                SVGMap.instance.zoomAndMove(centerx, centery, 7);
+            })
+        });
+    });
+
+    controls.onSearchVoiceQuery = (query) => {
+        console.log(query);
+    };
+
+    $("#dictateBtn").on('click', function() {
+        if ($(this).attr('data-dictating') == 'true') {
+            controls.stopVoice();
+            $(this).attr('data-dictating', 'false');
+            $(this).removeClass("active");
+        } else {
+            controls.startVoice();
+            $(this).attr('data-dictating', 'true');
+            $(this).addClass("active");
+        }
+    });
+
     /*
         Cuando se añade un nuevo elemento SVG, se notifica
         al observer, que recorre los elementos añadidos
@@ -73,6 +136,9 @@ $(document).ready(function() {
                         if ($(this).hasClass('non-clickable')) return;
 
                         $.get('/map/data/b/' + $(this).attr('data-building'), properties => {
+                            $("#data-table").css("display", "block");
+                            $("#results-table").css("display", "none");
+                
                             $("#data-table").empty();
 
                             for (var property in properties) {

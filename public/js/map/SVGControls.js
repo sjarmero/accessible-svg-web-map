@@ -13,19 +13,41 @@ export class SVGControls {
 
     pageLoad() {
         this.getBridge().tell(new Message('data-general', ''));
+    }
 
+    set onSearchVoiceQuery(callback) {
+        this.searchResultCallback = callback;
+    }
+
+    get onSearchVoiceQuery() {
+        return this.searchResultCallback;
+    }
+
+    startVoice() {
         if (SVGVoiceControls.compatible()) {
             this.voice = new SVGVoiceControls();
             this.voice.start(({confidence, transcript}) => {
                 console.log('Voice received:');
                 console.log(confidence, transcript);
 
-                let mode = this.voice.parseAction(transcript);
+                let {action, mode} = this.voice.parseAction(transcript);
                 console.log(mode);
+                
+                if (action == 'search') {
+                    this.onSearchVoiceQuery();
+                    return;
+                }
+
                 if (mode) {
                     this.navigationHandler(mode);
                 }
             });
+        }
+    }
+
+    stopVoice() {
+        if (SVGVoiceControls.compatible() && typeof this.voice != 'undefined') {
+            this.voice.stop();
         }
     }
 

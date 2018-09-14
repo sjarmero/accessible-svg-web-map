@@ -19,6 +19,12 @@ app.get('/map/data/b/:id', async (request, response) => {
     response.json(data);
 });
 
+app.get('/map/data/s/name/:name', async (request, response) => {
+    const name = request.params.name;
+    const data = await db.searchByName(name);
+    response.json(data);
+});
+
 app.get('/map/data', async (request, response) => {
     const result = await db.all();
     response.json(result);
