@@ -1,8 +1,8 @@
 // Database Layer
 const db = require('./postgis');
 
-// SVG Motor Layer
-const SVGMotor = require('./svgmotor.js');
+// HTTPS 
+const https = require('https');
 
 /*
     HTTP SERVER
@@ -42,6 +42,12 @@ app.get('/map', (request, response) => {
     });
 });
 
-app.listen(3000);
+// HTTP Server setup
+https.createServer({
+    key: fs.readFileSync('./ssl/localhost.key'),
+    cert: fs.readFileSync('./ssl/localhost.cert'),
+    requestCert: false,
+    rejectUnauthorized: false
+}, app).listen(3000);
 
 console.log("Listening on :3000");

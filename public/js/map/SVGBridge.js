@@ -16,9 +16,16 @@ export class SVGBridge {
             if (typeof e.data.json != 'undefined') {
                 let message = new Message(e.data);
                 if (message instanceof Message) {
-                    if (message.getName() == 'data-response') {
-                        SVGMap.instance.data = JSON.parse(message.getContents().data);
-                        SVGMap.instance.draw();
+                    switch (message.getName()) {
+                        case 'data-response':
+                            SVGMap.instance.data = JSON.parse(message.getContents().data);
+                            SVGMap.instance.draw();
+                            break;
+
+                        case 'voice-transcript':
+                            let {confidence, transcript} = message.getContents();
+                            console.log('Confidence:', confidence);
+                            console.log('Transcript:', transcript);
                     }
                 } else {
                     console.log('[BRIDGE] Unknown message type received:');

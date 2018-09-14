@@ -17,7 +17,6 @@ class Message {
     */
     constructor(name, contents) {
         if (typeof contents == 'undefined') {
-            console.log("Parsing from JSON...");
             let values = JSON.parse(name.json);
             let _name = values.name;
             let _contents = values.contents;
@@ -38,8 +37,6 @@ class Message {
 
             this.setName = function(v) { _name = name; }
             this.setContents = function(v) { _contents = contents; }
-
-            console.log("Returning JSON...");
 
             return { json: this.toString() }
         }

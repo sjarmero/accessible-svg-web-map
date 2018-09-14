@@ -1,6 +1,7 @@
 import { SVGMap } from './SVGMap.js';
 import { SVGBridge } from "./SVGBridge.js";
 import { Message } from './messages/Message.js';
+import { SVGVoiceControls } from './SVGVoiceControls.js';
 
 export class SVGControls {
     constructor() {
@@ -11,8 +12,18 @@ export class SVGControls {
     }
 
     pageLoad() {
-        let msg = new Message('data-general', '');
-        this.getBridge().tell(msg);
+        this.getBridge().tell(new Message('data-general', ''));
+
+        if (SVGVoiceControls.compatible) {
+            this.voice = new SVGVoiceControls();
+            this.voice.start(({confidence, transcript}) => {
+                console.log('Voice received:');
+                console.log(confidence, transcript);
+
+                let mode = this.voice.parseAction(transcript);
+                this.navigationHandler(mode);
+            });
+        }
     }
 
     navigationHandler(mode) {
