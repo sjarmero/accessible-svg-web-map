@@ -9,8 +9,8 @@ export class SVGVoiceControls {
         this.voice.lang = 'es-ES';
         this.voice.interimResults = false;
         this.voice.maxAlternatives = 1;
-        this.voice.continuous = true;
         this.voice.grammars = this.list;
+        this.voice.continuous = true;
     }
 
     static compatible() {
@@ -19,6 +19,11 @@ export class SVGVoiceControls {
 
     start(callback) {
         this.voice.onresult = (event) => {
+            this.stop();
+            setTimeout(() => {
+                this.start(callback);
+            }, 250);
+
             var last = event.results.length - 1;
             console.log(event.results[last]);
             var transcript = event.results[last][0].transcript;

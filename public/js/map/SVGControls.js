@@ -14,14 +14,17 @@ export class SVGControls {
     pageLoad() {
         this.getBridge().tell(new Message('data-general', ''));
 
-        if (SVGVoiceControls.compatible) {
+        if (SVGVoiceControls.compatible()) {
             this.voice = new SVGVoiceControls();
             this.voice.start(({confidence, transcript}) => {
                 console.log('Voice received:');
                 console.log(confidence, transcript);
 
                 let mode = this.voice.parseAction(transcript);
-                this.navigationHandler(mode);
+                console.log(mode);
+                if (mode) {
+                    this.navigationHandler(mode);
+                }
             });
         }
     }
