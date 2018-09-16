@@ -100,7 +100,7 @@ const allGroups = async function() {
 }
 
 const groupsForFeature = async function(id) {
-    const data = await client.query("SELECT groups.zoom_level from accessibility.groups join edificios on (edificios.geom <-> ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ' 0)') <= groups.radius and edificios.gid = "+ id +");");
+    const data = await client.query("set search_path = postgis; SELECT groups.zoom_level from accessibility.groups join public.edificios on (edificios.geom <-> postgis.ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ')') <= groups.radius and edificios.gid = " + id + ");");
     const groups = [];
     for (const group of data.rows) {
         groups.push(group.zoom_level);

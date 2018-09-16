@@ -7,7 +7,6 @@ import { main_grammar } from './grammar/main.js';
 
 const time_per_word = 500;
 
-
 export class SVGVoiceControls {
     constructor() {
         // Synth

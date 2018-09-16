@@ -87,7 +87,8 @@ export class SVGMap {
 
         let map_line_guides = this.svg.group().addClass('jails').back();
 
-        const steps = 5;
+        const steps = this.zoomlevel;
+        const percentage = (100 / steps) + '%';
         const {x, y} = this.svg.viewbox();
 
         const w = this.fullw / steps;
@@ -95,7 +96,7 @@ export class SVGMap {
 
         for (let i = 0; i < steps; i++) {
             for (let j = 0; j < steps; j++) {
-                map_line_guides.rect('20%', '20%').move(x + (i * w), y + (j * h)).fill('transparent').stroke({ width: 1 });
+                map_line_guides.rect(percentage, percentage).move(x + (i * w), y + (j * h)).fill('transparent').stroke({ width: 1 });
             }
         }
     }
@@ -122,7 +123,7 @@ export class SVGMap {
             for (const feature of this.data.buildings) {
                 let {centerx, centery} = feature;
 
-                if (jail.inside(centerx, centery)) {
+                if (jail.inside(centerx, centery) && feature.groups.indexOf(this.zoomlevel) == -1) {
                     affects++;
                     
                     if (this.marker_groups[this.zoomlevel].indexOf(parseInt(feature.properties.id.value)) == -1) {
@@ -137,12 +138,11 @@ export class SVGMap {
 
             if (affects == 0) { continue; }
 
-            let {cx, cy} = jail.bbox();
             this.data.groups[this.zoomlevel].push({
-                id: parseInt(cx).toString() + parseInt(cy).toString(),
+                id: parseInt(max_priority_feature.centerx).toString() + parseInt(max_priority_feature.centery).toString(),
                 affects: affects,
-                lat: cx,
-                long: cy,
+                lat: max_priority_feature.centerx,
+                long: max_priority_feature.centery,
                 name: "Marcadores cerca de " + max_priority_feature.properties.name.value,
                 radius: jail.width() / 2
             });

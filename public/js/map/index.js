@@ -85,7 +85,9 @@ $(document).ready(function() {
             speech.say('No te he entendido.');
         };
 
-        $("#dictateBtn").on('click', function() {
+        $("#dictateBtn").on('click', function(e) {
+            e.preventDefault();
+
             if ($(this).attr('data-dictating') == 'true') {
                 controls.stopVoice();
                 $(this).attr('data-dictating', 'false');
@@ -119,30 +121,7 @@ $(document).ready(function() {
                 if($(element).find("a.building-wrapper").attr("data-listened") != true) {
                     $(element).find("a.building-wrapper").click(function(e) {
                         if ($(this).hasClass('non-clickable')) return;
-
-                        $.get('/map/data/b/' + $(this).attr('data-building'), properties => {
-                            $("#data-table").css("display", "block");
-                            $("#results-table").css("display", "none");
-                
-                            $("#data-table").empty();
-
-                            for (var property in properties) {
-                                if (properties[property]['userinterest']) {
-                                    var row = document.createElement("tr");
-                                    
-                                    var headerCol = document.createElement("th");
-                                    var valueCol = document.createElement("td");
-                                    $(headerCol).html(properties[property]['display']);
-                                    $(valueCol).html(properties[property]['value']);
-
-                                    $(row).append(headerCol);
-                                    $(row).append(valueCol);
-
-                                    $("#data-table").prepend(row);
-                                    $("#data-status").html("Edificio seleccionado");
-                                }
-                            }
-                        });
+                        showBuildingInfo($(this).attr('data-building'));
                     });
 
                     $(element).find("a.building-wrapper").attr("data-listened", true);
@@ -176,6 +155,7 @@ function search(query, viaspeech = false) {
             $(visitBtn).addClass("btn btn-success result-view").html("Ir").attr("aria-label", "Ver en el mapa");
             $(visitBtn).attr("data-centerx", result.centerx).attr("data-centery", result.centery);
             $(visitBtn).attr('data-result-id', i);
+            $(visitBtn).attr('data-feature-id', result.id);
             
             $(valueCol).append(visitBtn);
             
@@ -199,12 +179,9 @@ function search(query, viaspeech = false) {
             controls.onSearchResultSelected = (selection) => {
                 let centerx = $(".result-view[data-result-id='"+ selection +"']").attr('data-centerx');
                 let centery = $(".result-view[data-result-id='"+ selection +"']").attr('data-centery');
-    
-                if (centerx != undefined && centery != undefined) {
-                    SVGMap.instance.zoomAndMove(centerx, centery, 7);
-                } else {
-                    speech.say("No se ha podido seleccionar ese resultado.");
-                }
+                let id = $(".result-view[data-result-id='"+ selection +"']").attr('data-feature-id');
+
+                focusBuilding(id, centerx, centery, controls.voiceControl);
             };
 
             controls.voiceControl.say(str);
@@ -216,8 +193,46 @@ function search(query, viaspeech = false) {
             e.preventDefault();
             let centerx = $(this).attr('data-centerx');
             let centery = $(this).attr('data-centery');
+            let id = $(this).attr('data-feature-id');
 
-            SVGMap.instance.zoomAndMove(centerx, centery, 7);
+            focusBuilding(id, centerx, centery);
         });
+    });
+}
+
+function focusBuilding(id, centerx, centery, speech) {
+    if (centerx != undefined && centery != undefined) {
+        SVGMap.instance.zoomAndMove(centerx, centery, 7);
+        $(SVGMap.instance.container + '.link-feature-' + id).focus();
+
+        showBuildingInfo(id);
+    } else if (speech != undefined) {
+        speech.say("No se ha podido seleccionar ese resultado.");
+    }
+}
+
+function showBuildingInfo(id) {
+    $.get('/map/data/b/' + id, properties => {
+        $("#data-table").css("display", "block");
+        $("#results-table").css("display", "none");
+
+        $("#data-table").empty();
+
+        for (var property in properties) {
+            if (properties[property]['userinterest']) {
+                var row = document.createElement("tr");
+                
+                var headerCol = document.createElement("th");
+                var valueCol = document.createElement("td");
+                $(headerCol).html(properties[property]['display']);
+                $(valueCol).html(properties[property]['value']);
+
+                $(row).append(headerCol);
+                $(row).append(valueCol);
+
+                $("#data-table").prepend(row);
+                $("#data-status").html("Edificio seleccionado");
+            }
+        }
     });
 }
