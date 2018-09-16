@@ -117,14 +117,20 @@ export class SVGMap {
             if (already_grouped) { continue; }
 
             let affects = 0;
+            let max_priority_feature;
 
-            for (const feature of this.svg.select('.building').members) {
-                let {cx, cy} = feature.bbox();
-                if (jail.inside(cx, cy)) {
+            for (const feature of this.data.buildings) {
+                let {centerx, centery} = feature;
+
+                if (jail.inside(centerx, centery)) {
                     affects++;
                     
-                    if (this.marker_groups[this.zoomlevel].indexOf(parseInt(feature.attr('id').split('feature-shape-')[1])) == -1) {
-                        this.marker_groups[this.zoomlevel].push(parseInt(feature.attr('id').split('feature-shape-')[1]));
+                    if (this.marker_groups[this.zoomlevel].indexOf(parseInt(feature.properties.id.value)) == -1) {
+                        this.marker_groups[this.zoomlevel].push(parseInt(feature.properties.id.value));
+                    }
+
+                    if (max_priority_feature == undefined || parseInt(feature.properties.priority.value) < parseInt(max_priority_feature.properties.priority.value)) {
+                        max_priority_feature = feature;
                     }
                 }
             }
@@ -137,7 +143,7 @@ export class SVGMap {
                 affects: affects,
                 lat: cx,
                 long: cy,
-                name: "Grupo " + parseInt(cx).toString() + parseInt(cy).toString(),
+                name: "Marcadores cerca de " + max_priority_feature.properties.name.value,
                 radius: jail.width() / 2
             });
         }

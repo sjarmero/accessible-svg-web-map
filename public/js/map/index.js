@@ -1,14 +1,20 @@
 import { SVGControls } from './SVGControls.js';
 import { SVGMap } from './SVGMap.js';
+import { SVGVoiceControls } from './SVGVoiceControls.js';
 
+var controls;
 $(document).ready(function() {
 
     // DEBUG
     window.gsvg = SVGMap.instance.svg;
 
+    $("form[action='']").on('submit', (e) => {
+        e.preventDefault();
+    });
+
     var altk = false;
 
-    let controls = new SVGControls();
+    controls = new SVGControls();
     controls.pageLoad();
 
     // Navigation buttons
@@ -64,64 +70,43 @@ $(document).ready(function() {
     // Búsqueda
     $("#searchform").on('submit', function(e) {
         e.preventDefault();
-
         let query = $("#queryTxt").val();
-        console.log(query);
+        search(query);
+    });
 
-        $.getJSON('/map/data/s/name/' + query, (data) => {
-            let results = data.results;
-            console.log(results);
+    // Voz
+    if (SVGVoiceControls.compatible()) {
+        controls.onSearchVoiceQuery = (query) => {
+            console.log(query);
+            search(query, true);
+        };
 
-            $("#data-table").css("display", "none");
-            $("#results-table").css("display", "block");
+        controls.onUnknownVoiceCommand = () => {
+            speech.say('No te he entendido.');
+        };
 
-            $("#results-table").empty();
-            for (const result of results) {
-                var row = document.createElement("tr");
-                                    
-                var headerCol = document.createElement("th");
-                var valueCol = document.createElement("td");
-                var visitBtn = document.createElement("button");
-                $(visitBtn).addClass("btn btn-success result-view").html("Ir").attr("aria-label", "Ver en el mapa");
-                $(visitBtn).attr("data-centerx", result.centerx).attr("data-centery", result.centery);
+        $("#dictateBtn").on('click', function() {
+            if ($(this).attr('data-dictating') == 'true') {
+                controls.stopVoice();
+                $(this).attr('data-dictating', 'false');
+                $(this).removeClass("active");
+                $("#dictateStatus").css("display", "none");
 
-                $(valueCol).append(visitBtn);
+                controls.voiceControl.say('El mapa ha dejado de escuchar.');
+            } else {
+                controls.startVoice();
+                $(this).attr('data-dictating', 'true');
+                $(this).addClass("active");
+                $("#dictateStatus").css("display", "inline");
 
-                $(headerCol).html(result.name);
-
-                $(row).append(headerCol);
-                $(row).append(valueCol);
-
-                $("#results-table").append(row);
+                controls.voiceControl.say('El mapa está ahora escuchando.');
             }
 
-            $("#data-status").html("Búsqueda de '"+ query +"'");
-
-            $("button.result-view").on('click', function(e) {
-                e.preventDefault();
-                let centerx = $(this).attr('data-centerx');
-                let centery = $(this).attr('data-centery');
-
-                SVGMap.instance.zoomAndMove(centerx, centery, 7);
-            })
+            $(this).blur();
         });
-    });
-
-    controls.onSearchVoiceQuery = (query) => {
-        console.log(query);
-    };
-
-    $("#dictateBtn").on('click', function() {
-        if ($(this).attr('data-dictating') == 'true') {
-            controls.stopVoice();
-            $(this).attr('data-dictating', 'false');
-            $(this).removeClass("active");
-        } else {
-            controls.startVoice();
-            $(this).attr('data-dictating', 'true');
-            $(this).addClass("active");
-        }
-    });
+    } else {
+        $("#dictateBtn").css("display", "none");
+    }
 
     /*
         Cuando se añade un nuevo elemento SVG, se notifica
@@ -168,3 +153,71 @@ $(document).ready(function() {
 
     observer.observe($(SVGMap.instance.container).get(0), { attributes: false, childList: true, subtree: false });
 });
+
+function search(query, viaspeech = false) {
+    $.getJSON('/map/data/s/name/' + query, (data) => {
+        let results = data.results;
+        console.log(results);
+
+        
+        $("#data-table").css("display", "none");
+        $("#results-table").css("display", "block");
+        
+        $("#results-table").empty();
+        
+        let i = 1;
+        let str = "Estos son los resultados para la búsqueda " + query;
+        for (const result of results) {
+            var row = document.createElement("tr");
+            
+            var headerCol = document.createElement("th");
+            var valueCol = document.createElement("td");
+            var visitBtn = document.createElement("button");
+            $(visitBtn).addClass("btn btn-success result-view").html("Ir").attr("aria-label", "Ver en el mapa");
+            $(visitBtn).attr("data-centerx", result.centerx).attr("data-centery", result.centery);
+            $(visitBtn).attr('data-result-id', i);
+            
+            $(valueCol).append(visitBtn);
+            
+            $(headerCol).html(result.name);
+            
+            $(row).append(headerCol);
+            $(row).append(valueCol);
+            $(row).attr("aria-atomic", "true");
+            
+            $("#results-table").append(row);
+            
+            if (viaspeech) {
+                str += "\n Resultado número " + i + ": " + result.name;
+            }
+            
+            i++;
+        }
+        
+        if (viaspeech) {
+            str += "\n Selecciona un resultado para verlo en el mapa.";
+            controls.onSearchResultSelected = (selection) => {
+                let centerx = $(".result-view[data-result-id='"+ selection +"']").attr('data-centerx');
+                let centery = $(".result-view[data-result-id='"+ selection +"']").attr('data-centery');
+    
+                if (centerx != undefined && centery != undefined) {
+                    SVGMap.instance.zoomAndMove(centerx, centery, 7);
+                } else {
+                    speech.say("No se ha podido seleccionar ese resultado.");
+                }
+            };
+
+            controls.voiceControl.say(str);
+        }
+
+        $("#data-status").html("Búsqueda de '"+ query +"'");
+
+        $("button.result-view").on('click', function(e) {
+            e.preventDefault();
+            let centerx = $(this).attr('data-centerx');
+            let centery = $(this).attr('data-centery');
+
+            SVGMap.instance.zoomAndMove(centerx, centery, 7);
+        });
+    });
+}

@@ -7,12 +7,17 @@ export class SVGControls {
     constructor() {
         var bridge = new SVGBridge();
         this.altk = false;
+        this.voice = new SVGVoiceControls();
 
         this.getBridge = () => bridge;
     }
 
     pageLoad() {
         this.getBridge().tell(new Message('data-general', ''));
+    }
+
+    get voiceControl() {
+        return this.voice;
     }
 
     set onSearchVoiceQuery(callback) {
@@ -23,23 +28,63 @@ export class SVGControls {
         return this.searchResultCallback;
     }
 
+    set onSearchResultSelected(callback) {
+        this.searchResultSelected = callback;
+    }
+
+    get onSearchResultSelected() {
+        return this.searchResultSelected;
+    }
+
+    set onUnknownVoiceCommand(callback) {
+        this.uvc = callback;
+    }
+
+    get onUnknownVoiceCommand() {
+        return this.uvc;
+    }
+
+    set searchResultsForVoiceSelection(results) {
+        this.srfvs = results;
+    }
+
+    get searchResultsForVoiceSelection() {
+        return this.srfvs;
+    }
+
     startVoice() {
         if (SVGVoiceControls.compatible()) {
-            this.voice = new SVGVoiceControls();
             this.voice.start(({confidence, transcript}) => {
                 console.log('Voice received:');
                 console.log(confidence, transcript);
 
-                let {action, mode} = this.voice.parseAction(transcript);
-                console.log(mode);
-                
-                if (action == 'search') {
-                    this.onSearchVoiceQuery();
-                    return;
-                }
+                let parsed = this.voice.parseAction(transcript);
+                if (parsed) {
+                    let {action, mode} = parsed;
+                    console.log(mode);
 
-                if (mode) {
-                    this.navigationHandler(mode);
+                    switch (action) {
+                        case 'unknown':
+                            this.onUnknownVoiceCommand();
+                            return;
+
+                        case 'search':
+                            this.onSearchVoiceQuery(mode);
+                            return;
+
+                        case 'select':
+                            this.onSearchResultSelected(this.toDigit(mode));
+                            return;
+
+                        case 'aramis':
+                            let speech = new Speech();
+                            speech.say("La máxima autoridad mundial en ocultismo");
+                            return;
+
+                        default:
+                            this.navigationHandler(mode);
+                            return;
+                    }
                 }
             });
         }
@@ -86,5 +131,18 @@ export class SVGControls {
         }
 
         SVGMap.instance.move(xdif, ydif);
+    }
+
+
+    toDigit(number) {
+        let n = ['uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez'];
+        console.log(n.length, number);
+        for (let i = 0; i < n.length; i++) {
+            if (n[i] == number) {
+                return (i + 1);
+            }
+        }
+
+        return -1;
     }
 }
