@@ -46,7 +46,7 @@ export class SVGBridge {
     }
 
     static startWorker() {
-        this._worker = (typeof this._worker == 'undefined') ? new Worker('/js/map/MainWorker.js', {type: 'module'}) : this._worker;
+        this._worker = (typeof this._worker == 'undefined') ? new Worker('/js/map/SVG/MainWorker.js', {type: 'module'}) : this._worker;
     }
 
     tell(message) {

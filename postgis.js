@@ -14,6 +14,8 @@ try {
     (async () => {
         await client.connect();
         console.log("Connected to PostGIS Database");
+
+        await client.query('set search_path = public, postgis, accessibility;');
     })();
 } catch (e) {
     console.log("Error connecting to PostGIS Database:");
@@ -22,7 +24,14 @@ try {
 }
 
 const allGeo = async function() {
-    const geo = await client.query('SELECT gid, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');
+    let geo;
+    try {
+        geo = await client.query('SELECT gid, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');
+    } catch (e) {
+        console.log("[POSTGIS] allGeo");
+        console.log(e);
+        return {};
+    }
 
     var buildings = [];
     for (const row of geo.rows) {
@@ -51,7 +60,15 @@ const allGeo = async function() {
 }
 
 const allData = async function() {
-    const geo = await client.query('SELECT gid, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');
+    let geo;
+    try {
+        geo = await client.query('SELECT gid, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');    
+    } catch (e) {
+        console.log("[POSTGIS] allData");
+        console.log(e);
+        return {};
+    }
+
     var buildings = [];
     for (const row of geo.rows) {
         const data = await client.query('SELECT property.p_code, p_name, val, userinterest from accessibility.feature_property join accessibility.property on property.p_code = feature_property.p_code where feature_property.code = ' + row['gid'] + ';');
@@ -80,7 +97,14 @@ const allData = async function() {
 }
 
 const allGroups = async function() {
-    const data = await client.query('SELECT * from accessibility.groups ORDER BY zoom_level ASC;');
+    let data;
+    try {
+        data = await client.query('SELECT * from accessibility.groups ORDER BY zoom_level ASC;');
+    } catch (e) {
+        console.log("[POSTGIS] allGroups");
+        console.log(e);
+    }
+
     const groups = Array.apply(null, Array(20)).map(element => []);
 
     for (const group of data.rows) {
@@ -100,7 +124,16 @@ const allGroups = async function() {
 }
 
 const groupsForFeature = async function(id) {
-    const data = await client.query("set search_path = postgis; SELECT groups.zoom_level from accessibility.groups join public.edificios on (edificios.geom <-> postgis.ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ')') <= groups.radius and edificios.gid = " + id + ");");
+    let data;
+    
+    try {
+        data = await client.query("SELECT groups.zoom_level from accessibility.groups join public.edificios on (edificios.geom <-> postgis.ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ')') <= groups.radius and edificios.gid = " + id + ");");
+    } catch (e) {
+        console.log("[POSTGIS] groupsForFeature");
+        console.log(e);
+        return {};
+    }
+
     const groups = [];
     for (const group of data.rows) {
         groups.push(group.zoom_level);
@@ -110,8 +143,15 @@ const groupsForFeature = async function(id) {
 }
 
 const all = async function() {
-    const buildings = await allData();
-    const groups = await allGroups();
+    let buildings, groups;
+    try {
+        buildings = await allData();
+        groups = await allGroups();
+    } catch (e) {
+        console.log("[POSTGIS] all");
+        console.log(e);
+        return {};
+    }
 
     const result = {
         name: "Universidad de Alicante",
@@ -124,7 +164,16 @@ const all = async function() {
 }
 
 const dataByBuilding = async function(id) {
-    const data = await client.query('SELECT feature_property.p_code, p_name, val, userinterest from accessibility.feature_property join accessibility.property on (property.p_code = feature_property.p_code) where feature_property.code = ' + id + ';');
+    let data;
+
+    try {
+        data = await client.query('SELECT feature_property.p_code, p_name, val, userinterest from accessibility.feature_property join accessibility.property on (property.p_code = feature_property.p_code) where feature_property.code = ' + id + ';');
+    } catch (e) {
+        console.log("[POSTGIS] dataByBuilding");
+        console.log(e);
+        return {};
+    }
+    
     const properties_array = {};
     for (const property of data.rows) {
         properties_array[property['p_code']] = propertyParser(property);
@@ -140,11 +189,31 @@ const dataByBuilding = async function(id) {
 }
 
 const searchByName = async function(name) {
-    const data = await client.query("select gid as id, feature_property.val as name, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery from public.edificios join accessibility.feature_property on (edificios.gid = feature_property.code) where feature_property.p_code = 'name' and lower(feature_property.val) like '%"+ name.toLowerCase() +"%';");
+    let data;
+    try {
+        data = await client.query("select gid as id, feature_property.val as name, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery from public.edificios join accessibility.feature_property on (edificios.gid = feature_property.code) where feature_property.p_code = 'name' and lower(feature_property.val) like '%"+ name.toLowerCase() +"%';");
+    } catch (e) {
+        console.log("[POSTGIS] searchByName");
+        console.log(e);
+        return { code: 400, results: {}};
+    }
     return {
         code: 200,
         results: data.rows
     }
+}
+
+const djPath = async function(bid1, bid2) {
+    let data;
+    try {
+        data = await client.query(`select * from dijkstraPath(${bid1}, ${bid2}, false);`);
+    } catch (e) {
+        console.log("[POSTGIS] djPath");
+        console.log(e);
+        return {};
+    }
+
+    return data.rows;
 }
 
 const propertyParser = property => {
@@ -160,5 +229,6 @@ module.exports = {
     allData: allData,
     allGeo: allGeo,
     dataByBuilding: dataByBuilding,
-    searchByName: searchByName
+    searchByName: searchByName,
+    djPath: djPath
 }

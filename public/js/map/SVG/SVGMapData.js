@@ -3,7 +3,7 @@
     Data management from Node server
 */
 
-importScripts('/js/map/messages/WorkerMessage.js');
+importScripts('/js/map/SVG/messages/WorkerMessage.js');
 
 (function() {
     let data;

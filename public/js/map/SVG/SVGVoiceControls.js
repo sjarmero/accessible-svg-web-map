@@ -1,5 +1,3 @@
-import { main_grammar } from './grammar/main.js';
-
 /*
     Clase que engloba funciones de síntesis
     y reconocimiento de voz.
@@ -12,7 +10,7 @@ export class SVGVoiceControls {
         // Synth
         if (SVGVoiceControls.compatible()) {
             this.list = new webkitSpeechGrammarList();
-            this.list.addFromString(main_grammar);
+            this.list.addFromString('');
 
             this.voice = new webkitSpeechRecognition();
             this.voice.lang = 'es-ES';
@@ -38,6 +36,7 @@ export class SVGVoiceControls {
         this.container.innerHTML = sentence;
 
         setTimeout(() => {
+            console.log(this.onTranscript);
             this.start(this.onTranscript);
         }, (time_per_word) * (sentence.split(" ").length));
     }

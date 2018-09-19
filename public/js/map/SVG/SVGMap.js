@@ -96,7 +96,7 @@ export class SVGMap {
 
         for (let i = 0; i < steps; i++) {
             for (let j = 0; j < steps; j++) {
-                map_line_guides.rect(percentage, percentage).move(x + (i * w), y + (j * h)).fill('transparent').stroke({ width: 1 });
+                map_line_guides.rect(percentage, percentage).move(x + (i * w), y + (j * h)).fill('transparent').stroke({ width: 0 });
             }
         }
     }
@@ -202,15 +202,15 @@ export class SVGMap {
         console.log(this.marker_groups);
         console.log(this.data.groups);
         
+        let late_removal = [];
         for (const group of this.marker_groups) {
             for (const marker of group) {
                 if (i == level) {
-                    console.log('#marker-' + marker);
-                    this.svg.select('#marker-' + marker).hide();
-
-                    $("#link-feature-" + marker).attr("tabindex", "-1");
-                    $("#link-feature-" + marker).addClass("non-clickable");
+                    // Evitamos mostrar los elementos después de haberlos ocultado
+                    // si aparecen en grupos de otros niveles
+                    late_removal.push(marker);
                 } else {
+                    console.log('SHOW #marker-' + marker);
                     $("#link-feature-" + marker).removeAttr("tabindex");
                     $("#link-feature-" + marker).removeClass("non-clickable");
 
@@ -246,6 +246,14 @@ export class SVGMap {
             i++;
         }
 
+        for (const marker of late_removal) {
+            console.log('REMOVE #marker-' + marker);
+            this.svg.select('#marker-' + marker).hide();
+
+            $("#link-feature-" + marker).attr("tabindex", "-1");
+            $("#link-feature-" + marker).addClass("non-clickable");
+        }
+
         var self = this;
         $(this.container + "a.gmarker").on('keydown click', function(e) {
             if (e.type == "click" || e.which == 13) {
@@ -267,6 +275,7 @@ export class SVGMap {
 
     resizeToLevel(level, raisedbyuser = true) {
         $(this.container + ".jails").remove();
+        this.zoomlevel = level;
 
         let {vbx, wdiff} = this.getZoomValues(level, raisedbyuser);
         var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;

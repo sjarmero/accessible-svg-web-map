@@ -25,11 +25,16 @@ app.get('/map/data/s/name/:name', async (request, response) => {
     response.json(data);
 });
 
+app.get('/map/data/p/:id1,:id2', async (request, response) => {
+    let {id1, id2} = request.params;
+    const data = await db.djPath(id1, id2);
+    response.json(data);
+});
+
 app.get('/map/data', async (request, response) => {
     const result = await db.all();
     response.json(result);
 });
-
 
 app.get('/map/svg', async (request, response) => {
     const data = await db.allGeo();

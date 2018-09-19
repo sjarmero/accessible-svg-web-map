@@ -1,4 +1,4 @@
-importScripts('/subworkers/subworkers.js', '/js/map/messages/WorkerMessage.js');
+importScripts('/subworkers/subworkers.js', '/js/map/SVG/messages/WorkerMessage.js');
 
 /*
     Dispatches messages to proper worker

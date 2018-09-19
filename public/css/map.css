@@ -4,82 +4,123 @@ body {
     padding: 0;
 }
 
-    #map > svg {
-        width: 100%;
-        height: calc(100vh - 56px);
-        background-color: #ECEFF1;
+section section {
+    margin-top: 1em;
+    padding-bottom: 1em;
+    border-bottom: solid 1px #aaa;
+
+}
+
+#controlPanel section:first-child {
+    padding-bottom: 1em;
+    border-bottom: solid 1px darkgray;
+}
+
+    #controlPanel #searchform input {
+        width: 75%;
     }
+
+    #controlPanel #searchform .btn {
+        width: calc(25% - 8px);
+    }
+
+    #controlPanel .h1 {
+        font-size: 32px;
+    }
+
+    #controlPanel #resultsPanel th {
+        text-align: left;
+        padding-right: 1em;
+        width: 100%;
+    }
+
+    #controlPanel #dataPanel th {
+        text-align: left;
+        padding-right: 2em;
+    }
+
+    #controlPanel #voicePanel {
+        display: none;
+    }
+
+    #controlPanel #routePanel .input-group {
+        margin-bottom: 1em;
+    }
+
+#mapPanel {
+    padding-right: 0px;
+}
+
+#map > svg {
+    width: 100%;
+    height: 100vh !important;
+    height: calc(100vh - 56px);
+    background-color: #ECEFF1;
+}
 
     #map > svg > #SVG_MAIN_CONTENT {
         transform: translate(0, 0);
     }
 
-        #map > svg > #SVG_MAIN_CONTENT .map-marker text {
-            fill: #212121;
-            background-color: black;
-            text-shadow: 0px 0px 0px black;
-            font-size: 0.3em;
-        }
-
-        #map > svg > #SVG_MAIN_CONTENT .gmarker circle {
-            fill: #C51162;
-        }
-
-        #map > svg > #SVG_MAIN_CONTENT .gmarker text {
-            fill: white;
-        }
-
-        #map > svg > #SVG_MAIN_CONTENT .building {
-            fill: #90A4AE;
-            stroke: #455A64;
-            stroke-width: 0.05em;
-        }
-
-        #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building,  #map > svg > #SVG_MAIN a.active .building, #map > svg > #SVG_MAIN_CONTENT a:focus .gmarker circle, #map > svg > #SVG_MAIN_CONTENT a:hover .gmarker circle,  #map > svg > #SVG_MAIN a.active .gmarker circle {
-            stroke: blue;
-        }
-
-        #map > svg > #SVG_MAIN_CONTENT a.non-clickable {
-            
-        }
-
-#controls {
-    padding: 16px;
-}
-
-    #controls #pad {
-        text-align: center;
+    #map > svg > #SVG_MAIN_CONTENT .map-marker text {
+        fill: #212121;
+        background-color: black;
+        text-shadow: 0px 0px 0px black;
+        font-size: 0.3em;
     }
 
-        #controls #pad .btn {
-            border-radius: 3px;
-            border: 0;
-            background: #455A64;
-            margin-bottom: 8px;
-            padding: 0;
-            width: 2em;
-            height: 2em;
-            font-size: 1.5em;
-            line-height: 2em;   
-            color: white;
-        }
+    #map > svg > #SVG_MAIN_CONTENT .gmarker circle {
+        fill: #C51162;
+    }
 
-            #controls #pad .btn:hover {
-                background-color: #78909C;
-            }
+    #map > svg > #SVG_MAIN_CONTENT .gmarker text {
+        fill: white;
+    }
 
-            #controls #pad .btn:focus {
-                box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .75);
-            }
+    #map > svg > #SVG_MAIN_CONTENT .building {
+        fill: #90A4AE;
+        stroke: #455A64;
+        stroke-width: 0.05em;
+    }
 
-        #controls #pad .row .btn:nth-child(2) {
-            margin-left: 2em;
-        }
+    #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building,  #map > svg > #SVG_MAIN a.active .building, #map > svg > #SVG_MAIN_CONTENT a:focus .gmarker circle, #map > svg > #SVG_MAIN_CONTENT a:hover .gmarker circle,  #map > svg > #SVG_MAIN a.active .gmarker circle {
+        stroke: blue;
+    }
 
-table th {
-    text-align: left;
-    padding-right: 1em;
+#pad {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    text-align: center;
+    z-index: 9999;
 }
+
+    #pad .row {
+        margin-right: 0;
+        width: 0;
+    }
+
+    #pad .btn {
+        display: block;
+        border-radius: 3px;
+        border: 0;
+        background: #455A64;
+        margin-bottom: 8px;
+        padding: 0;
+        width: 2em;
+        height: 2em;
+        font-size: 1.5em;
+        line-height: 2em;   
+        color: white;
+    }
+
+        #pad .btn:hover {
+            background-color: #78909C;
+        }
+
+        #pad .btn:focus {
+            box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .75);
+        }
 
 #centermark {
     width: 16px;
@@ -105,4 +146,16 @@ table th {
 
 #results-table tr td {
     text-align: right;
+}
+
+@keyframes rotation {
+	from {transform: rotate(0deg); }
+	to {transform: rotate(360deg); }
+}
+
+.rotating-spinner {
+	animation-name: rotation;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
 }

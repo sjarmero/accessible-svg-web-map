@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
+<html lang="es">
+<head>
         <title>Mapa accesible de la Universidad de Alicante</title>
         
         <meta charset="utf-8">
@@ -11,101 +11,104 @@
         
         <link rel="stylesheet" href="/css/map.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    </head>
-    <body>
-        <nav class="navbar navbar-light bg-light">
-            <div class="d-flex justify-content-between" style="width:100%;">
-                <div>
-                    <a class="navbar-brand" href="">SVG Accesible</a>
-                </div>
+</head>
+<body>
+    <header class="sr-only">
+        <nav class="inline">
+            <ul>
+                <li><a href="#voicePanel">Ir al panel del control por voz</a></li>
+                <li><a href="#searchPanel">Ir a panel de búsqueda</a></li>
+                <li><a href="#mapPanel">Ir al panel del mapa</a></li>
+            </ul>
+        </nav>
+    </header>
 
-                <div>
+    <main class="container-fluid">
+        <div class="row">
+            <section id="controlPanel" class="col-md-4 col-sm-12">
+                <section id="voicePanel">
+                    <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
+                    <span class="d-none d-sm-none d-md-inline d-xl-inline"><span id="dictateStatus" style="display:none;">Escuchando...</span></span>
+                </section>
+
+                <section id="searchPanel">
                     <form class="form-inline my-2 my-lg-0" id="searchform">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Buscar en el mapa" aria-label="Nombre del elemento a buscar en el mapa" id="queryTxt" />
+                        <input class="form-control mr-sm-2" type="search" placeholder="Buscar en el mapa" aria-label="Nombre del elemento a buscar en el mapa" id="queryTxt" autocomplete="off" />
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
                     </form>
-                </div>
+                </section>
 
-                <div style="width: 200px; display: table;">
-                    <form class="form-inline" style="display: table-cell; text-align: right;">
-                        <span class="d-none d-sm-none d-md-inline d-xl-inline">
-                        <span id="dictateStatus" style="display:none;">Escuchando...</span></span>
-                        <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-left: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
+                <section id="routePanel">
+                    <strong class="h2">Calcular ruta</strong>
+
+                    <br />
+                    <br />
+
+                    <form id="routeform">
+                        <label for="routeSource">Punto de partida</label>
+
+                        <div class="input-group">
+                            <input class="form-control" type="text" placeholder="Nombre de un lugar" aria-label="Nombre del punto de destino" id="routeSource" autocomplete="off" required="true" />
+                            <div class="input-group-prepend" id="routeSourcePrepend"><span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span></div>
+                        </div>
+
+                        <label for="routeTarget">Punto de destino</label>
+                        <div class="input-group">
+                            <input class="form-control" type="text" placeholder="Nombre de un lugar" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required="true" />
+                            <div class="input-group-prepend" id="routeTargetPrepend"><span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span></div>
+                        </div>
+
+                        <div class="d-flex">
+                            <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true">
+                                <option selected>Discapacidad</option>
+                                <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
+                                <option value="2">Física (silla de ruedas, muletas...)</option>
+                            </select>
+
+                            <button class="btn btn-outline-primary flex-fill" type="submit" aria-label="Calcular ruta">Calcular</button>
+                        </div>
                     </form>
-                </div>
+                </section>
+
+                <section id="resultsPanel" style="display: none;">
+                    <strong class="h4">Resultados de búsqueda</strong>
+                    <table tabindex="0"></table>
+                </section>
+                
+                <section id="dataPanel" style="display: none;">
+                    <strong class="h4">Información sobre el edificio</strong>
+                    <table tabindex="0" aria-live="assertive"></table>
+                </section>
+            </section>
+
+            <div id="pad">
+                <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
+                <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
+                <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
+                <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
+                <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
+                <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
             </div>
-        </nav>
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-4">
-                    <div id="controls">
-                        <h2>Navegación</h2>
-                        <div id="pad">
-                            <div class="row">
-                                <div class="col-md-10">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
-                                            <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                        <div class="row">
-                                                <div class="col-sm-12 col-md-12">
-                                                    <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-sm-12 col-md-12">
-                                                    <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="data-panel">
-                                <h2 id="data-status">Ningún elemento seleccionado</h2>
-                                <table id="data-table" tabindex="0" aria-live="assertive"></table>
-                                <table id="results-table" tabindex="0" style="display:none;"></table>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-8">
-                            <div id="map">
-                                <!-- viewBox="0 100 1000 1000" preserveAspectRatio="xMidYMin meet" -->
-                            </div>
-                            <div id="centermark">✛</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <section id="mapPanel" class="col-md-8 col-sm-12">
+                <div id="map"></div>
+            </section>
         </div>
+    </main>
 
-        <script src="/js/jquery.js"></script>
-        <script src="/bootstrap/js/popper.js"></script>
-        <script src="/bootstrap/js/bootstrap.min.js"></script>
-        <script src="/svg.js/dist/svg.min.js"></script>
-        <script src="/js/map/invents.js"></script>
-        <!--<script src="/js/map/controller.js"></script>
-        <script src="/js/map/map.js"></script>-->
+    <script src="/js/jquery.js"></script>
+    <script src="/bootstrap/js/popper.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/svg.js/dist/svg.min.js"></script>
+    <script src="/js/map/invents.js"></script>
+    <!--<script src="/js/map/controller.js"></script>
+    <script src="/js/map/map.js"></script>-->
 
-        <script src="/js/map/index.js" type="module"></script>
+    <script src="/js/map/buildinginfo.js"></script>
+    <script src="/js/map/search.js"></script>
+    <script src="/js/map/voice.js" type="module"></script>
+    <script src="/js/map/index.js" type="module"></script>
 
-        <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
-    </body>
+    <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
+</body>
 </html>
