@@ -44,19 +44,18 @@
                     <br />
                     <br />
 
-                    <form id="routeform">
+                    <div id="routeform">
                         <label for="routeSource">Punto de partida</label>
-
-                        <div class="input-group">
+                        <form class="input-group" id="sourceForm">
                             <input class="form-control" type="text" placeholder="Nombre de un lugar" aria-label="Nombre del punto de destino" id="routeSource" autocomplete="off" required="true" />
-                            <div class="input-group-prepend" id="routeSourcePrepend"><span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span></div>
-                        </div>
+                            <div class="input-group-prepend" id="routeSourcePrepend"><button class="btn btn-primary routeBtn" aria-label="Buscar punto de partida" data-search="sourceForm"><i class="fas fa-search"></i></button></div>
+                        </form>
 
                         <label for="routeTarget">Punto de destino</label>
-                        <div class="input-group">
+                        <form class="input-group" id="targetForm">
                             <input class="form-control" type="text" placeholder="Nombre de un lugar" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required="true" />
-                            <div class="input-group-prepend" id="routeTargetPrepend"><span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span></div>
-                        </div>
+                            <div class="input-group-prepend" id="routeTargetPrepend"><button class="btn btn-primary routeBtn" aria-label="Buscar punto de destino" data-search="targetForm"><i class="fas fa-search"></i></button></div>
+                        </form>
 
                         <div class="d-flex">
                             <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true">
@@ -65,9 +64,9 @@
                                 <option value="2">Física (silla de ruedas, muletas...)</option>
                             </select>
 
-                            <button class="btn btn-outline-primary flex-fill" type="submit" aria-label="Calcular ruta">Calcular</button>
+                            <button class="btn btn-outline-primary flex-fill" type="submit" aria-label="Calcular ruta" id="calculateBtn">Calcular</button>
                         </div>
-                    </form>
+                    </div>
                 </section>
 
                 <section id="resultsPanel" style="display: none;">
@@ -97,6 +96,7 @@
     </main>
 
     <script src="/js/jquery.js"></script>
+    <script src="/jquery-mousewheel/jquery.mousewheel.js"></script>
     <script src="/bootstrap/js/popper.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/svg.js/dist/svg.min.js"></script>
@@ -106,6 +106,7 @@
 
     <script src="/js/map/buildinginfo.js"></script>
     <script src="/js/map/search.js"></script>
+    <script src="/js/map/route.js" type="module"></script>
     <script src="/js/map/voice.js" type="module"></script>
     <script src="/js/map/index.js" type="module"></script>
 

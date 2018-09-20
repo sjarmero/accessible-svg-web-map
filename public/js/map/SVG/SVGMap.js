@@ -193,7 +193,7 @@ export class SVGMap {
         this.moveTo(this.data.buildings[0].centerx, this.data.buildings[0].centery, false);
     }
 
-    groupMarkers(level) {        
+    groupMarkers(level) {
         console.log("Gropung markers for level " + level);
         var i = 0;
 
@@ -274,6 +274,8 @@ export class SVGMap {
     }
 
     resizeToLevel(level, raisedbyuser = true) {
+        if (level < 1 || level > 21) return;
+        
         $(this.container + ".jails").remove();
         this.zoomlevel = level;
 

@@ -66,6 +66,83 @@ $(document).ready(function() {
         }
     });
 
+    // Drag and drop map to move
+    let moving = false;
+    let ox, oy;
+
+    let move_event = ('ontouchstart' in window) ? 'touchmove' : 'mousemove';
+    let up_event = ('ontouchstart' in window) ? 'touchend' : 'mouseup';
+    let down_event = ('ontouchstart' in window) ? 'touchstart' :  'mousedown';
+
+    $(SVGMap.instance.container).on(down_event, function(e) {
+        e.preventDefault();
+        moving = ("ontouchstart" in window) ? (e.touches.length == 1) : true;
+
+        ox = ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX;
+        oy = ("ontouchstart" in window) ? e.targetTouches[0].pageY: e.pageY;
+    });
+
+    $(SVGMap.instance.container).on(up_event, function(e) {
+        moving = false;
+    });
+
+    $(SVGMap.instance.container).on(move_event, function(e) {
+        if (moving) {
+            let x = ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX;
+            let y = ("ontouchstart" in window) ? e.targetTouches[0].pageY: e.pageY;
+            let xdiff = (("ontouchstart" in window) ? (-1) : 1) * (x - ox) / 50;
+            let ydiff = (("ontouchstart" in window) ? (-1) : 1) * (y - oy) / 50;
+
+            SVGMap.instance.move(xdiff, ydiff, false);
+        }
+    });
+
+    // Scroll to zoom
+    let zooming = false;
+    $(SVGMap.instance.container).on('mousewheel', function(e) {
+        e.preventDefault();
+        if (zooming) return;
+
+        console.log(e.deltaX, e.deltaY, e.deltaFactor);
+        if (e.deltaY < 0 && e.deltaY != -0) {
+            SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel - 1, true);
+        } else {
+            SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel + 1, true);
+        }
+
+        zooming = true;
+        setTimeout(() => zooming = false, 400);
+
+    });
+
+    // Pinch/spread to zoom
+    let odistance;
+    let scale = false;
+    $(SVGMap.instance.container).on('touchstart', function(e) {
+        e.preventDefault();
+        if (e.touches.length == 2) {
+            scale = true;
+            odistance = Math.abs(e.touches[0].pageX - e.touches[1].pageX);
+        }
+    });
+
+    $(SVGMap.instance.container).on('touchmove', function(e) {
+        e.preventDefault();
+        if (scale && !zooming && e.touches.length == 2) {
+            let distance = Math.abs(e.touches[0].pageX - e.touches[1].pageX);
+
+            if (distance > odistance) {
+                SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel + 1, true);
+                zooming = true;
+            } else {
+                SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel - 1, true);
+                zooming = true;
+            }
+
+            setTimeout(() => zooming = false, 400);
+        }
+    });
+
     // Búsqueda
     $("#searchform").on('submit', function(e) {
         e.preventDefault();
