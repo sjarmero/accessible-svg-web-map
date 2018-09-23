@@ -1,0 +1,88 @@
+.row *[class^='col'] {
+    padding: 0px;
+}
+
+.padding {
+    padding: 15px;
+}
+
+#routePanel {
+    margin-top: 0px;
+}
+
+#routePanel header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px;
+    box-shadow: 0px 2px 5px gray;
+}
+
+    #routePanel header a {
+        color: white;
+        font-size: 1em;
+        margin-bottom: 1em;
+        display: block;
+    }
+
+    #routePanel header > div {
+        font-size: 1.5em;
+        margin-bottom: 1em;
+    }
+
+    #routePanel header > div:before {
+        content: "";
+
+        border: solid 1.5px white;
+        border-radius: 2px 2px 2px 2px;
+        width: 0px;
+        height: 1.5em;
+        position: absolute;
+        top: 89px;
+        left: 23px;
+    }
+
+    #routePanel header div span {
+        display: block;
+        width: 20px;
+        margin-right: 1em;
+        float: left;
+    }
+
+    #routePanel .input-group {
+        width: auto;
+    }
+
+
+    #controlPanel #routePanel .input-group {
+        margin-bottom: 1em;
+    }
+
+.route-steps {
+    counter-reset: stepscounter;
+}
+
+    .route-steps .route-step {
+        font-weight: bold;
+        counter-increment: stepcounter;
+        padding-left: 4em;
+        padding-bottom: 2em;
+    }
+
+        .route-steps .route-step span::before {
+            content: counter(stepcounter);
+            float: left;
+            display: block;
+            margin-left: -4em;
+            background-color: #007bff;
+            border-radius: 50% 50% 50% 50%;
+            width: 2em;
+            height: 2em;
+            text-align: center;
+            padding-top: 0.3em;
+            color: white;
+            box-shadow: 0px 1px 5px gray;
+        }
+
+svg #SVG_MAIN_CONTENT {
+    transition: transform 1s linear;
+}

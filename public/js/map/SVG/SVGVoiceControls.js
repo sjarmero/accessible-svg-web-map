@@ -36,7 +36,6 @@ export class SVGVoiceControls {
         this.container.innerHTML = sentence;
 
         setTimeout(() => {
-            console.log(this.onTranscript);
             this.start(this.onTranscript);
         }, (time_per_word) * (sentence.split(" ").length));
     }
@@ -50,9 +49,15 @@ export class SVGVoiceControls {
             this.voice.stop();
 
             var last = event.results.length - 1;
-            console.log(event.results[last]);
             var transcript = event.results[last][0].transcript;
-            callback({confidence: event.results[0][0].confidence, transcript: transcript });
+            var confidence = event.results[last][0].confidence;
+
+            if (confidence >= 0.80) {
+                callback({confidence: confidence, transcript: transcript });
+            } else {
+                console.log("Ignoring because of low confidence:");
+                console.log(`(${confidence}) ${transcript}`);
+            }
         }
 
         this.voice.onend = (event) => {
@@ -133,6 +138,14 @@ export class SVGVoiceControls {
         if (parsed != null) {
             let [,,, number] = parsed;
             return {action: 'select', mode: number};
+        }
+
+        // Probamos ruta
+        const route = /((ir )|(calcular ruta ))*desde ((\w|\d| )+) hasta ((\w|\d| )+)/i;
+        var parsed = sentence.match(route);
+        if (parsed != null) {
+            let [,,,, origin,, target] = parsed;
+            return {action: 'route', mode: {origin: origin, target: target}};
         }
 
         //

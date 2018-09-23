@@ -36,6 +36,14 @@ export class SVGControls {
         return this.searchResultSelected;
     }
 
+    set onRouteCommand(callback) {
+        this.routeCommand = callback;
+    }
+
+    get onRouteCommand() {
+        return this.routeCommand;
+    }
+
     set onUnknownVoiceCommand(callback) {
         this.uvc = callback;
     }
@@ -74,6 +82,10 @@ export class SVGControls {
 
                         case 'select':
                             this.onSearchResultSelected(this.toDigit(mode));
+                            return;
+
+                        case 'route':
+                            this.onRouteCommand(mode);
                             return;
 
                         case 'aramis':

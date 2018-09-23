@@ -4,11 +4,18 @@ body {
     padding: 0;
 }
 
+.block {
+    display: block;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
 section section {
     margin-top: 1em;
     padding-bottom: 1em;
     border-bottom: solid 1px #aaa;
-
 }
 
 #controlPanel section:first-child {
@@ -41,10 +48,6 @@ section section {
 
     #controlPanel #voicePanel {
         display: none;
-    }
-
-    #controlPanel #routePanel .input-group {
-        margin-bottom: 1em;
     }
 
 #mapPanel {

@@ -14,6 +14,18 @@ $(document).ready(function() {
             controls.voiceControl.say('No te he entendido.');
         };
 
+        controls.onRouteCommand = (data) => {
+            $("#routeSource").val(data.origin);
+            $("#sourceForm .btn").trigger('click');
+
+            $("#routeTarget").val(data.target);
+            $("#targetForm .btn").trigger('click');
+
+            setTimeout(() => {
+                $("#calculateBtn").trigger('click');
+            }, 1000);
+        };
+
         $("#dictateBtn").on('click', function(e) {
             e.preventDefault();
 

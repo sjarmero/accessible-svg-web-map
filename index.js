@@ -36,15 +36,19 @@ app.get('/map/data', async (request, response) => {
     response.json(result);
 });
 
-app.get('/map/svg', async (request, response) => {
-    const data = await db.allGeo();
-    const svg = await SVGMotor.fromData(data);
-    response.send(svg);
-});
-
 const fs = require('fs');
 app.get('/map', (request, response) => {
     fs.readFile(__dirname + '/public/map.html', 'utf8', async (err, html) => {
+        if (err) {
+            response.send(err.stack);
+        } else {
+            response.send(html);
+        }
+    });
+});
+
+app.get('/route', (request, response) => {
+    fs.readFile(__dirname + '/public/route.html', 'utf8', async (err, html) => {
         if (err) {
             response.send(err.stack);
         } else {

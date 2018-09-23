@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+        <title>Mapa accesible de la Universidad de Alicante</title>
+        
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+        
+        <link rel="stylesheet" href="/css/index.css" />
+        <link rel="stylesheet" href="/css/route.css" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+</head>
+<body>
+    <!--<header class="sr-only">
+        <nav class="inline">
+            <ul>
+                <li><a href="#voicePanel">Ir al panel del control por voz</a></li>
+                <li><a href="#searchPanel">Ir a panel de búsqueda</a></li>
+                <li><a href="#mapPanel">Ir al panel del mapa</a></li>
+            </ul>
+        </nav>
+    </header>-->
+
+    <main class="container-fluid">
+        <div class="row">
+            <section id="routePanel" class="col-md-4 col-sm-12">
+                <section id="routePanel">
+                        <div id="routeform">
+                            <header>
+                                <a href="/map"><i class="fas fa-long-arrow-alt-left"></i> Volver al mapa</a>
+                                <div>
+                                    <span>◈</span>
+                                    <form class="input-group" id="sourceForm">
+                                        <input class="form-control" type="text" placeholder="Nombre del punto de origen" aria-label="Nombre del punto de origen" id="routeSource" autocomplete="off" required="true" />
+                                        <div class="input-group-prepend" id="routeSourcePrepend"><button class="btn routeBtn" aria-label="Buscar punto de partida" data-search="sourceForm"><i class="fas fa-search"></i></button></div>
+                                    </form>     
+                                </div>
+                                <div>
+                                    <span>◈</span>
+                                    <form class="input-group" id="targetForm">
+                                        <input class="form-control" type="text" placeholder="Nombre del punto de destino" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required="true" />
+                                        <div class="input-group-prepend" id="routeTargetPrepend"><button class="btn routeBtn" aria-label="Buscar punto de destino" data-search="targetForm"><i class="fas fa-search"></i></button></div>
+                                    </form>     
+                                </div>
+                            </header>
+
+                            <div class="d-flex padding" style="margin-top: 1em;">
+                                <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true">
+                                    <option selected>Discapacidad</option>
+                                    <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
+                                    <option value="2">Física (silla de ruedas, muletas...)</option>
+                                </select>
+
+                                <button class="btn btn-outline-primary flex-fill" type="submit" aria-label="Calcular ruta" id="calculateBtn">Calcular</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="padding">
+                    <div class="route-steps">
+                        <div class="route-step">
+                            <span>
+                                Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. 
+                            </span>
+                        </div>
+
+                        <div class="route-step">
+                            <span>
+                                Gira a la derecha
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div id="pad">
+                <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
+                <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
+                <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
+                <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
+                <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
+                <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
+            </div>    
+
+            <section id="mapPanel" class="col-md-8 col-sm-12">
+                <div id="map"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="/js/jquery.js"></script>
+    <script src="/jquery-mousewheel/jquery.mousewheel.js"></script>
+    <script src="/bootstrap/js/popper.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/svg.js/dist/svg.min.js"></script>
+    <script src="/js/map/invents.js"></script>
+    <!--<script src="/js/map/controller.js"></script>
+    <script src="/js/map/map.js"></script>-->
+
+    <script src="/js/map/index.js" type="module"></script>
+    <script src="/js/route/route.js" type="module"></script>
+    <script src="/js/map/voice.js" type="module"></script>
+
+    <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
+</body>
+</html>
