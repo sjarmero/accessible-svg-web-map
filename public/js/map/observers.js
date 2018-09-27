@@ -10,7 +10,7 @@ export function setupObservers() {
         for (const elements of list) {
             for (const element of elements.addedNodes) {
                 if($(element).find("a.building-wrapper").attr("data-listened") != true) {
-                    $(element).find("a.building-wrapper").click(function(e) {
+                    $(element).find("a.building-wrapper").on('click', function(e) {
                         if ($(this).hasClass('non-clickable')) return;
                         showBuildingInfo($(this).attr('data-building'));
                     });

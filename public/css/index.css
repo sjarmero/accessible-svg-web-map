@@ -68,11 +68,12 @@ section section {
         }
 
 #mapPanel {
+    margin-left: -15px;
     padding-right: 0px;
 }
 
 #map > svg {
-    width: 100%;
+    width: calc(100% + 15px);
     height: 100vh !important;
     height: calc(100vh - 56px);
     background-color: #ECEFF1;
@@ -108,11 +109,8 @@ section section {
     }
 
 #pad {
-    position: absolute;
-    right: 8px;
-    bottom: 8px;
+    padding: 1em;
     text-align: center;
-    z-index: 9999;
 }
 
     #pad .row {
@@ -121,7 +119,6 @@ section section {
     }
 
     #pad .btn {
-        display: block;
         border-radius: 3px;
         border: 0;
         background: #455A64;
@@ -179,4 +176,10 @@ section section {
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
+}
+
+@media(max-width: 992px) {
+    #map > svg {
+        height: calc(100vh - 200px) !important;
+    }
 }

@@ -26,7 +26,15 @@
 
     <main class="container-fluid">
         <div class="row">
-            <section id="controlPanel" class="col-md-4 col-sm-12">
+            <section id="controlPanel" class="col-lg-4 col-12 order-12">
+                <section id="pad">
+                    <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
+                    <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
+                    <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
+                    <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
+                    <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
+                    <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
+                </section>
                 <section id="voicePanel">
                     <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
                     <span class="d-none d-sm-none d-md-inline d-xl-inline"><span id="dictateStatus">Haz click para comenzar a escuchar</span></span>
@@ -61,18 +69,9 @@
             </section>
 
             
-            <section id="mapPanel" class="col-md-8 col-sm-12">
+            <section id="mapPanel" class="col-lg-8 col-12 order-1">
                 <div id="map"></div>
             </section>
-            
-            <div id="pad">
-                <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
-                <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
-                <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
-                <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
-                <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
-                <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
-            </div>
         </div>
     </main>
 

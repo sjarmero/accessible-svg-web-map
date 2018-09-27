@@ -69,9 +69,9 @@ export function setupEvents() {
     let move_event = ('ontouchstart' in window) ? 'touchmove' : 'mousemove';
     let up_event = ('ontouchstart' in window) ? 'touchend' : 'mouseup';
     let down_event = ('ontouchstart' in window) ? 'touchstart' :  'mousedown';
+    const CTM = $(SVGMap.instance.container).get(0).getScreenCTM();
 
     $(SVGMap.instance.container).on(down_event, function(e) {
-        e.preventDefault();
         moving = ("ontouchstart" in window) ? (e.touches.length == 1) : true;
 
         ox = ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX;
@@ -86,9 +86,10 @@ export function setupEvents() {
         if (moving) {
             let x = ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX;
             let y = ("ontouchstart" in window) ? e.targetTouches[0].pageY: e.pageY;
-            let xdiff = (("ontouchstart" in window) ? (-1) : 1) * (x - ox) / 50;
-            let ydiff = (("ontouchstart" in window) ? (-1) : 1) * (y - oy) / 50;
 
+            let xdiff = (x - ox) / -35;
+            let ydiff = (y - oy) / -35;
+            
             SVGMap.instance.move(xdiff, ydiff, false);
         }
     });
@@ -96,7 +97,6 @@ export function setupEvents() {
     // Scroll to zoom
     let zooming = false;
     $(SVGMap.instance.container).on('mousewheel', function(e) {
-        e.preventDefault();
         if (zooming) return;
 
         console.log(e.deltaX, e.deltaY, e.deltaFactor);
@@ -115,14 +115,13 @@ export function setupEvents() {
     let odistance;
     let scale = false;
     $(SVGMap.instance.container).on('touchstart', function(e) {
-        e.preventDefault();
         if (e.touches.length == 2) {
             scale = true;
             odistance = Math.abs(e.touches[0].pageX - e.touches[1].pageX);
         }
     });
 
-    $(SVGMap.instance.container).on('touchmove', function(e) {
+    $(SVGMap.instance.container).not('a').on('touchmove', function(e) {
         e.preventDefault();
         if (scale && !zooming && e.touches.length == 2) {
             let distance = Math.abs(e.touches[0].pageX - e.touches[1].pageX);

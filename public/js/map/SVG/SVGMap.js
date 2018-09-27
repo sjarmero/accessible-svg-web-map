@@ -326,10 +326,6 @@ export class SVGMap {
     move(x, y, raisedbyuser = true) {
         var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
         handler.viewbox(this.svg.viewbox().x + x, this.svg.viewbox().y + y, this.svg.viewbox().width, this.svg.viewbox().height);
-
-        setTimeout(() => {
-            this.drawGuides();
-        }, 300);
     }
 
     /*
@@ -338,10 +334,6 @@ export class SVGMap {
     moveTo(x, y, raisedbyuser = true) {
         var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
         handler.viewbox(x - (this.fullw / 2), y - (this.fullh / 2), this.svg.viewbox().width, this.svg.viewbox().height);
-
-        setTimeout(() => {
-            this.drawGuides();
-        }, 300);
     }
 
     zoomAndMove(x, y, level) {
