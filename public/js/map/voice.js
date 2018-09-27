@@ -33,14 +33,14 @@ $(document).ready(function() {
                 controls.stopVoice();
                 $(this).attr('data-dictating', 'false');
                 $(this).removeClass("active");
-                $("#dictateStatus").css("display", "none");
+                $("#dictateStatus").html("Haz click para comenzar a escuchar");
 
                 controls.voiceControl.say('El mapa ha dejado de escuchar.');
             } else {
                 controls.startVoice();
                 $(this).attr('data-dictating', 'true');
                 $(this).addClass("active");
-                $("#dictateStatus").css("display", "inline");
+                $("#dictateStatus").html("Escuchando...");
 
                 controls.voiceControl.say('El mapa está ahora escuchando.');
             }

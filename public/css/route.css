@@ -8,6 +8,7 @@
 
 #routePanel {
     margin-top: 0px;
+    padding-top: 0px;
 }
 
 #routePanel header {
@@ -81,6 +82,11 @@
             padding-top: 0.3em;
             color: white;
             box-shadow: 0px 1px 5px gray;
+        }
+
+        .route-steps .route-step:focus span {
+            color: white;
+            background-color: #007bff;
         }
 
 svg #SVG_MAIN_CONTENT {

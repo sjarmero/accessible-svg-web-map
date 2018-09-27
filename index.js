@@ -65,4 +65,7 @@ https.createServer({
     rejectUnauthorized: false
 }, app).listen(3000);
 
-console.log("Listening on :3000");
+app.listen(3001);
+
+console.log("[HTTPS] Listening on :3000");
+console.log("[HTTP] Listening on :3001");

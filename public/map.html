@@ -4,7 +4,7 @@
         <title>Mapa accesible de la Universidad de Alicante</title>
         
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
@@ -18,6 +18,7 @@
             <ul>
                 <li><a href="#voicePanel">Ir al panel del control por voz</a></li>
                 <li><a href="#searchPanel">Ir a panel de búsqueda</a></li>
+                <li><a href="/route">Ir a cálculo de rutas</a></li>
                 <li><a href="#mapPanel">Ir al panel del mapa</a></li>
             </ul>
         </nav>
@@ -28,15 +29,25 @@
             <section id="controlPanel" class="col-md-4 col-sm-12">
                 <section id="voicePanel">
                     <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
-                    <span class="d-none d-sm-none d-md-inline d-xl-inline"><span id="dictateStatus" style="display:none;">Escuchando...</span></span>
+                    <span class="d-none d-sm-none d-md-inline d-xl-inline"><span id="dictateStatus">Haz click para comenzar a escuchar</span></span>
                 </section>
 
-                <section id="searchPanel">
-                    <form class="form-inline my-2 my-lg-0" id="searchform">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Buscar en el mapa" aria-label="Nombre del elemento a buscar en el mapa" id="queryTxt" autocomplete="off" />
-                        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
-                    </form>
+                <section id="routeAccessPanel" style="padding-top: 0em;">
+                    <a class="btn btn-primary block" href="/route" aria-label="Acceder a pantalla de rutas">Acceder a cálculo de rutas</a>
                 </section>
+
+                <section id="currentViewPanel" style="border-top: solid 1px gray;">
+                    <strong class="h3">Elementos a la vista</strong>
+                    <ul>
+                    </ul>
+                </section>
+
+                <section id="searchPanel" style="border-top: solid 1px gray;">
+                        <form class="form-inline my-2 my-lg-0" id="searchform">
+                            <input class="form-control mr-sm-2" type="search" placeholder="Buscar en el mapa" aria-label="Nombre del elemento a buscar en el mapa" id="queryTxt" autocomplete="off" />
+                            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
+                        </form>
+                    </section>
 
                 <section id="resultsPanel" style="display: none;">
                     <strong class="h4">Resultados de búsqueda</strong>
@@ -49,6 +60,11 @@
                 </section>
             </section>
 
+            
+            <section id="mapPanel" class="col-md-8 col-sm-12">
+                <div id="map"></div>
+            </section>
+            
             <div id="pad">
                 <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
                 <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
@@ -57,10 +73,6 @@
                 <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
                 <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
             </div>
-
-            <section id="mapPanel" class="col-md-8 col-sm-12">
-                <div id="map"></div>
-            </section>
         </div>
     </main>
 
@@ -74,7 +86,6 @@
     <script src="/js/map/map.js"></script>-->
 
     <script src="/js/map/index.js" type="module"></script>
-    <script src="/js/map/search.js"></script>
     <script src="/js/map/voice.js" type="module"></script>
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>

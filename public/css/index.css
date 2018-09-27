@@ -14,13 +14,12 @@ body {
 
 section section {
     margin-top: 1em;
-    padding-bottom: 1em;
-    border-bottom: solid 1px #aaa;
+    padding-top: 2em;
 }
 
 #controlPanel section:first-child {
+    padding-top: 0em;
     padding-bottom: 1em;
-    border-bottom: solid 1px darkgray;
 }
 
     #controlPanel #searchform input {
@@ -49,6 +48,24 @@ section section {
     #controlPanel #voicePanel {
         display: none;
     }
+
+    #controlPanel #currentViewPanel ul {
+        list-style: none;
+        padding: 0;
+        margin-left: -0.5em;
+    }
+
+        #controlPanel #currentViewPanel ul li a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 0.5em;
+        }
+
+        #controlPanel #currentViewPanel ul li a:focus {
+            background-color: #7986CB;
+            color: white;
+        }
 
 #mapPanel {
     padding-right: 0px;
@@ -119,6 +136,7 @@ section section {
 
         #pad .btn:hover {
             background-color: #78909C;
+            outline: 1;
         }
 
         #pad .btn:focus {

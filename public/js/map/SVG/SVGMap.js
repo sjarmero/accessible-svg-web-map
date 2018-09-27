@@ -265,6 +265,36 @@ export class SVGMap {
                 self.zoomAndMove(x, y, self.zoomlevel);
             }
         });
+
+        $("#currentViewPanel ul").empty();
+        if (this.zoomlevel >= MAX_GROUP_LEVEL) {
+            for (const feature of this.data.buildings) {
+                console.log(feature);
+                let li = document.createElement("li");
+                let a = document.createElement("a");
+                $(a).html(`Edificio: ${feature.properties.name.value}`);
+                $(a).attr('href', '#');
+                $(a).attr('data-id', feature.properties.id.value);
+                $(a).attr('data-x', feature.centerx);
+                $(a).attr('data-y', feature.centery);
+                $(li).append(a);
+                $("#currentViewPanel ul").append(li);
+            }
+        } else {
+            for (const group of this.data.groups[this.zoomlevel]) {
+                console.log(group);
+                let li = document.createElement("li");
+                let a = document.createElement("a");
+                $(a).html(`Grupo: ${group.name}`);
+                $(a).attr('href', '#');
+                $(a).attr('data-type', 'group');
+                $(a).attr('data-listened', false);
+                $(a).attr('data-x', group.lat);
+                $(a).attr('data-y', group.long);
+                $(li).append(a);
+                $("#currentViewPanel ul").append(li);
+            }
+        }
     }
 
     getZoomValues(level, raisedbyuser) {

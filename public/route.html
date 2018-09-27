@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-        <title>Mapa accesible de la Universidad de Alicante</title>
+        <title>Cálculo de rutas - Mapa accesible de la Universidad de Alicante</title>
         
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
@@ -26,7 +26,7 @@
 
     <main class="container-fluid">
         <div class="row">
-            <section id="routePanel" class="col-md-4 col-sm-12">
+            <section class="col-md-4 col-sm-12">
                 <section id="routePanel">
                         <div id="routeform">
                             <header>
@@ -48,7 +48,7 @@
                             </header>
 
                             <div class="d-flex padding" style="margin-top: 1em;">
-                                <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true">
+                                <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true" aria-label="Seleccionar discapacidad">
                                     <option selected>Discapacidad</option>
                                     <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
                                     <option value="2">Física (silla de ruedas, muletas...)</option>
@@ -60,19 +60,7 @@
                 </section>
                 
                 <div class="padding">
-                    <div class="route-steps">
-                        <div class="route-step">
-                            <span>
-                                Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. Lorem impsum dolor sit amet. 
-                            </span>
-                        </div>
-
-                        <div class="route-step">
-                            <span>
-                                Gira a la derecha
-                            </span>
-                        </div>
-                    </div>
+                    <div class="route-steps" tabindex="0" role="list"></div>
                 </div>
             </section>
 
@@ -100,9 +88,7 @@
     <!--<script src="/js/map/controller.js"></script>
     <script src="/js/map/map.js"></script>-->
 
-    <script src="/js/map/index.js" type="module"></script>
     <script src="/js/route/route.js" type="module"></script>
-    <script src="/js/map/voice.js" type="module"></script>
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
 </body>
