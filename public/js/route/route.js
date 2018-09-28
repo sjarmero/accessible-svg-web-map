@@ -16,13 +16,21 @@ $(document).ready(function() {
     console.log(rotar({x: 1, y: 1}, 90, true));
     console.log(rotar({x: 1, y: 1}, 90, false));
 
+    let form;
     $(".routeBtn").on('click', function(e) {
         e.preventDefault();
 
-        let form = "#" + $(this).attr('data-search');
+        form = "#" + $(this).attr('data-search');
         changeIcon($(form), loadingIcon);
         $(form).find('button').removeClass('btn-primary btn-success btn-danger');
         $(form).find('button').addClass('btn-primary');
+
+        if ($(form).find('input').val() == "") {
+            changeIcon($(form), errIcon);
+            $(form).find('button').removeClass('btn-primary btn-success btn-danger');
+            $(form).find('button').addClass('btn-danger');
+            return;
+        }
 
         $.getJSON('/map/data/s/name/' + $(form).find('input').val(), function(data) {
             if (data.code == 200) {
@@ -41,12 +49,69 @@ $(document).ready(function() {
                         target = results[0].id;
                     }
                 } else {
-                    changeIcon($(form), errIcon);
-                    $(form).find('button').removeClass('btn-primary btn-success btn-danger');
-                    $(form).find('button').addClass('btn-danger');
+                    let point = (form == '#sourceForm') ? 'Punto de origen' : 'Punto de destino';
+                    $('#searchModal .modal-body').empty();
+                    $('#modalTitle').html(point);
+
+                    for (const result of results)  {
+                        console.log(result);
+                        let div = document.createElement("div");
+                        let input = document.createElement("input");
+                        $(input).attr("type", "radio");
+                        $(input).attr("data-feature", result.name);
+                        $(input).attr("aria-label", `Elegir ${result.name} como ${point}`);
+                        $(input).attr("name", "featureSelection");
+                        $(input).attr("id", `feature-${result.id}`);
+                        $(input).attr("value", result.name);
+                        $(input).attr('tabindex', 0);
+
+                        let label = document.createElement('label');
+                        $(label).attr('for', `feature-${result.id}`);
+                        $(label).html(result.name);
+                        
+                        $(div).attr('class', 'check-group');
+                        $(div).append(input);
+                        $(div).append(label);
+
+                        console.log(div);
+                        $("#searchModal .modal-body").append(div);
+                    }
+                    
+                    $('#searchModal').modal('show');
                 }
             }
         });
+    });
+
+    $('#searchModal').on('shown.bs.modal', function(e) {
+        $('#searchModal input[name="featureSelection"]:first').trigger('focus');
+    });
+
+    $('#searchModal').on('hide.bs.modal', function(e) {
+        let chosen = $('#searchModal input[name="featureSelection"]:checked').val();
+        let id = $('#searchModal input[name="featureSelection"]:checked').attr('id').split('feature-')[1];
+
+        console.log(chosen);
+
+        if (typeof chosen == 'undefined') {
+            changeIcon($(form), errIcon);
+            $(form).find('button').removeClass('btn-primary btn-success btn-danger');
+            $(form).find('button').addClass('btn-danger');        
+        } else {
+            $(form).find('input').val(chosen);
+            changeIcon($(form), okIcon);
+            $(form).find('button').removeClass('btn-primary btn-success btn-danger');
+            $(form).find('button').addClass('btn-success');
+            
+            
+            if (form == '#sourceForm') {
+                verified[0] = true;
+                source = id;
+            } else {
+                verified[1] = true 
+                target = id;
+            }
+        }
     });
 
     $("#calculateBtn").on('click', function(e) {
@@ -75,6 +140,8 @@ function changeIcon(container, newClass) {
 
 let guide = [];
 function navigationMode(data) {
+    $("#SVG_MAIN_CONTENT #route").empty();
+
     // Dibujar ruta
     let svg = SVGMap.instance.svg;
     const gm = svg.select('#SVG_MAIN_CONTENT').members[0].group().attr('id', 'route');
@@ -92,7 +159,6 @@ function navigationMode(data) {
     }
 
     gm.polyline(polyline).fill('transparent').stroke({width: 3, color: '#1A237E'});
-
 
     let a = {x: data[0].vcenterx, y: data[0].vcentery};
     let p = {x: data[1].vcenterx, y: data[1].vcentery};
@@ -181,14 +247,8 @@ function navigationMode(data) {
 
         i++;
     }
-/*
-    for (let i = 0; i < (data.length - 1); i++) {
-        a = {x: data[i].vcenterx, y: data[i].vcentery};
-        p = {x: data[i+1].vcenterx, y: data[i+1].vcentery};
-        
-        let tilt = toDeg(angulo(p, a));
-        console.log(tilt);
-    }*/
+
+    $(".route-steps .route-step:first").trigger('focus');
 }
 
 // Devuelve el ángulo entre dos puntos en radianes

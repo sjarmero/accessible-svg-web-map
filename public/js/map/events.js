@@ -72,6 +72,8 @@ export function setupEvents() {
     const CTM = $(SVGMap.instance.container).get(0).getScreenCTM();
 
     $(SVGMap.instance.container).on(down_event, function(e) {
+        e.preventDefault();
+        
         moving = ("ontouchstart" in window) ? (e.touches.length == 1) : true;
 
         ox = ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX;

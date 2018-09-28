@@ -89,6 +89,31 @@
             background-color: #007bff;
         }
 
-svg #SVG_MAIN_CONTENT {
+#map svg #SVG_MAIN_CONTENT {
     transition: transform 1s linear;
 }
+
+#mapPanel {
+    margin-left: 0px;
+}
+
+#map svg {
+    width: 100%;
+}
+
+#searchModal .modal-body .check-group {
+    padding: 0.5em;
+    margin-top: 0.5em;
+}
+    #searchModal .modal-body .check-group label {
+        margin-bottom: 0;
+    }
+
+    #searchModal .modal-body .check-group input {
+        margin-right: 0.5em;
+    }
+
+    #searchModal .modal-body .check-groupfocus {
+        background-color: #007bff;
+        color: white;
+    }

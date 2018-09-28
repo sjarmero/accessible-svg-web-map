@@ -1,5 +1,5 @@
 import { SVGMap } from './SVG/SVGMap.js';
-import { focusBuilding } from './features.js';
+import { focusBuilding, showBuildingInfo } from './features.js';
 export function setupObservers() {
     /*
         Cuando se añade un nuevo elemento SVG, se notifica
