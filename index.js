@@ -25,9 +25,9 @@ app.get('/map/data/s/name/:name', async (request, response) => {
     response.json(data);
 });
 
-app.get('/map/data/p/:id1,:id2', async (request, response) => {
-    let {id1, id2} = request.params;
-    const data = await db.djPath(id1, id2);
+app.get('/map/data/p/:id1,:id2,:disability', async (request, response) => {
+    let {id1, id2, disability} = request.params;
+    const data = await db.djPath(id1, id2, disability);
     response.json(data);
 });
 

@@ -178,11 +178,15 @@ section section {
     animation-timing-function: ease-in-out;
 }
 
-@media(max-width: 992px) {
+@media(min-width: 992px) {
     #map {
         position: fixed;
-        width: 100%;
+        width: 66%;
+        height: 100%;
     }
+}
+
+@media(max-width: 992px) {
     #map > svg {
         height: calc(100vh - 200px) !important;
     }

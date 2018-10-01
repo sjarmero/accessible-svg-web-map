@@ -49,7 +49,7 @@
 
                             <div class="d-flex padding" style="margin-top: 1em;">
                                 <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true" aria-label="Seleccionar discapacidad">
-                                    <option selected>Discapacidad</option>
+                                    <option selected value="0">Ninguna discapacidad</option>
                                     <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
                                     <option value="2">Física (silla de ruedas, muletas...)</option>
                                 </select>
@@ -59,9 +59,6 @@
                     </div>
                 </section>
                 
-                <div class="padding">
-                    <div class="route-steps" tabindex="0" role="list"></div>
-                </div>
 
                 <div id="pad">
                     <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
@@ -70,7 +67,19 @@
                     <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
                     <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
                     <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
-                </div>  
+                </div>
+
+                <div class="padding">
+                    <div class="d-flex" style="margin-bottom: 1em;">
+                        Distancia medida en 
+                        <select class="custom-select" id="metricUnitSelect" aria-label="Seleccionar unidad de medida">
+                            <option selected value="0">Pasos</option>
+                            <option value="1">Metros</option>
+                        </select>
+                    </div>
+
+                    <div class="route-steps" role="list"></div>
+                </div>
             </section>
 
             <section id="mapPanel" class="col-md-8 col-sm-12">
@@ -99,7 +108,6 @@
       </div>
 
     <script src="/js/jquery.js"></script>
-    <script src="/jquery-mousewheel/jquery.mousewheel.js"></script>
     <script src="/bootstrap/js/popper.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/svg.js/dist/svg.min.js"></script>

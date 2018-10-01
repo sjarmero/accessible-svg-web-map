@@ -12,10 +12,6 @@ $(document).ready(function() {
     let verified = [false, false];
     let source, target;
 
-    console.log(angulo({x: 10, y: 0}, {x: 0, y: 10}));
-    console.log(rotar({x: 1, y: 1}, 90, true));
-    console.log(rotar({x: 1, y: 1}, 90, false));
-
     let form;
     $(".routeBtn").on('click', function(e) {
         e.preventDefault();
@@ -35,7 +31,11 @@ $(document).ready(function() {
         $.getJSON('/map/data/s/name/' + $(form).find('input').val(), function(data) {
             if (data.code == 200) {
                 let {results} = data;
-                if (results.length == 1) {
+                if (results.length == 0) {
+                    $(form).find('button').removeClass('btn-primary btn-success btn-danger');
+                    $(form).find('button').addClass('btn-danger');
+                    changeIcon($(form), errIcon);
+                } else if (results.length == 1) {
                     $(form).find('input').val(results[0].name);
                     changeIcon($(form), okIcon);
                     $(form).find('button').removeClass('btn-primary btn-success btn-danger');
@@ -125,7 +125,7 @@ $(document).ready(function() {
         console.log(acc, source, target);
 
         if (acc) {
-            $.getJSON(`/map/data/p/${source},${target}`, function(data) {
+            $.getJSON(`/map/data/p/${source},${target},${$("#impairmentSelect").val()}`, function(data) {
                 console.log(data);
 
                 navigationMode(data);
@@ -146,19 +146,22 @@ function navigationMode(data) {
     let svg = SVGMap.instance.svg;
     const gm = svg.select('#SVG_MAIN_CONTENT').members[0].group().attr('id', 'route');
     const polyline = [];
+    let count = 1;
     for (const step of data) {
         let {vcenterx, vcentery} = step;
 
-        console.log(gm.circle());
         const circle = gm.circle().radius(5);
         circle.cx(vcenterx);
         circle.cy(vcentery);
-        circle.fill('#1A237E')
+        circle.fill('#1A237E');
+        circle.attr('id', 'step-circle-' + count);
 
         polyline.push([vcenterx], [vcentery]);
+
+        count++;
     }
 
-    gm.polyline(polyline).fill('transparent').stroke({width: 3, color: '#1A237E'});
+    gm.polyline(polyline).fill('transparent').stroke({width: 3, color: '#1A237E'}).back();
 
     let a = {x: data[0].vcenterx, y: data[0].vcentery};
     let p = {x: data[1].vcenterx, y: data[1].vcentery};
@@ -170,6 +173,9 @@ function navigationMode(data) {
     let rotacionMapa = perspectiva(p, a);
     let ajuste = toDeg(angulo(p, a));
     if (rotacionMapa == 90) { ajuste = 90 - ajuste; }
+    if (rotacionMapa == 270) { ajuste = 90 - ajuste; }
+
+    console.log('perspectiva', rotacionMapa, 'ajuste', ajuste);
 
     $("#map svg #SVG_MAIN_CONTENT").css({
         'transform-origin': `${a.x}px ${a.y}px`,
@@ -183,6 +189,8 @@ function navigationMode(data) {
         });
     });
 
+    SVGMap.instance.zoomAndMove(a.x, a.y, 15);
+
     let lastRotacion = rotacionMapa;
     
     guide = [];
@@ -193,25 +201,28 @@ function navigationMode(data) {
         rotacionMapa = perspectiva(p, a);
         ajuste = toDeg(angulo(p, a));
         if (rotacionMapa == 90) { ajuste = 90 - ajuste; }
+        if (rotacionMapa == 270) { ajuste = 90 - ajuste; }
 
-        console.log(rotacionMapa);
+        console.log('rotacionMapa (perspectiva)', rotacionMapa);
 
         let giro = rotacionMapa - lastRotacion;
-        console.log(giro);
+        console.log('giro', giro);
 
         let direction = 0;
-        if (giro <= 20 && giro >= -20) {
+        if (giro == 0) {
             direction = 0; // Recto
-        } else if (giro <= 120 && giro >= 60) {
+        } else if (giro == 90) {
             direction = 1; // Izquierda
-        } else if (giro <= -60 && giro >= -120) {
-            direction = 2; // Derecha
+        } else if (giro == -90) {
+            direction = 2; // Derecha;
         }
 
         guide.push({
             direction: direction,
             distance: modulo({x: p.x - a.x, y: p.y - a.y})
         });
+
+        lastRotacion = rotacionMapa;
     }
 
     $(".route-steps").empty();
@@ -223,15 +234,15 @@ function navigationMode(data) {
         let order = `<span class='sr-only'>Paso número ${i}.</span>`;
         switch (step.direction) {
             case 0:
-                order += `Camina ${Math.ceil(step.distance)} pasos hacia delante`;
+                order += `Camina <span class="steps-expression" data-steps='${Math.ceil(step.distance)}'>${Math.ceil(step.distance)} pasos</span> hacia delante`;
                 break;
 
             case 1:
-                order += `Gira a la izquierda y camina ${Math.ceil(step.distance)} pasos`;
+                order += `Gira a la izquierda y camina <span class="steps-expression" data-steps='${Math.ceil(step.distance)}'>${Math.ceil(step.distance)} pasos</span>`;
                 break;
 
             case 2:
-                order += `Gira a la derecha y camina ${Math.ceil(step.distance)} pasos`;
+                order += `Gira a la derecha y camina <span class="steps-expression" data-steps='${Math.ceil(step.distance)}'>${Math.ceil(step.distance)} pasos</span>`;
                 break;
         }
 
@@ -242,11 +253,30 @@ function navigationMode(data) {
         $(stepDiv).addClass('route-step');
         $(stepDiv).attr('role', 'listitem');
         $(stepDiv).attr('tabindex', '0');
+        $(stepDiv).attr('data-step', i);
 
         $(".route-steps").append(stepDiv);
 
         i++;
     }
+
+    $("#metricUnitSelect").on('change', function(e) {
+        console.log($(this).val());
+        $(".steps-expression").each(function() {
+            let steps = $(item).attr('data-steps');
+
+            if ($("#metricUnitSelect").val() == 0) {
+                $(item).html(`${steps} pasos`);
+            } else {
+                let meters = steps / 2;
+                $(item).html(`${meters} metros`);
+            }
+        });
+    });
+
+    $(".route-steps .route-step").on('focus', function(e) {
+        // TODO: Mover al punto el mapa cuando el paso se seleccione        
+    });
 
     $(".route-steps .route-step:first").trigger('focus');
 }
@@ -268,9 +298,9 @@ function angulo(p1, p2) {
     let c = {x: (p2.x - p1.x), y: (p2.y - p1.y)};
     let alpha = Math.atan2(modulo(b), modulo(a));
 
-    /*gsvg.line(p1.x, p1.y, h.x, h.y).stroke({ width: 1, color: 'pink'});
-    gsvg.line(p2.x, p2.y, h.x, h.y).stroke({ width: 1, color: 'yellow'});
-    gsvg.line(p1.x, p1.y, p2.x, p2.y).stroke({ width: 1, color: 'red'});*/
+    /*SVGMap.instance.svg.line(p1.x, p1.y, h.x, h.y).stroke({ width: 1, color: 'pink'});
+    SVGMap.instance.svg.line(p2.x, p2.y, h.x, h.y).stroke({ width: 1, color: 'yellow'});
+    SVGMap.instance.svg.line(p1.x, p1.y, p2.x, p2.y).stroke({ width: 1, color: 'red'});*/
 
     return alpha;
 }
@@ -281,9 +311,23 @@ function perspectiva(p, a) {
     let ydiff = p.y - a.y;
     let xdiff = p.x - a.x;
 
-    console.log(xdiff, ydiff);
+    console.log('perspectiva', xdiff, ydiff);
 
-    if (Math.abs(xdiff) <= 50) {
+    /*if (Math.abs(xdiff) <= 50) {
+        if (ydiff > 0) {
+            return 180;
+        } else {
+            return 0;
+        }
+    } else {
+        if (xdiff > 0) {
+            return 270;
+        } else {
+            return 90;
+        }
+    }*/
+
+    if (Math.abs(ydiff) > Math.abs(xdiff)) {
         if (ydiff > 0) {
             return 180;
         } else {
@@ -296,8 +340,6 @@ function perspectiva(p, a) {
             return 90;
         }
     }
-
-    return 90;
 }
 
 function toDeg(rad) {
@@ -306,24 +348,6 @@ function toDeg(rad) {
 
 function toRad(deg) {
     return deg * Math.PI / 180;
-}
-
-function rotar(v, angulo_, clockwise) {
-    let angulo = angulo_ / (Math.PI / 180);
-    let xprima, yprima;
-
-    if (!clockwise) { 
-        xprima = (v.x * Math.cos(angulo)) - (v.y * Math.sin(angulo));
-        yprima = (v.x * Math.sin(angulo)) + (v.y * Math.cos(angulo));
-    } else {
-        xprima = (v.x * Math.cos(angulo)) + (v.y * Math.sin(angulo));
-        yprima = - (v.x * Math.sin(angulo)) + (v.y * Math.cos(angulo));
-    }
-
-    let r = {x: xprima, y: yprima};
-    console.log('xprima:', r.x, 'yprima:', r.y);
-
-    return r;
 }
 
 function modulo(v) {

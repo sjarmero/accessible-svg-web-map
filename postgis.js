@@ -203,10 +203,10 @@ const searchByName = async function(name) {
     }
 }
 
-const djPath = async function(bid1, bid2) {
+const djPath = async function(bid1, bid2, disability) {
     let data;
     try {
-        data = await client.query(`select * from dijkstraPath(${bid1}, ${bid2}, false);`);
+        data = await client.query(`select dp.*, ST_X(rn.the_geom) as vcenterx, (-1) * ST_Y(rn.the_geom) as vcentery from dijkstraPath(${bid1}, ${bid2}, false, ${disability}) as dp, routes_noded_vertices_pgr as rn where dp.node = rn.id order by seq;`);
     } catch (e) {
         console.log("[POSTGIS] djPath");
         console.log(e);

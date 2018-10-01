@@ -90,7 +90,7 @@
         }
 
 #map svg #SVG_MAIN_CONTENT {
-    transition: transform 1s linear;
+    transition: transform-origin 0.25s linear;
 }
 
 #mapPanel {
