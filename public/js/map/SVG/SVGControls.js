@@ -1,19 +1,14 @@
 import { SVGMap } from './SVGMap.js';
-import { SVGBridge } from "./SVGBridge.js";
-import { Message } from './messages/Message.js';
 import { SVGVoiceControls } from './SVGVoiceControls.js';
 
 export class SVGControls {
     constructor() {
-        var bridge = new SVGBridge();
         this.altk = false;
         this.voice = new SVGVoiceControls();
-
-        this.getBridge = () => bridge;
     }
 
     pageLoad() {
-        this.getBridge().tell(new Message('data-general', ''));
+        SVGMap.instance.draw();
     }
 
     get voiceControl() {
@@ -68,33 +63,32 @@ export class SVGControls {
 
                 let parsed = this.voice.parseAction(transcript);
                 if (parsed) {
-                    let {action, mode} = parsed;
-                    console.log(mode);
+                    console.log('Parsed as', parsed);
+                    let {name} = parsed;
 
-                    switch (action) {
+                    switch (name) {
                         case 'unknown':
                             this.onUnknownVoiceCommand();
                             return;
 
                         case 'search':
-                            this.onSearchVoiceQuery(mode);
+                            this.onSearchVoiceQuery(parsed.query);
                             return;
 
                         case 'select':
-                            this.onSearchResultSelected(this.toDigit(mode));
+                            this.onSearchResultSelected(this.toDigit(parsed.item));
                             return;
 
                         case 'route':
-                            this.onRouteCommand(mode);
+                            this.onRouteCommand({ origin: parsed.origin, target: parsed.target });
                             return;
 
-                        case 'aramis':
-                            let speech = new Speech();
-                            speech.say("La máxima autoridad mundial en ocultismo");
+                        case 'access-routes':
+                            this.onRouteCommand(null);
                             return;
 
                         default:
-                            this.navigationHandler(mode);
+                            this.navigationHandler(parsed.direction);
                             return;
                     }
                 }

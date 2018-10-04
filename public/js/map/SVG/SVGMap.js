@@ -56,6 +56,18 @@ export class SVGMap {
         this._container = v;
     }
 
+    fetchData() {
+        if (typeof this._data == 'undefined') {
+            return $.getJSON('/map/data', (data) => {
+                return data;
+            });
+        } else {
+            new Promise((resolve, reject) => {
+                resolve(this._data);
+            });
+        }
+    }
+
     get data() {
         return this._data;
     }
@@ -150,47 +162,52 @@ export class SVGMap {
     }
 
     draw() {
-        this.svg.attr('id', 'this.svg_MAIN');
-        this.svg.attr('preserveAspectRatio', 'xMidYMid slice');
-        this.svg.attr('class', 'map-dragable');
-        this.svg.attr('tabindex', 0);
-        
-        const main = this.svg.group().attr('id', 'SVG_MAIN_CONTENT').front();
+        this.fetchData().then((data) => {
+            console.log(data);
+            this.data = data;
 
-        for (const feature of this.data.buildings) {
-            const g = main.group();
-
-            const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link building-wrapper').attr('id', 'link-feature-' + feature.properties.id.value);
-            a.attr('data-building', feature.properties.id.value);
+            this.svg.attr('id', 'this.svg_MAIN');
+            this.svg.attr('preserveAspectRatio', 'xMidYMid slice');
+            this.svg.attr('class', 'map-dragable');
+            this.svg.attr('tabindex', 0);
             
-            const rect = a.path().attr('d', feature.path);
-            rect.attr('id', 'feature-shape-' + feature.properties.id.value);
-            rect.attr('class', 'building');
+            const main = this.svg.group().attr('id', 'SVG_MAIN_CONTENT').front();
 
-            const marker = a.group().attr('id', 'marker-' + feature.properties.id.value).attr('class', 'map-marker');
+            for (const feature of this.data.buildings) {
+                const g = main.group();
 
-            const img = marker.image('/images/building_marker.svg', 14, 14);
-            img.attr('class', 'marker');
-            img.attr('x', feature.centerx - 15);
-            img.attr('y', feature.centery - 7);
+                const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link building-wrapper').attr('id', 'link-feature-' + feature.properties.id.value);
+                a.attr('data-building', feature.properties.id.value);
+                
+                const rect = a.path().attr('d', feature.path);
+                rect.attr('id', 'feature-shape-' + feature.properties.id.value);
+                rect.attr('class', 'building');
 
-            const text = marker.plain((feature.properties.name ? feature.properties.name.value : ""));
-            text.attr('x' , feature.centerx);
-            text.attr('y', feature.centery);
-            text.attr('text-anchor', 'start');
-            text.attr('id', 'label-' + (feature.properties.id ? feature.properties.id.value : ""));
+                const marker = a.group().attr('id', 'marker-' + feature.properties.id.value).attr('class', 'map-marker');
 
-            a.attr('aria-labelledby', 'label-' + feature.properties.id.value);
+                const img = marker.image('/images/building_marker.svg', 14, 14);
+                img.attr('class', 'marker');
+                img.attr('x', feature.centerx - 15);
+                img.attr('y', feature.centery - 7);
 
-            // We save this marker in its group for further hiding
-            for (const group of feature.groups) {
-                this.marker_groups[group].push(feature.properties.id.value);
+                const text = marker.plain((feature.properties.name ? feature.properties.name.value : ""));
+                text.attr('x' , feature.centerx);
+                text.attr('y', feature.centery);
+                text.attr('text-anchor', 'start');
+                text.attr('id', 'label-' + (feature.properties.id ? feature.properties.id.value : ""));
+
+                a.attr('aria-labelledby', 'label-' + feature.properties.id.value);
+
+                // We save this marker in its group for further hiding
+                for (const group of feature.groups) {
+                    this.marker_groups[group].push(feature.properties.id.value);
+                }
             }
-        }
 
-        // Zoom and move (0, 0) to center
-        this.resizeToLevel(this.zoomlevel, false);
-        this.moveTo(this.data.buildings[0].centerx, this.data.buildings[0].centery, false);
+            // Zoom and move (0, 0) to center
+            this.resizeToLevel(this.zoomlevel, false);
+            this.moveTo(this.data.buildings[0].centerx, this.data.buildings[0].centery, false);
+        });
     }
 
     groupMarkers(level) {

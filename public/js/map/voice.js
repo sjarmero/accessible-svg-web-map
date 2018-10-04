@@ -1,7 +1,8 @@
 import { SVGVoiceControls } from './SVG/SVGVoiceControls.js';
+import { search } from './search.js';
 
 $(document).ready(function() {
-// Voz
+    // Voz
     if (SVGVoiceControls.compatible()) {
         $("#voicePanel").css("display", "block");
 
@@ -15,15 +16,10 @@ $(document).ready(function() {
         };
 
         controls.onRouteCommand = (data) => {
-            $("#routeSource").val(data.origin);
-            $("#sourceForm .btn").trigger('click');
-
-            $("#routeTarget").val(data.target);
-            $("#targetForm .btn").trigger('click');
-
-            setTimeout(() => {
-                $("#calculateBtn").trigger('click');
-            }, 1000);
+            if (data == null) {
+                window.location.href = "/route";
+                return;
+            }
         };
 
         $("#dictateBtn").on('click', function(e) {

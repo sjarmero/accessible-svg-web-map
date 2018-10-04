@@ -28,7 +28,16 @@ app.get('/map/data/s/name/:name', async (request, response) => {
 app.get('/map/data/p/:id1,:id2,:disability', async (request, response) => {
     let {id1, id2, disability} = request.params;
     const data = await db.djPath(id1, id2, disability);
-    response.json(data);
+
+    if (typeof data == 'undefined' || data.length == 0) {
+        disability = 0;
+        data = await db.djPath(id1, id2, 0);
+    }
+
+    response.json({
+        disability: parseInt(disability),
+        data: data
+    });
 });
 
 app.get('/map/data', async (request, response) => {

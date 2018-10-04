@@ -13,6 +13,12 @@ $(document).ready(function() {
     let source, target;
 
     let form;
+
+    $("#routeSource, #routeTarget").on('keypress', function() {
+        $(this).parent().find('button').removeClass('btn-primary btn-success btn-danger');
+        changeIcon($(this).parent(), searchIcon);
+    });
+
     $(".routeBtn").on('click', function(e) {
         e.preventDefault();
 
@@ -125,10 +131,15 @@ $(document).ready(function() {
         console.log(acc, source, target);
 
         if (acc) {
-            $.getJSON(`/map/data/p/${source},${target},${$("#impairmentSelect").val()}`, function(data) {
-                console.log(data);
+            $.getJSON(`/map/data/p/${source},${target},${$("#impairmentSelect").val()}`, function(path) {
+                navigationMode(path.data);
 
-                navigationMode(data);
+                if ($("#impairmentSelect").val() != 0 && path.disability == 0) {
+                    $("#nonAccessibleWarning").css("display", "block");
+                    $("#nonAccessibleWarning").html($("#nonAccessibleWarning").html());
+                } else {
+                    $("#nonAccessibleWarning").css("display", "none");
+                }
             });
         }
     });
@@ -263,13 +274,13 @@ function navigationMode(data) {
     $("#metricUnitSelect").on('change', function(e) {
         console.log($(this).val());
         $(".steps-expression").each(function() {
-            let steps = $(item).attr('data-steps');
+            let steps = $(this).attr('data-steps');
 
             if ($("#metricUnitSelect").val() == 0) {
-                $(item).html(`${steps} pasos`);
+                $(this).html(`${steps} pasos`);
             } else {
                 let meters = steps / 2;
-                $(item).html(`${meters} metros`);
+                $(this).html(`${meters} metros`);
             }
         });
     });

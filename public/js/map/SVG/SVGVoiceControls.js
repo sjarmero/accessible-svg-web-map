@@ -2,6 +2,7 @@
     Clase que engloba funciones de síntesis
     y reconocimiento de voz.
 */
+import { voiceParse } from './SVGVoicePatterns.js';
 
 const time_per_word = 500;
 
@@ -52,7 +53,7 @@ export class SVGVoiceControls {
             var transcript = event.results[last][0].transcript;
             var confidence = event.results[last][0].confidence;
 
-            if (confidence >= 0.80) {
+            if (confidence >= 0.75) {
                 callback({confidence: confidence, transcript: transcript });
             } else {
                 console.log("Ignoring because of low confidence:");
@@ -81,78 +82,46 @@ export class SVGVoiceControls {
     }
 
     parseAction(sentence) {
-        // Anti bucle
-        if (sentence.match(/(No te he entendido)|(El mapa está ahora escuchando)/i)) return {};
-
-        // Primero probamos pan
-        const pan = /(mover) (mapa |mapas |plano )?(a |hacia |para )?(la derecha|la izquierda|arriba|abajo)/i;
-        var parsed = sentence.match(pan);
-        
-        if (parsed != null) {
-            let [, action, , , direction] = parsed;
-            console.log(action, direction);
-
-            let mode;
-            switch (direction) {
+        let parsed = voiceParse(sentence);
+        console.log(parsed);
+        if (parsed.name == 'move') {
+            switch (parsed.direction) {
                 case 'la derecha':
-                    mode = 'right';
+                    parsed.direction = 'right';
                     break;
 
                 case 'la izquierda':
-                    mode = 'left';
+                    parsed.direction = 'left';
                     break;
 
-                case 'arriba':
-                    mode = 'up';
+                case 'arriba': 
+                    parsed.direction = 'up';
                     break;
 
                 case 'abajo':
-                    mode = 'down';
+                    parsed.direction = 'down';
+                    break;
+
+                default:
+                    parsed.direction = null;
                     break;
             }
+        } else if (parsed.action === 'zoom') {
+            switch (parsed.direction) {
+                case 'alejar':
+                    parsed.direction = 'zoom-out';
+                    break;
 
-            return {action: 'move', mode: mode};
+                case 'acercar':
+                    parsed.direction = 'zoom-in';
+                    break;
+
+                default:
+                    parsed.direction = null;
+                    break;
+            }
         }
 
-        // Probamos zoom
-        const zoom = /(alejar|acercar)( mapa)?/i;
-        var parsed = sentence.match(zoom);
-
-        if (parsed != null) {
-            let [, action] = parsed;
-            return {action: 'zoom', mode: (action == 'acercar') ? 'zoom-in' : 'zoom-out'}; 
-        }
-        
-        // Probamos búsqueda
-        const search = /(buscar) ([\w | \d]+)+/i
-        var parsed = sentence.match(search);
-        if (parsed != null) {
-            let [,, query] = parsed;
-            return {action: 'search', mode: query};
-        }
-
-        // Probamos selección
-        const selection = /(seleccionar |elegir |escoger |ver )(número |resultado )*(\w+)+/i;
-        var parsed = sentence.match(selection);
-        console.log(parsed);
-        if (parsed != null) {
-            let [,,, number] = parsed;
-            return {action: 'select', mode: number};
-        }
-
-        // Probamos ruta
-        const route = /((ir )|(calcular ruta ))*desde ((\w|\d| )+) hasta ((\w|\d| )+)/i;
-        var parsed = sentence.match(route);
-        if (parsed != null) {
-            let [,,,, origin,, target] = parsed;
-            return {action: 'route', mode: {origin: origin, target: target}};
-        }
-
-        //
-        const aramis = /(aramis fuster)/i;
-        if (sentence.match(aramis)) return {action: 'aramis'};
-
-        // "No te he entendido"
-        return {action: 'unknown'}
+        return parsed;
     }
 }

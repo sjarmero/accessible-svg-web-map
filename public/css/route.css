@@ -58,6 +58,19 @@
         margin-bottom: 1em;
     }
 
+#nonAccessibleWarning {
+    display: none;
+    background-color: #B71C1C;
+    padding: 1em;
+    padding-top: 2em;
+    color: white;
+}
+
+    #nonAccessibleWarning span {
+        margin-top: 0.5em;
+        margin-right: 1em;
+    }
+
 .route-steps {
     counter-reset: stepscounter;
 }

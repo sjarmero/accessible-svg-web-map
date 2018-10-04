@@ -26,7 +26,7 @@
 
     <main class="container-fluid">
         <div class="row">
-            <section class="col-md-4 col-sm-12">
+            <section class="col-md-4 col-12">
                 <section id="routePanel">
                         <div id="routeform">
                             <header>
@@ -46,6 +46,16 @@
                                     </form>     
                                 </div>
                             </header>
+
+                            <div id="nonAccessibleWarning" aria-live="assertive">
+                                <div class="d-flex">
+                                    <span class="fas fa-exclamation-triangle" aria-hidden="true" role="presentation"></span>
+
+                                    <p>
+                                        <strong>La ruta que se muestra tiene problemas de accesibilidad</strong>, pero es la única que se ha podido encontrar.
+                                    </p>
+                                </div>
+                            </div>
 
                             <div class="d-flex padding" style="margin-top: 1em;">
                                 <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true" aria-label="Seleccionar discapacidad">
@@ -82,7 +92,7 @@
                 </div>
             </section>
 
-            <section id="mapPanel" class="col-md-8 col-sm-12">
+            <section id="mapPanel" class="col-md-8 col-12">
                 <div id="map"></div>
             </section>
         </div>
