@@ -82,7 +82,7 @@
         padding-bottom: 2em;
     }
 
-        .route-steps .route-step span::before {
+        .route-steps .route-step > span::before {
             content: counter(stepcounter);
             float: left;
             display: block;

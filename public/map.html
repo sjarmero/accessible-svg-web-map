@@ -9,8 +9,8 @@
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
         
-        <link rel="stylesheet" href="/css/index.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <link rel="stylesheet" href="/css/index.css" />
 </head>
 <body>
     <header class="sr-only">
@@ -27,20 +27,32 @@
     <main class="container-fluid">
         <div class="row">
             <section id="controlPanel" class="col-lg-4 col-12 order-12 order-lg-1">
-                <section id="pad">
-                    <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
-                    <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
-                    <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
-                    <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
-                    <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
-                    <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
-                </section>
-                <section id="voicePanel">
-                    <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
-                    <span id="dictateStatus">Haz click para comenzar a escuchar</span>
+                <section id="modeSelectPanel">
+                    <label for="modeSelect">Seleccionar modo de la página</label>
+                    <select class="custom-select flex-fill" id="modeSelect" aria-label="Seleccionar modo de la página">
+                        <option selected value="0">Visual</option>
+                        <option value="1">Textual</option>
+                    </select>
                 </section>
 
-                <section id="routeAccessPanel" style="padding-top: 0em;">
+                <section id="voicePanel" style="border-top: solid 1px gray;">
+                    <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
+                    <span id="dictateStatus">Haz click para comenzar a escuchar</span>
+                </section>    
+
+                <section id="padPanel">
+                    <label for="pad">Botones de navegación</label>
+                    <div id="pad">
+                        <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
+                        <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
+                        <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
+                        <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
+                        <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
+                        <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
+                    </div>
+                </section>
+
+                <section id="routeAccessPanel" style="border-top: solid 1px gray;">
                     <a class="btn btn-primary block" href="/route" aria-label="Acceder a pantalla de rutas">Acceder a cálculo de rutas</a>
                 </section>
 
@@ -70,7 +82,24 @@
 
             
             <section id="mapPanel" class="col-lg-8 col-12 order-1 order-lg-12">
-                <div id="map"></div>
+                <div id="map" class="page-mode" data-mode="0"></div>
+                <div id="textual" class="page-mode" data-mode="1">
+                    <strong class="h1" id="textualTitle">Modo textual del mapa</strong>
+                    <br />
+                    <br />
+                    <table aria-labelledby="textualTitle" class="table table-striped" id="textualTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Ubicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </div>
     </main>

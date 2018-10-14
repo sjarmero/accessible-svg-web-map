@@ -40,6 +40,16 @@ app.get('/map/data/p/:id1,:id2,:disability', async (request, response) => {
     });
 });
 
+app.get('/map/data/pi/:id1,:id2,:disability', async (request, response) => {
+    let {id1, id2, disability} = request.params;
+    let data = await db.djPathWithPoi(id1, id2, disability);
+    
+    response.json({
+        disability: parseInt(disability),
+        data: data
+    });
+});
+
 app.get('/map/data', async (request, response) => {
     const result = await db.all();
     response.json(result);

@@ -62,7 +62,15 @@ const allGeo = async function() {
 const allData = async function() {
     let geo;
     try {
-        geo = await client.query('SELECT gid, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery, ST_asSVG(geom) as path, ST_asText(ST_Envelope(geom)) as box FROM public.edificios;');    
+        geo = await client.query(`SELECT e1.gid, 
+        ST_X(ST_Centroid(ST_Envelope(e1.geom))) as centerx, 
+        (-1) * ST_Y(ST_Centroid(ST_Envelope(e1.geom))) as centery, ST_asSVG(e1.geom) as path, 
+        ST_asText(ST_Envelope(e1.geom)) as box,
+        array_agg(fp.val) as nearestNames
+        FROM public.edificios e1
+        LEFT JOIN LATERAL (select le2.gid, ST_Distance(e1.geom, le2.geom) as d, count(*) as c from public.edificios le2 where ST_Distance(e1.geom, le2.geom) < 100 and le2.id != e1.id group by le2.gid order by d asc) e2 on (e2.c > 0)
+        LEFT JOIN accessibility.feature_property as fp on (e2.gid = fp.code and fp.p_code = 'name')
+        group by e1.gid;`);
     } catch (e) {
         console.log("[POSTGIS] allData");
         console.log(e);
@@ -89,7 +97,8 @@ const allData = async function() {
             box: row['box'],
             path: row['path'],
             properties: properties_array,
-            groups: (await groupsForFeature(row['gid']))
+            groups: (await groupsForFeature(row['gid'])),
+            nearestnames: row['nearestnames']
         });
     };
 
@@ -206,9 +215,22 @@ const searchByName = async function(name) {
 const djPath = async function(bid1, bid2, disability) {
     let data;
     try {
-        data = await client.query(`select dp.*, ST_X(rn.the_geom) as vcenterx, (-1) * ST_Y(rn.the_geom) as vcentery from dijkstraPath(${bid1}, ${bid2}, false, ${disability}) as dp, routes_noded_vertices_pgr as rn where dp.node = rn.id order by seq;`);
+        data = await client.query(`select dp.*, ST_X(v.the_geom) as vcenterx, (-1) * ST_Y(v.the_geom) as vcentery from dijkstraPath(${bid1}, ${bid2}, false, ${disability}) as dp, routes_noded_vertices_pgr as v where node = v.id;`);
     } catch (e) {
         console.log("[POSTGIS] djPath");
+        console.log(e);
+        return {};
+    }
+
+    return data.rows;
+}
+
+const djPathWithPoi = async function(bid1, bid2, disability) {
+    let data;
+    try {
+        data = await client.query(`select dp.*, ST_X(v.the_geom) as vcenterx, (-1) * ST_Y(v.the_geom) as vcentery from dijkstraPathWithPOI(${bid1}, ${bid2}, false, ${disability}) as dp, routes_noded_vertices_pgr as v where node = v.id;`);
+    } catch (e) {
+        console.log("[POSTGIS] djPathWithPoi");
         console.log(e);
         return {};
     }
@@ -230,5 +252,6 @@ module.exports = {
     allGeo: allGeo,
     dataByBuilding: dataByBuilding,
     searchByName: searchByName,
-    djPath: djPath
+    djPath: djPath,
+    djPathWithPoi: djPathWithPoi
 }

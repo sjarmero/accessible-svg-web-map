@@ -14,6 +14,8 @@ export class SVGMap {
         }
 
         this._svg = SVG('map');
+        this._svg.attr('version', '1.1');
+        this._svg.attr('role', 'graphics-document document');
         this._zoomlevel = 3;
         this._container = "#map svg ";
         this.guides_drawn = false;
@@ -131,13 +133,12 @@ export class SVGMap {
 
             let affects = 0;
             let max_priority_feature;
-
             for (const feature of this.data.buildings) {
                 let {centerx, centery} = feature;
 
                 if (jail.inside(centerx, centery) && feature.groups.indexOf(this.zoomlevel) == -1) {
                     affects++;
-                    
+                                       
                     if (this.marker_groups[this.zoomlevel].indexOf(parseInt(feature.properties.id.value)) == -1) {
                         this.marker_groups[this.zoomlevel].push(parseInt(feature.properties.id.value));
                     }
@@ -163,7 +164,6 @@ export class SVGMap {
 
     draw() {
         this.fetchData().then((data) => {
-            console.log(data);
             this.data = data;
 
             this.svg.attr('id', 'this.svg_MAIN');
@@ -176,8 +176,15 @@ export class SVGMap {
             for (const feature of this.data.buildings) {
                 const g = main.group();
 
-                const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link building-wrapper').attr('id', 'link-feature-' + feature.properties.id.value);
+                const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link building-wrapper feature-object').attr('id', 'link-feature-' + feature.properties.id.value);
                 a.attr('data-building', feature.properties.id.value);
+                a.attr('role', 'graphics-symbol img');
+                a.attr('data-name', feature.properties.name.value);
+                a.attr('data-coords', `${feature.centerx}:${feature.centery}`);
+                a.attr('data-description', feature.properties.description.value);
+                a.attr('data-nearest', feature.nearestnames.reduce((prev, curr) => {
+                    return `${prev},${curr}`
+                }));
                 
                 const rect = a.path().attr('d', feature.path);
                 rect.attr('id', 'feature-shape-' + feature.properties.id.value);
@@ -211,13 +218,9 @@ export class SVGMap {
     }
 
     groupMarkers(level) {
-        console.log("Gropung markers for level " + level);
         var i = 0;
 
         this.calculateAutoGroups();
-
-        console.log(this.marker_groups);
-        console.log(this.data.groups);
         
         let late_removal = [];
         for (const group of this.marker_groups) {
@@ -227,7 +230,6 @@ export class SVGMap {
                     // si aparecen en grupos de otros niveles
                     late_removal.push(marker);
                 } else {
-                    console.log('SHOW #marker-' + marker);
                     $("#link-feature-" + marker).removeAttr("tabindex");
                     $("#link-feature-" + marker).removeClass("non-clickable");
 
@@ -240,7 +242,7 @@ export class SVGMap {
                     const fit = (gmarker.affects.toString().length == 1) ? 1 : gmarker.affects.toString().length / 2;
                     
                     const a = this.svg.select('#SVG_MAIN_CONTENT').members[0].link('#gmarker-' + gmarker.id).attr('class', 'non-link gmarker').attr('id', 'gmarker-' + gmarker.id);;
-                    const gm = a.group().attr('class', 'gmarker');
+                    const gm = a.group();
                     const circle = gm.circle().radius(10);
                     circle.cx(gmarker.lat).cy(gmarker.long);
                     const text = gm.plain(gmarker.affects).attr('text-anchor', 'middle');
@@ -264,7 +266,6 @@ export class SVGMap {
         }
 
         for (const marker of late_removal) {
-            console.log('REMOVE #marker-' + marker);
             this.svg.select('#marker-' + marker).hide();
 
             $("#link-feature-" + marker).attr("tabindex", "-1");
@@ -272,21 +273,27 @@ export class SVGMap {
         }
 
         var self = this;
-        $(this.container + "a.gmarker").on('keydown click', function(e) {
-            if (e.type == "click" || e.which == 13) {
-                e.preventDefault();
-        
-                self.zoomlevel += 2;
-                let [x, y] = $(this).attr('data-coords').split('#');
+        $(this.container + "a.gmarker").on('focus', function() {
+            $(this).on('keyup', function(e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    self.zoomlevel += 2;
+                    let [x, y] = $(this).attr('data-coords').split('#');
+                    self.zoomAndMove(x, y, self.zoomlevel);
+                }
+            });
+        });
 
-                self.zoomAndMove(x, y, self.zoomlevel);
-            }
+        $(this.container + "a.gmarker").on('click', function(e) {
+            e.preventDefault();
+            self.zoomlevel += 2;
+            let [x, y] = $(this).attr('data-coords').split('#');
+            self.zoomAndMove(x, y, self.zoomlevel);
         });
 
         $("#currentViewPanel ul").empty();
         if (this.zoomlevel >= MAX_GROUP_LEVEL) {
             for (const feature of this.data.buildings) {
-                console.log(feature);
                 let li = document.createElement("li");
                 let a = document.createElement("a");
                 $(a).html(`Edificio: ${feature.properties.name.value}`);
@@ -299,7 +306,6 @@ export class SVGMap {
             }
         } else {
             for (const group of this.data.groups[this.zoomlevel]) {
-                console.log(group);
                 let li = document.createElement("li");
                 let a = document.createElement("a");
                 $(a).html(`Grupo: ${group.name}`);

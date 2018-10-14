@@ -14,7 +14,7 @@ body {
 
 section section {
     margin-top: 1em;
-    padding-top: 2em;
+    padding-top: 1em;
 }
 
 #controlPanel section:first-child {
@@ -104,12 +104,11 @@ section section {
         stroke-width: 0.05em;
     }
 
-    #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building,  #map > svg > #SVG_MAIN a.active .building, #map > svg > #SVG_MAIN_CONTENT a:focus .gmarker circle, #map > svg > #SVG_MAIN_CONTENT a:hover .gmarker circle,  #map > svg > #SVG_MAIN a.active .gmarker circle {
+    #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building,  #map > svg > #SVG_MAIN a.active .building, #map > svg > #SVG_MAIN_CONTENT a.gmarker:focus circle, #map > svg > #SVG_MAIN_CONTENT a.gmarker:hover circle,  #map > svg > #SVG_MAIN a.active.gmarker circle {
         stroke: blue;
     }
 
 #pad {
-    padding: 1em;
     text-align: center;
 }
 
@@ -164,6 +163,11 @@ section section {
 
 #results-table tr td {
     text-align: right;
+}
+
+#textual {
+    display: none;
+    padding: 1em;
 }
 
 @keyframes rotation {

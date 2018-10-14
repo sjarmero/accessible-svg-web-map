@@ -19,7 +19,7 @@ export function setupEvents() {
     });
 
     // Navigation keyboard shortcuts
-    $("body").not("input").not("textarea").keydown(function(e) {            
+    $("body").not("input").not("textarea").keydown(function(e) {     
         altk = altk || (e.which == 18);
         if (!altk) return;
 
