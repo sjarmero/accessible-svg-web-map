@@ -5,7 +5,6 @@
 import { voiceParse } from './SVGVoicePatterns.js';
 
 const time_per_word = 500;
-
 export class SVGVoiceControls {
     constructor() {
         // Synth
@@ -44,6 +43,9 @@ export class SVGVoiceControls {
     // Synth
 
     start(callback) {
+        console.log(this.on);
+        if (!this.on) return;
+
         this.onTranscript = callback;
 
         this.voice.onresult = (event) => {
@@ -61,7 +63,7 @@ export class SVGVoiceControls {
             }
         }
 
-        this.voice.onend = (event) => {
+        this.voice.onend = function() {
             if (this.on) {
                 this.start(callback);
             }
@@ -71,14 +73,11 @@ export class SVGVoiceControls {
             this.voice.start();
         } catch (e) {}
 
-        this.on = true;
-
         console.log("Voice started...");
     }
 
     stop() {
         this.voice.stop();
-        this.on = false;
     }
 
     parseAction(sentence) {

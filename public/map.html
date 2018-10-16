@@ -13,35 +13,57 @@
         <link rel="stylesheet" href="/css/index.css" />
 </head>
 <body>
-    <header class="sr-only">
+    <div class="sr-only sr-only-focusable">
         <nav class="inline">
             <ul>
+                <li><a href="#modeSelectPanel">Ir a selección de modo</a></li>
                 <li><a href="#voicePanel">Ir al panel del control por voz</a></li>
                 <li><a href="#searchPanel">Ir a panel de búsqueda</a></li>
                 <li><a href="/route">Ir a cálculo de rutas</a></li>
                 <li><a href="#mapPanel">Ir al panel del mapa</a></li>
             </ul>
         </nav>
-    </header>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/map">Mapa</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse " id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Página principal <span class="sr-only">(te encuentras en esta página)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/route">Calcular rutas</a>
+                </li>
+            </ul>
+
+            <form class="form-inline mr-auto" id="searchform">
+                <input class="form-control mr-sm-2" type="search" placeholder="Buscar en el mapa" aria-label="Nombre del elemento a buscar en el mapa" id="queryTxt" autocomplete="off" />
+                <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
+            </form>
+
+            <form class="form-inline" id="modeSelectForm">
+                <select class="custom-select flex-fill" id="modeSelect" aria-label="Seleccionar modo de la página">
+                    <option selected value="0">Visual</option>
+                    <option value="1">Textual</option>
+                </select>
+            </form>
+        </div>
+    </nav>
 
     <main class="container-fluid">
         <div class="row">
-            <section id="controlPanel" class="col-lg-4 col-12 order-12 order-lg-1">
-                <section id="modeSelectPanel">
-                    <label for="modeSelect">Seleccionar modo de la página</label>
-                    <select class="custom-select flex-fill" id="modeSelect" aria-label="Seleccionar modo de la página">
-                        <option selected value="0">Visual</option>
-                        <option value="1">Textual</option>
-                    </select>
-                </section>
-
-                <section id="voicePanel" style="border-top: solid 1px gray;">
+            <section id="controlPanel" class="col-lg-4 col-12 order-12 order-lg-1 page-mode" data-mode="0">
+                <section id="voicePanel">
                     <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
                     <span id="dictateStatus">Haz click para comenzar a escuchar</span>
-                </section>    
+                </section>
 
-                <section id="padPanel">
-                    <label for="pad">Botones de navegación</label>
+                <section id="padPanel" class="page-mode" data-mode="0">
                     <div id="pad">
                         <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
                         <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
@@ -52,22 +74,11 @@
                     </div>
                 </section>
 
-                <section id="routeAccessPanel" style="border-top: solid 1px gray;">
-                    <a class="btn btn-primary block" href="/route" aria-label="Acceder a pantalla de rutas">Acceder a cálculo de rutas</a>
-                </section>
-
-                <section id="currentViewPanel" style="border-top: solid 1px gray;">
+                <section id="currentViewPanel">
                     <strong class="h3">Elementos a la vista</strong>
                     <ul>
                     </ul>
                 </section>
-
-                <section id="searchPanel" style="border-top: solid 1px gray;">
-                        <form class="form-inline my-2 my-lg-0" id="searchform">
-                            <input class="form-control mr-sm-2" type="search" placeholder="Buscar en el mapa" aria-label="Nombre del elemento a buscar en el mapa" id="queryTxt" autocomplete="off" />
-                            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
-                        </form>
-                    </section>
 
                 <section id="resultsPanel" style="display: none;">
                     <strong class="h4">Resultados de búsqueda</strong>
@@ -80,13 +91,18 @@
                 </section>
             </section>
 
-            
             <section id="mapPanel" class="col-lg-8 col-12 order-1 order-lg-12">
                 <div id="map" class="page-mode" data-mode="0"></div>
                 <div id="textual" class="page-mode" data-mode="1">
                     <strong class="h1" id="textualTitle">Modo textual del mapa</strong>
-                    <br />
-                    <br />
+                    
+                    <section id="filterTextualPanel" style="margin-bottom: 1em;">
+                        <form class="form-inline d-flex" id="filterTextualForm">
+                            <input class="form-control mr-sm-2 flex-fill" type="search" placeholder="Filtrar tabla" aria-label="Filtrar datos de la tabla" id="textualQueryTxt" autocomplete="off" />
+                            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
+                        </form>
+                    </section>
+
                     <table aria-labelledby="textualTitle" class="table table-striped" id="textualTable">
                         <thead>
                             <tr>

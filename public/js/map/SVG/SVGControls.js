@@ -57,6 +57,7 @@ export class SVGControls {
 
     startVoice() {
         if (SVGVoiceControls.compatible()) {
+            this.voice.on = true;
             this.voice.start(({confidence, transcript}) => {
                 console.log('Voice received:');
                 console.log(confidence, transcript);
@@ -87,6 +88,10 @@ export class SVGControls {
                             this.onRouteCommand(null);
                             return;
 
+                        case 'zoom':
+                            this.navigationHandler((parsed.direction === 'acercar') ? 'zoom-in' : 'zoom-out');
+                            return;
+
                         default:
                             this.navigationHandler(parsed.direction);
                             return;
@@ -98,6 +103,7 @@ export class SVGControls {
 
     stopVoice() {
         if (SVGVoiceControls.compatible() && typeof this.voice != 'undefined') {
+            this.voice.on = false;
             this.voice.stop();
         }
     }

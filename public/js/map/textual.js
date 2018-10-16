@@ -5,16 +5,47 @@ export function textual() {
 
     $('#modeSelect').on('change', function(e) {
         let value = $('#modeSelect').val();
-        console.log(value);
         
-        $(".page-mode").not(`*[data-mode='${value}']`).css('display', 'none');
+        if (value == 1) {
+            // Textual
+            $("#mapPanel").removeClass("col-lg-8");
+            $("#mapPanel").addClass("col-lg-12");
+        } else {
+            // Visual
+            $("#mapPanel").removeClass("col-lg-12");
+            $("#mapPanel").addClass("col-lg-8");   
+        }
+        
+        $(`.page-mode[data-mode!='${value}']`).css('display', 'none');
         $(`.page-mode[data-mode='${value}']`).css('display', 'block');
 
         loadTextualData();
     });
+
+    $('#filterTextualForm').on('submit', function(e) {
+        e.preventDefault();
+
+        let query = $('#textualQueryTxt').val();
+        console.log('query', `'${query}'`);
+
+        if (query == '' || query === undefined) {
+            $('#textualTable tbody tr').css('visibility', 'visible');
+        } else {
+            $('#textualTable tbody tr').each(function() {
+                let r = new RegExp(`${query}`, 'i');
+                if (!$(this).find('td:first-child').html().match(r)) {
+                    $(this).css('visibility', 'collapse');
+                } else {
+                    $(this).css('visibility', 'visible');
+                }
+            });
+        }
+    });
 }
 
 function loadTextualData() {
+    let trs = [];
+
     $(SVGMap.instance.container + '#SVG_MAIN_CONTENT .feature-object').each(function () {
         let tr = document.createElement('tr');
 
@@ -45,6 +76,19 @@ function loadTextualData() {
 
         $(td).appendTo(tr);
 
-        $(tr).appendTo('#textualTable tbody');
+        $(tr).attr('tabindex', 0);
+        trs.push(tr);
     });
+
+    trs = trs.sort((a, b) => {
+        let na = $(a).find('td:first-child').html();
+        let nb = $(b).find('td:first-child').html();
+        if (na < nb) return -1;
+        if (na > nb) return 1;
+        return 0;
+    });
+
+    for (const tr of trs) {
+        $(tr).appendTo('#textualTable tbody');
+    }
 }
