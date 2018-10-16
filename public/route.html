@@ -31,19 +31,29 @@
                         <div id="routeform">
                             <header>
                                 <a href="/map"><i class="fas fa-long-arrow-alt-left"></i> Volver al mapa</a>
-                                <div>
+                                <div class="itinerary">
                                     <span>◈</span>
                                     <form class="input-group" id="sourceForm">
                                         <input class="form-control" type="text" placeholder="Nombre del punto de origen" aria-label="Nombre del punto de origen" id="routeSource" autocomplete="off" required="true" />
                                         <div class="input-group-prepend" id="routeSourcePrepend"><button class="btn routeBtn" aria-label="Buscar punto de partida" data-search="sourceForm"><i class="fas fa-search"></i></button></div>
-                                    </form>     
+                                    </form> 
                                 </div>
-                                <div>
+                                <div class="itinerary">
                                     <span>◈</span>
                                     <form class="input-group" id="targetForm">
                                         <input class="form-control" type="text" placeholder="Nombre del punto de destino" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required="true" />
                                         <div class="input-group-prepend" id="routeTargetPrepend"><button class="btn routeBtn" aria-label="Buscar punto de destino" data-search="targetForm"><i class="fas fa-search"></i></button></div>
                                     </form>     
+                                </div>
+
+                                <div class="d-flex" style="margin-top: 1em;">
+                                    <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true" aria-label="Seleccionar discapacidad">
+                                        <option selected value="0">Ninguna discapacidad</option>
+                                        <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
+                                        <option value="2">Física (silla de ruedas, muletas...)</option>
+                                    </select>
+    
+                                    <button class="btn btn-light flex-fill" type="submit" aria-label="Calcular ruta" id="calculateBtn">Calcular</button>
                                 </div>
                             </header>
 
@@ -56,20 +66,10 @@
                                     </p>
                                 </div>
                             </div>
-
-                            <div class="d-flex padding" style="margin-top: 1em;">
-                                <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true" aria-label="Seleccionar discapacidad">
-                                    <option selected value="0">Ninguna discapacidad</option>
-                                    <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
-                                    <option value="2">Física (silla de ruedas, muletas...)</option>
-                                </select>
-
-                                <button class="btn btn-outline-primary flex-fill" type="submit" aria-label="Calcular ruta" id="calculateBtn">Calcular</button>
-                        </div>
                     </div>
                 </section>
                 
-                <div id="pad">
+                <div id="pad" class="mt-3">
                     <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
                     <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
                     <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>

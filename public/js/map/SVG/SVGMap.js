@@ -359,12 +359,13 @@ export class SVGMap {
         handler.viewbox(x - (this.fullw / 2), y - (this.fullh / 2), this.svg.viewbox().width, this.svg.viewbox().height);
     }
 
-    zoomAndMove(x, y, level) {
+    zoomAndMove(x, y, level, raisedbyuser = true) {
         $(this.container + ".jails").remove();
         this.zoomlevel = level;
 
         let {vbx, wdiff} = this.getZoomValues(level, true);
-        this.svg.animate({ duration: 300 }).viewbox(x - (this.fullw / 2) + wdiff, y - (this.fullh / 2) + wdiff, vbx, vbx);
+        let handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
+        handler.viewbox(x - (this.fullw / 2) + wdiff, y - (this.fullh / 2) + wdiff, vbx, vbx);
 
         window.location.href = "#zoom=" + level;
 

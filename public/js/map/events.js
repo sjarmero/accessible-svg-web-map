@@ -105,7 +105,7 @@ export function setupEvents() {
         let wheel = (typeof e.originalEvent.detail == 'number' && e.originalEvent.detail !== 0) ? e.originalEvent.detail : e.originalEvent.wheelDelta;
         console.log('wheel', wheel);
 
-        if (wheel < 0) {
+        if (wheel > 0) {
             SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel + 1, true);
         } else {
             SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel - 1, true);

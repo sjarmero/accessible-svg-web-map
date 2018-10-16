@@ -1,4 +1,4 @@
-import { angulo, perspectiva, toDeg, toRad, modulo} from './math.js';
+import { angulo, perspectiva, toDeg, modulo} from './math.js';
 import { SVGMap } from '/js/map/SVG/SVGMap.js';
 
 let guide = [];
@@ -9,10 +9,11 @@ export function navigationMode(data) {
     let p = {x: data[1].vcenterx, y: data[1].vcentery};
 
     // Centrar mapa en primer punto
-    SVGMap.instance.zoomAndMove(a.x, a.y, 15);
+    // SVGMap.instance.zoomAndMove(a.x, a.y, 15);
 
     // Rotar el mapa para mirar al primer destino
     let rotacionMapa = perspectiva(p, a);
+    let originalRotacion = rotacionMapa;
     let ajuste = toDeg(angulo(p, a));
     if (rotacionMapa == 90) { ajuste = 90 - ajuste; }
     if (rotacionMapa == 270) { ajuste = 90 - ajuste; }
@@ -29,7 +30,6 @@ export function navigationMode(data) {
         });
     });
 
-    SVGMap.instance.zoomAndMove(a.x, a.y, 15);
 
     /* Calculamos la guia:
         - Adoptamos los POI en la ruta
@@ -185,6 +185,7 @@ export function navigationMode(data) {
         $(stepDiv).attr('role', 'listitem');
         $(stepDiv).attr('tabindex', '0');
         $(stepDiv).attr('data-step', i);
+        $(stepDiv).attr('data-map-rotation', originalRotacion);
 
         $(".route-steps").append(stepDiv);
 
@@ -205,7 +206,14 @@ export function navigationMode(data) {
     });
 
     $(".route-steps .route-step").on('focus', function(e) {
-        // TODO: Mover al punto el mapa cuando el paso se seleccione        
+        // TODO: Mover al punto el mapa cuando el paso se seleccione
+        let data = guide[$(this).attr('data-step') - 1];
+
+        $("#map svg #SVG_MAIN_CONTENT").css({
+            'transform-origin': `${data.vcenterx}px ${data.vcentery}px`
+        });
+
+        SVGMap.instance.zoomAndMove(data.vcenterx, data.vcentery, 15, false);
     });
 
     $(".route-steps .route-step:first").trigger('focus');
