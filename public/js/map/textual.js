@@ -44,6 +44,23 @@ export function textual() {
 }
 
 function loadTextualData() {
+    let radio = Cookies.get('locationRadio') || 300;
+    $('.locationRadioTxt').html(radio);
+
+    $('#radioControl button').on('click', function(e) {
+        e.preventDefault();
+        console.log($(this).attr('data-radio'))
+
+        let sense = $(this).attr('data-radio');
+        if (sense === '+' && radio + 20 <= 1000) {
+            radio += 20;
+            $('.locationRadioTxt').html(radio);
+        } else if (sense === '-' && radio - 20 >= 20) {
+            radio -= 20;
+            $('.locationRadioTxt').html(radio);
+        }
+    });
+
     let trs = [];
 
     $(SVGMap.instance.container + '#SVG_MAIN_CONTENT .feature-object').each(function () {
@@ -57,25 +74,30 @@ function loadTextualData() {
         $(td).html(`${$(this).attr('data-description')}`);
         $(td).appendTo(tr);
 
+        let nearestAttr = $(this).attr('data-nearest');
+
         var td = document.createElement('td');
-        $(td).html('Cerca de ');
+        if (typeof nearestAttr !== 'undefined' && nearestAttr !== '') { 
+            $(td).html('Cerca de ');
+            let nearest = nearestAttr.split(',');
 
-        let nearest = $(this).attr('data-nearest').split(',');
-
-        if (nearest.length == 1) {
-            $(td).html($(td).html() + nearest[0] + '.');
-        } else {
-            for (let i = 0; i < nearest.length; i++) {
-                if (i + 1 == nearest.length) {
-                    $(td).html($(td).html() + `y ${nearest[i]}.`);
-                } else {
-                    $(td).html($(td).html() + `${nearest[i]}${(i+1 == nearest.length - 1) ? '' : ','} `);
+            if (nearest.length == 1) {
+                $(td).html($(td).html() + nearest[0] + '.');
+            } else {
+                for (let i = 0; i < nearest.length; i++) {
+                    if (i + 1 == nearest.length) {
+                        $(td).html($(td).html() + `, y ${nearest[i]}.`);
+                    } else {
+                        $(td).html($(td).html() + `${nearest[i]}${(i+1 == nearest.length - 1) ? '' : ','}`);
+                    }
                 }
             }
+
+        } else {
+            $(td).html('Sin información sobre sitios cercanos.');   
         }
-
+        
         $(td).appendTo(tr);
-
         $(tr).attr('tabindex', 0);
         trs.push(tr);
     });

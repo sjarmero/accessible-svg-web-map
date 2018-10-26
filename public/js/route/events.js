@@ -1,4 +1,5 @@
 import { navigationMode } from './navigation.js';
+import { SVGMap } from '/js/map/SVG/SVGMap.js';
 
 const searchIcon = 'fas fa-search';
 const loadingIcon = 'fas fa-spinner rotating-spinner';

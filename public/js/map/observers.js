@@ -15,13 +15,19 @@ export function setupObservers() {
                         showBuildingInfo($(this).attr('data-building'));
                     });
 
+                    $(element).find('a.building-wrapper').on('focus', function(e) {
+                        let id = $(this).attr('data-building');
+                        let [cx, cy] = $(this).attr('data-coords').split(':');
+                        focusBuilding(id, cx, cy, false);
+                    })
+
                     $(element).find("a.building-wrapper").attr("data-listened", true);
                 }
             }
         }
     });
 
-    observer.observe($(SVGMap.instance.container).get(0), { attributes: false, childList: true, subtree: false });
+    observer.observe($(SVGMap.instance.container).get(0), { attributes: false, childList: true, subtree: true });
 
     /*
         Cuando se añade un nuevo elemento SVG a la lista de elementos

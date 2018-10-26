@@ -4,11 +4,27 @@ const db = require('./postgis');
 // HTTPS 
 const https = require('https');
 
+// File system
+const fs = require('fs');
+const path = require('path');
+var rfs = require('rotating-file-stream')
+
+// Log
+const morgan = require('morgan');
+
 /*
     HTTP SERVER
 */
 const express = require('express');
 const app = express();
+
+let logDirectory = path.join(__dirname, 'log');
+let rotatingLog = rfs('access.log', {
+  interval: '1d', // rotate daily
+  path: logDirectory
+});
+
+app.use(morgan(':date[iso] [:remote-addr] | :method :url :status :response-time ms - :res[content-length]', { stream: rotatingLog }));
 
 app.use(express.static('public'));
 app.use(express.static('node_modules'));
@@ -44,6 +60,11 @@ app.get('/map/data/pi/:id1,:id2,:disability', async (request, response) => {
     let {id1, id2, disability} = request.params;
     let data = await db.djPathWithPoi(id1, id2, disability);
     
+    if (typeof data == 'undefined' || data.length == 0) {
+        disability = 0;
+        data = await db.djPath(id1, id2, 0);
+    }
+    
     response.json({
         disability: parseInt(disability),
         data: data
@@ -55,7 +76,6 @@ app.get('/map/data', async (request, response) => {
     response.json(result);
 });
 
-const fs = require('fs');
 app.get('/map', (request, response) => {
     fs.readFile(__dirname + '/public/map.html', 'utf8', async (err, html) => {
         if (err) {
@@ -68,6 +88,16 @@ app.get('/map', (request, response) => {
 
 app.get('/route', (request, response) => {
     fs.readFile(__dirname + '/public/route.html', 'utf8', async (err, html) => {
+        if (err) {
+            response.send(err.stack);
+        } else {
+            response.send(html);
+        }
+    });
+});
+
+app.get('/settings', (request, response) => {
+    fs.readFile(__dirname + '/public/settings.html', 'utf8', async (err, html) => {
         if (err) {
             response.send(err.stack);
         } else {

@@ -10,22 +10,18 @@
         <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
         
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <link rel="stylesheet" href="/fonts/import.css" />
         <link rel="stylesheet" href="/css/index.css" />
 </head>
 <body>
-    <div class="sr-only sr-only-focusable">
-        <nav class="inline">
-            <ul>
-                <li><a href="#modeSelectPanel">Ir a selección de modo</a></li>
-                <li><a href="#voicePanel">Ir al panel del control por voz</a></li>
-                <li><a href="#searchPanel">Ir a panel de búsqueda</a></li>
-                <li><a href="/route">Ir a cálculo de rutas</a></li>
-                <li><a href="#mapPanel">Ir al panel del mapa</a></li>
-            </ul>
-        </nav>
-    </div>
+    <nav class="inline accessibility-links">
+        <a href="#voicePanel" class="sr-only sr-only-focusable">Ir al panel del control por voz</a>
+        <a href="#searchPanel" class="sr-only sr-only-focusable">Ir a panel de búsqueda</a>
+        <a href="#mainnav" class="sr-only sr-only-focusable">Ir a menú principal</a>
+        <a href="#mapPanel" class="sr-only sr-only-focusable">Ir al panel del mapa</a>
+    </nav>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" id="mainnav">
         <a class="navbar-brand" href="/map">Mapa</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -39,10 +35,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/route">Calcular rutas</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/settings">Ajustes</a>
+                </li>
             </ul>
 
             <form class="form-inline mr-auto py-2 d-flex" id="searchform">
-                <input class="form-control mr-sm-2 flex-fill" type="search" placeholder="Buscar en el mapa" aria-label="Nombre del elemento a buscar en el mapa" id="queryTxt" autocomplete="off" />
+                <input class="form-control mr-sm-2 flex-fill" type="search" placeholder="Buscar en el mapa" aria-label="Escribe un nombre para buscarlo en el mapa" id="queryTxt" autocomplete="off" />
                 <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
             </form>
 
@@ -55,7 +54,7 @@
         </div>
     </nav>
 
-    <main class="container-fluid">
+    <main class="container-fluid" style="margin-top: 22px;">
         <div class="row">
             <section id="controlPanel" class="col-lg-4 col-12 order-12 order-lg-1 page-mode" data-mode="0">
                 <section id="voicePanel">
@@ -80,7 +79,7 @@
                     </ul>
                 </section>
 
-                <section id="resultsPanel" style="display: none;">
+                <section id="resultsPanel" style="display: none;" tabindex="0">
                     <strong class="h4">Resultados de búsqueda</strong>
                     <table tabindex="0"></table>
                 </section>
@@ -95,6 +94,16 @@
                 <div id="map" class="page-mode" data-mode="0"></div>
                 <div id="textual" class="page-mode" data-mode="1">
                     <strong class="h1" id="textualTitle">Modo textual del mapa</strong>
+
+                    <div class="row my-3">
+                        <div class="col">
+                            Mostrando lugares cercanos en un radio de <span class="locationRadioTxt"></span> metros. <br />
+                            <div id="radioControl" class="btn-group" role="group" aria-label="Controlar radio de búsqueda de lugares cercanos">
+                                <button type="button" class="btn btn-secondary" data-radio='+'>Aumentar</button>
+                                <button type="button" class="btn btn-secondary" data-radio='-'>Reducir</button>
+                            </div>
+                        </div>
+                    </div>
                     
                     <section id="filterTextualPanel" style="margin-bottom: 1em;">
                         <form class="form-inline d-flex" id="filterTextualForm">
@@ -126,9 +135,12 @@
     <script src="/bootstrap/js/bootstrap.min.js"></script>
     <script src="/svg.js/dist/svg.min.js"></script>
     <script src="/js/map/invents.js"></script>
+    <script src="/proj4/dist/proj4.js"></script>
+    <script src="/js-cookie/src/js.cookie.js"></script>
     <!--<script src="/js/map/controller.js"></script>
     <script src="/js/map/map.js"></script>-->
 
+    <script src="/js/settings/load.js"></script>
     <script src="/js/map/index.js" type="module"></script>
     <script src="/js/map/voice.js" type="module"></script>
 

@@ -1,13 +1,30 @@
 import { SVGMap } from './SVGMap.js';
 import { SVGVoiceControls } from './SVGVoiceControls.js';
+import { SVGLocation } from './SVGLocation.js';
 
 export class SVGControls {
     constructor() {
         this.altk = false;
         this.voice = new SVGVoiceControls();
+
+        proj4.defs('EPSG:25830', "+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs");
     }
 
     pageLoad() {
+        SVGMap.instance.onDrawn = function() {
+            setTimeout(function() {
+                SVGMap.instance.groupMarkers(SVGMap.instance.zoomlevel);
+            }, 100);
+
+            
+            let svgl = new SVGLocation();
+            svgl.watch(function(lat, long) {
+                let [x, y] = proj4('EPSG:4326', 'EPSG:25830', [long, lat]);
+
+                SVGMap.instance.drawLocation(x, -y);
+            });
+        };
+
         SVGMap.instance.draw();
     }
 
@@ -57,7 +74,7 @@ export class SVGControls {
 
     startVoice() {
         if (SVGVoiceControls.compatible()) {
-            this.voice.on = true;
+            SVGVoiceControls.setOn(true);
             this.voice.start(({confidence, transcript}) => {
                 console.log('Voice received:');
                 console.log(confidence, transcript);
@@ -97,13 +114,13 @@ export class SVGControls {
                             return;
                     }
                 }
-            });
+            }, true);
         }
     }
 
     stopVoice() {
         if (SVGVoiceControls.compatible() && typeof this.voice != 'undefined') {
-            this.voice.on = false;
+            SVGVoiceControls.setOn(false);
             this.voice.stop();
         }
     }

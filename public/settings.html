@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+        <title>Mapa accesible de la Universidad de Alicante</title>
+        
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+        
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <link rel="stylesheet" href="/fonts/import.css" />
+        <link rel="stylesheet" href="/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css" />
+        <link rel="stylesheet" href="/css/index.css" />
+        <link rel="stylesheet" href="/css/settings.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id="mainnav">
+        <a class="navbar-brand" href="/map">Mapa</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse " id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/map">Página principal <span class="sr-only">(te encuentras en esta página)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/route">Calcular rutas</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/settings">Ajustes</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <form id="settingsForm">
+            <div class="row settings-title">
+                <div class="col">
+                    <strong>Ajustes generales</strong>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="mapFontFamily" id="mapFontFamilyLabel" class="col-sm-3 col-form-label">Fuente del texto</label>
+                <div class="col-sm-9">
+                    <select class="custom-select" name="fontFamily">
+                        <option value="Arial" selected>Arial</option>
+                        <option value="OpenDyslexic">OpenDyslexic</option>
+                        <option value="Tahoma">Tahoma</option>
+                        <option value="Verdana">Verdana</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="textSize" id="textSizeLabel" class="col-sm-3 col-form-label">Tamaño del texto</label>
+                <div class="col-sm-9">
+                    <div class="input-group">
+                        <input type="number" name="textSize" id="textSize" aria-labelledby="textSizeLabel" class="form-control" min="1" value="16" />
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">píxeles</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row settings-title">
+                <div class="col">
+                    <strong>Versión textual del mapa</strong>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="locationRadio" id="locationRadioLabel" class="col-sm-3 col-form-label">Radio de búsqueda de lugares cercanos</label>
+                <div class="col-sm-9">
+                    <div class="input-group">
+                        <input type="number" name="locationRadio" id="locationRadio" aria-labelledby="locationRadioLabel" class="form-control" min="20" value="300" max="1000" step="20" />
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">metros</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row settings-title">
+                <div class="col">
+                    <strong>Versión visual del mapa</strong>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <div class="form-group row">
+                        <label for="mapFontFamily" id="mapFontFamilyLabel" class="col-sm-3 col-form-label">Fuente del texto</label>
+                        <div class="col-sm-9">
+                            <select class="custom-select" name="mapFontFamily">
+                                <option value="Arial" selected>Arial</option>
+                                <option value="OpenDyslexic">OpenDyslexic</option>
+                                <option value="Tahoma">Tahoma</option>
+                                <option value="Verdana">Verdana</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="buildingColor" id="buildingColorLabel" class="col-sm-3 col-form-label">Color de los edificios</label>
+                        <div class="col-sm-9">
+                            <div class="input-group colorpicker-group">
+                                <input type="text" class="form-control" name="buildingColor" value="#90A4AE" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="strokeColor" id="strokeColorLabel" class="col-sm-3 col-form-label">Color del borde de los edificios</label>
+                        <div class="col-sm-9">
+                            <div class="input-group colorpicker-group">
+                                <input type="text" class="form-control" name="strokeColor" value="#455A64" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="backgroundColor" id="backgroundColorLabel" class="col-sm-3 col-form-label">Color del fondo</label>
+                        <div class="col-sm-9">
+                            <div class="input-group colorpicker-group">
+                                <input type="text" class="form-control" name="backgroundColor" value="#ECEFF1" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="textColor" id="textColorLabel" class="col-sm-3 col-form-label">Color del texto de los marcadores</label>
+                        <div class="col-sm-9">
+                            <div class="input-group colorpicker-group">
+                                <input type="text" class="form-control" name="textColor" value="#212121" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                        <svg id="previewSvg" width="100%" height="100%" 
+                        xmlns="http://www.w3.org/2000/svg" version="1.1" 
+                        xmlns:xlink="http://www.w3.org/1999/xlink" 
+                        xmlns:svgjs="http://svgjs.com/svgjs"
+                        viewBox="0 0 500 500"
+                        preserveAspectRatio="xMidYMid meet"
+                        role="graphics-document document" tabindex="0">
+
+                            <rect width="300" height="200" x="200" y="100" id="building" />
+
+                            <!-- Marker -->
+                            <image href="/images/building_marker.svg" width="64" height="64"
+                            x="50" y="120"></image>
+                            <text x="120" y="155" style="font-size: 2em;" id="text">Marcador de edificio</text>
+                        </svg>
+                </div>
+            </div>
+
+            <div class="form-group row submit-row">
+                <div class="col">
+                    <input type=reset class="btn" value="Restablecer valores" />
+                    <input type=submit class="btn btn-primary" value="Guardar" />
+                </div>
+            </div>
+
+            <div class="row my-2 align-right" id="successRow" style="display: none;" aria-live="assertive">
+                <div class="col">
+                    <div class="badge badge-success p-2">
+                        <span class="fas fa-check"></span> 
+                        Ajustes guardados correctamente
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <script src="/js/jquery.js"></script>
+    <script src="/bootstrap/js/popper.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/js-cookie/src/js.cookie.js"></script>
+    <script src="/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
+
+    <script src="/js/settings/settings.js"></script>
+</body>
+</html>

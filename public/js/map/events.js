@@ -3,6 +3,8 @@ import { SVGMap } from './SVG/SVGMap.js';
 import { search } from './search.js';
 
 export function setupEvents() {
+    loadSettings();
+
     $("form[action='']").on('submit', (e) => {
         e.preventDefault();
     });
@@ -11,6 +13,7 @@ export function setupEvents() {
 
     window.controls = new SVGControls();
     controls.pageLoad();
+    SVGMap.instance.moveTo(717444.93870502, -4251399.25399798);
 
     // Navigation buttons
     $("#pad .btn").click(function(e) {
@@ -63,7 +66,7 @@ export function setupEvents() {
     });
 
     // Drag and drop map to move
-    let moving = false;
+    let moving = false, moved = false;
     let ox, oy;
 
     let move_event = ('ontouchstart' in window) ? 'touchmove' : 'mousemove';
@@ -81,6 +84,10 @@ export function setupEvents() {
     });
 
     $(SVGMap.instance.container).on(up_event, function(e) {
+        if (moved) {
+            SVGMap.instance.groupMarkers(SVGMap.instance.zoomlevel);
+        }
+
         moving = false;
     });
 
@@ -93,6 +100,8 @@ export function setupEvents() {
             let ydiff = (y - oy) / -35;
             
             SVGMap.instance.move(xdiff, ydiff, false);
+
+            moved = true;
         }
     });
 

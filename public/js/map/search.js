@@ -18,7 +18,7 @@ export function search(query, viaspeech = false) {
             var headerCol = document.createElement("th");
             var valueCol = document.createElement("td");
             var visitBtn = document.createElement("button");
-            $(visitBtn).addClass("btn btn-success result-view").html("Ir").attr("aria-label", "Ver " + result.name + " en el mapa");
+            $(visitBtn).addClass("btn btn-success result-view").html("Ir").attr("aria-label", `Ver en el mapa ${result.name}.`);
             $(visitBtn).attr("data-centerx", result.centerx).attr("data-centery", result.centery);
             $(visitBtn).attr('data-result-id', i);
             $(visitBtn).attr('data-feature-id', result.id);
@@ -53,6 +53,8 @@ export function search(query, viaspeech = false) {
         }
 
         $("#data-status").html("Búsqueda de '"+ query +"'");
+
+        $("#resultsPanel").trigger('focus');
 
         $("button.result-view").on('click', function(e) {
             e.preventDefault();

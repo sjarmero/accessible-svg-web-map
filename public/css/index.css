@@ -12,6 +12,17 @@ body {
     display: inline-block;
 }
 
+nav.inline {
+    margin: 0;
+    height: 3em;
+    padding: 1em;
+    line-height: 2em;
+}
+
+nav.accessibility-links {
+    background-color: #f8f9fa!important;
+}
+
 section section {
     margin-top: 1em;
     padding-top: 1em;
@@ -185,7 +196,7 @@ section section {
 @media(min-width: 992px) {
     #map {
         position: fixed;
-        width: 66%;
+        width: 67%;
         height: 100%;
     }
 }

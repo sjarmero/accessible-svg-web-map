@@ -29,13 +29,24 @@ export class SVGVoiceControls {
         return ((typeof SpeechRecognition != 'undefined') || (typeof webkitSpeechRecognition != 'undefined'));
     }
 
+    static isOn() {
+        return this.on;
+    }
+
+    static setOn(v) {
+        this.on = v;
+    }
+
     // Speech
     say(sentence) {
+        let prevOn = SVGVoiceControls.isOn();
+        SVGVoiceControls.setOn(false);
         this.stop();
         this.container.innerHTML = "";
         this.container.innerHTML = sentence;
 
         setTimeout(() => {
+            SVGVoiceControls.setOn(prevOn);
             this.start(this.onTranscript);
         }, (time_per_word) * (sentence.split(" ").length));
     }
@@ -43,8 +54,8 @@ export class SVGVoiceControls {
     // Synth
 
     start(callback) {
-        console.log(this.on);
-        if (!this.on) return;
+        console.log(SVGVoiceControls.isOn());
+        if (!SVGVoiceControls.isOn()) return;
 
         this.onTranscript = callback;
 
@@ -64,8 +75,11 @@ export class SVGVoiceControls {
         }
 
         this.voice.onend = function() {
-            if (this.on) {
-                this.start(callback);
+            console.log('Voice end and on=' + SVGVoiceControls.isOn());
+            if (SVGVoiceControls.isOn()) {
+                setTimeout(() => {
+                    this.start(callback);
+                }, 1000);
             }
         }
 

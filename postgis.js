@@ -68,7 +68,7 @@ const allData = async function() {
         ST_asText(ST_Envelope(e1.geom)) as box,
         array_agg(fp.val) as nearestNames
         FROM public.edificios e1
-        LEFT JOIN LATERAL (select le2.gid, ST_Distance(e1.geom, le2.geom) as d, count(*) as c from public.edificios le2 where ST_Distance(e1.geom, le2.geom) < 100 and le2.id != e1.id group by le2.gid order by d asc) e2 on (e2.c > 0)
+        LEFT JOIN LATERAL (select le2.gid, ST_Distance(e1.geom, le2.geom) as d, count(*) as c from public.edificios le2 where ST_Distance(e1.geom, le2.geom) < 100 and le2.gid != e1.gid group by le2.gid order by d asc) e2 on (e2.c > 0)
         LEFT JOIN accessibility.feature_property as fp on (e2.gid = fp.code and fp.p_code = 'name')
         group by e1.gid;`);
     } catch (e) {
