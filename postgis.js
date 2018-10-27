@@ -62,15 +62,14 @@ const allGeo = async function() {
 const allData = async function() {
     let geo;
     try {
-        geo = await client.query(`SELECT e1.gid, 
-        ST_X(ST_Centroid(ST_Envelope(e1.geom))) as centerx, 
-        (-1) * ST_Y(ST_Centroid(ST_Envelope(e1.geom))) as centery, ST_asSVG(e1.geom) as path, 
-        ST_asText(ST_Envelope(e1.geom)) as box,
-        array_agg(fp.val) as nearestNames
-        FROM public.edificios e1
-        LEFT JOIN LATERAL (select le2.gid, ST_Distance(e1.geom, le2.geom) as d, count(*) as c from public.edificios le2 where ST_Distance(e1.geom, le2.geom) < 100 and le2.gid != e1.gid group by le2.gid order by d asc) e2 on (e2.c > 0)
-        LEFT JOIN accessibility.feature_property as fp on (e2.gid = fp.code and fp.p_code = 'name')
-        group by e1.gid;`);
+        geo = await client.query(`SELECT e.gid, 
+        ST_X(ST_Centroid(ST_Envelope(e.geom))) as centerx, 
+        (-1) * ST_Y(ST_Centroid(ST_Envelope(e.geom))) as centery, ST_asSVG(e.geom) as path, 
+        ST_asText(ST_Envelope(e.geom)) as box,
+        nn.radius as nearestnamesradius,
+        nn.iname as nearestnames
+        from edificios as e, nearestNamesForAll(100) as nn
+        where nn.gid = e.gid;`);
     } catch (e) {
         console.log("[POSTGIS] allData");
         console.log(e);
@@ -98,7 +97,8 @@ const allData = async function() {
             path: row['path'],
             properties: properties_array,
             groups: (await groupsForFeature(row['gid'])),
-            nearestnames: row['nearestnames']
+            nearestnames: row['nearestnames'],
+            nearestnamesradius: row['nearestnamesradius']
         });
     };
 
@@ -238,6 +238,19 @@ const djPathWithPoi = async function(bid1, bid2, disability) {
     return data.rows;
 }
 
+const nearestNamesForFeature = async function(bid, radius) {
+    let data;
+    try {
+        data = await client.query(`select * from nearestNamesForFeature(${bid}, ${radius})`);
+    } catch (e) {
+        console.log("[POSTGIS] djPathWithPoi");
+        console.log(e);
+        return {};
+    }
+
+    return data.rows;
+}
+
 const propertyParser = property => {
     return {
         "display": property['p_name'],
@@ -253,5 +266,6 @@ module.exports = {
     dataByBuilding: dataByBuilding,
     searchByName: searchByName,
     djPath: djPath,
-    djPathWithPoi: djPathWithPoi
+    djPathWithPoi: djPathWithPoi,
+    nearestNamesForFeature: nearestNamesForFeature
 }

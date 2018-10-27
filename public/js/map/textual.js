@@ -77,28 +77,46 @@ function loadTextualData() {
         let nearestAttr = $(this).attr('data-nearest');
 
         var td = document.createElement('td');
+        let newnames = '<div class="names">Cerca de ';
         if (typeof nearestAttr !== 'undefined' && nearestAttr !== '') { 
-            $(td).html('Cerca de ');
             let nearest = nearestAttr.split(',');
 
             if (nearest.length == 1) {
-                $(td).html($(td).html() + nearest[0] + '.');
+                newnames += nearest[0] + '.';
             } else {
                 for (let i = 0; i < nearest.length; i++) {
                     if (i + 1 == nearest.length) {
-                        $(td).html($(td).html() + `, y ${nearest[i]}.`);
+                        newnames += `, y ${nearest[i]}.`;
                     } else {
-                        $(td).html($(td).html() + `${nearest[i]}${(i+1 == nearest.length - 1) ? '' : ','}`);
+                        newnames += `${nearest[i]}${(i+1 == nearest.length - 1) ? '' : ','}`;
                     }
                 }
             }
 
+            newnames += '</div>';
         } else {
-            $(td).html('Sin información sobre sitios cercanos.');   
+            newnames = 'Sin información sobre sitios cercanos.';   
         }
+
+        $(td).html(newnames);
+
+        $(td).html($(td).html() + `
+            <br />
+            <div class='specific-radio-controls mt-3'>
+                <span class='badge badge-secondary'>A <span class='specific-radio'>${$(this).attr('data-nearest-radius')}</span> metros</span>
+                <div class='btn-group' role='group' aria-label='Controles de radio de búsqueda alrededor de ${$(this).attr('data-name')}'>
+                    <button type='button' class='btn btn-link' data-radio='+'>Aumentar radio</button>
+                    <button type='button' class='btn btn-link' data-radio='-'>Reducir radio</button>
+                </div>
+            </div>
+        `);
         
         $(td).appendTo(tr);
+
         $(tr).attr('tabindex', 0);
+        $(tr).attr('data-feature-id', $(this).attr('data-building'));
+        $(tr).attr('data-radius', $(this).attr('data-nearest-radius'));
+
         trs.push(tr);
     });
 
@@ -113,4 +131,44 @@ function loadTextualData() {
     for (const tr of trs) {
         $(tr).appendTo('#textualTable tbody');
     }
+
+    $('.specific-radio-controls button').on('click', function(e) {
+        e.preventDefault();
+        let p = $(this).parents('tr');
+
+        let sense = $(this).attr('data-radio');
+        let radius = parseFloat($(p).attr('data-radius'));
+
+        console.log(sense, radius);
+        if (sense == '+') {
+            radius += 20;
+        } else {
+            radius = (radius - 20 >= 1) ? radius - 20 : radius;
+        }
+
+        $(p).find('.specific-radio').html(radius);
+        $(p).attr('data-radius', radius);
+
+        $.getJSON(`/map/data/nn4f/${$(p).attr('data-feature-id')},${radius}`, function(data) {
+            let nearest = data[0].iname;
+            console.log(data);
+            let newnames = 'Cerca de ';
+
+            if (nearest.length == 0) {
+                newnames = 'No hay información de lugares cercanos.';
+            } else if (nearest.length == 1) {
+                newnames += nearest[0];
+            } else {
+                for (let i = 0; i < nearest.length; i++) {
+                    if (i + 1 == nearest.length) {
+                        newnames += `, y ${nearest[i]}.`;
+                    } else {
+                        newnames += ` ${nearest[i]}${(i+1 == nearest.length - 1) ? '' : ','}`;
+                    }
+                }
+            }
+
+            $(p).find('td:last-child .names').html(newnames);
+        });
+    })
 }

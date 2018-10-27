@@ -195,6 +195,7 @@ export class SVGMap {
                 a.attr('data-nearest', feature.nearestnames.reduce((prev, curr) => {
                     return `${prev},${curr}`
                 }));
+                a.attr('data-nearest-radius', feature.nearestnamesradius);
 
                 const rect = a.path().attr('d', feature.path);
                 rect.attr('id', 'feature-shape-' + feature.properties.id.value);

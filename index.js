@@ -71,6 +71,14 @@ app.get('/map/data/pi/:id1,:id2,:disability', async (request, response) => {
     });
 });
 
+
+app.get('/map/data/nn4f/:bid,:radius', async (request, response) => {
+    let {bid, radius} = request.params;
+    let data = await db.nearestNamesForFeature(bid, radius);
+    
+    response.json(data);
+});
+
 app.get('/map/data', async (request, response) => {
     const result = await db.all();
     response.json(result);
