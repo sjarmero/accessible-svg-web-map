@@ -181,6 +181,10 @@ section section {
     padding: 1em;
 }
 
+.specific-radio-controls .badge:focus {
+    background-color: #007bff;
+}
+
 @keyframes rotation {
 	from {transform: rotate(0deg); }
 	to {transform: rotate(360deg); }

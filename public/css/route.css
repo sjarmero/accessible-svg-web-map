@@ -130,3 +130,12 @@
         background-color: #007bff;
         color: white;
     }
+
+.focus-location button, .focus-orientation button {
+    width: 100%;
+}
+
+    .focus-location button .fas, .focus-orientation button .fas {
+        float: left;
+        line-height: 24px;
+    }

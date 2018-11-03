@@ -59,7 +59,7 @@ const allGeo = async function() {
     return result;
 }
 
-const allData = async function() {
+const allData = async function(radius) {
     let geo;
     try {
         geo = await client.query(`SELECT e.gid, 
@@ -68,7 +68,7 @@ const allData = async function() {
         ST_asText(ST_Envelope(e.geom)) as box,
         nn.radius as nearestnamesradius,
         nn.iname as nearestnames
-        from edificios as e, nearestNamesForAll(100) as nn
+        from edificios as e, nearestNamesForAll(${radius}) as nn
         where nn.gid = e.gid;`);
     } catch (e) {
         console.log("[POSTGIS] allData");
@@ -151,10 +151,10 @@ const groupsForFeature = async function(id) {
     return groups;
 }
 
-const all = async function() {
+const all = async function(radius) {
     let buildings, groups;
     try {
-        buildings = await allData();
+        buildings = await allData(radius);
         groups = await allGroups();
     } catch (e) {
         console.log("[POSTGIS] all");

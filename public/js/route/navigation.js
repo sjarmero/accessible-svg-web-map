@@ -214,7 +214,6 @@ export function navigationMode(data) {
             'transform-origin': `${data.vcenterx}px ${data.vcentery}px`
         });
 
-
         $("#map svg #SVG_MAIN_CONTENT .map-marker").each(function(e) {
             $(this).css({
                 'transform-origin': `${$(this).find('text').attr('x')}px ${$(this).find('text').attr('y')}px`        
@@ -224,6 +223,6 @@ export function navigationMode(data) {
         SVGMap.instance.zoomAndMove(data.vcenterx, data.vcentery, 15, false);
     });
 
-    $('.route-steps .route-step:first-child').trigger('focus');
-    $('.route-steps .route-step:first-child').trigger('focus');
+    $('.route-steps:not(.route-orientation) .route-step:first-child').trigger('focus');
+    $('.route-steps:not(.route-orientation) .route-step:first-child').trigger('focus');
 }

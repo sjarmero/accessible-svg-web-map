@@ -44,7 +44,7 @@ export function textual() {
 }
 
 function loadTextualData() {
-    let radio = Cookies.get('locationRadio') || 300;
+    let radio = Cookies.get('locationRadio') || 100;
     $('.locationRadioTxt').html(radio);
 
     $('#radioControl button').on('click', function(e) {
@@ -77,7 +77,7 @@ function loadTextualData() {
         let nearestAttr = $(this).attr('data-nearest');
 
         var td = document.createElement('td');
-        let newnames = '<div class="names">Cerca de ';
+        let newnames = '<div class="names" tabindex=0>Cerca de ';
         if (typeof nearestAttr !== 'undefined' && nearestAttr !== '') { 
             let nearest = nearestAttr.split(',');
 
@@ -88,7 +88,7 @@ function loadTextualData() {
                     if (i + 1 == nearest.length) {
                         newnames += `, y ${nearest[i]}.`;
                     } else {
-                        newnames += `${nearest[i]}${(i+1 == nearest.length - 1) ? '' : ','}`;
+                        newnames += ` ${nearest[i]}${(i+1 == nearest.length - 1) ? '' : ','}`;
                     }
                 }
             }
@@ -103,7 +103,7 @@ function loadTextualData() {
         $(td).html($(td).html() + `
             <br />
             <div class='specific-radio-controls mt-3'>
-                <span class='badge badge-secondary'>A <span class='specific-radio'>${$(this).attr('data-nearest-radius')}</span> metros</span>
+                <span class='badge badge-secondary' tabindex='0'>A <span class='specific-radio'><span class='sr-only'>Radio de búsqueda </span>${$(this).attr('data-nearest-radius')}</span> metros</span>
                 <div class='btn-group' role='group' aria-label='Controles de radio de búsqueda alrededor de ${$(this).attr('data-name')}'>
                     <button type='button' class='btn btn-link' data-radio='+'>Aumentar radio</button>
                     <button type='button' class='btn btn-link' data-radio='-'>Reducir radio</button>

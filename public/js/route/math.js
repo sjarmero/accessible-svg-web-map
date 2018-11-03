@@ -71,3 +71,22 @@ export function toRad(deg) {
 export function modulo(v) {
     return Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));
 }
+
+// cx y cy son puntos de pivote, respecto a los que rotar
+export function rotar(x, y, cx, cy, degrees) {
+    let rad = toRad(degrees);
+    degrees = parseFloat(degrees);
+
+    let s = Math.sin(rad);
+    let c = Math.cos(rad);
+
+    // translate point back to origin:
+    let tx = x - cx;
+    let ty = y - cy;
+
+    // rotate point
+    let xnew = (tx * c) - (ty * s);
+    let ynew = (tx * s) + (ty * c);
+
+    return [(xnew + cx), (ynew + cy)];
+}

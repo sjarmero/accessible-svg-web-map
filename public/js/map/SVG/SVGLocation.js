@@ -1,5 +1,7 @@
 export class SVGLocation {
     constructor() {
+        this.lastLocation = null;
+        this.orientationAccum = 0;
     }
 
     isGeolocationAvailable() {
@@ -29,6 +31,17 @@ export class SVGLocation {
             enableHighAccuracy: true, 
             maximumAge: 30000, 
             timeout: 27000
+        });
+    }
+
+    watchOrientation(callback) {
+        window.addEventListener("deviceorientation", (e) => {
+            if (this.orientationAccum == 50) {
+                this.orientationAccum = 0;
+                callback(e.alpha, e.beta, e.gamma);
+            } else {
+                this.orientationAccum++;
+            }
         });
     }
 }

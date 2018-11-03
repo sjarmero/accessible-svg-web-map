@@ -25,13 +25,13 @@
         <div class="collapse navbar-collapse " id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/map">Página principal <span class="sr-only">(te encuentras en esta página)</span></a>
+                    <a class="nav-link" href="/map">Página principal</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/route">Calcular rutas</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/settings">Ajustes</a>
+                    <a class="nav-link" href="/settings">Ajustes <span class="sr-only">(te encuentras en esta página)</span></a>
                 </li>
             </ul>
         </div>
@@ -45,9 +45,9 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="mapFontFamily" id="mapFontFamilyLabel" class="col-sm-3 col-form-label">Fuente del texto</label>
+                <label for="fontFamily" id="fontFamilyLabel" class="col-sm-3 col-form-label">Fuente del texto</label>
                 <div class="col-sm-9">
-                    <select class="custom-select" name="fontFamily">
+                    <select class="custom-select" name="fontFamily" aria-labelledby="fontFamilyLabel">
                         <option value="Arial" selected>Arial</option>
                         <option value="OpenDyslexic">OpenDyslexic</option>
                         <option value="Tahoma">Tahoma</option>
@@ -73,7 +73,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="locationRadio" id="locationRadioLabel" class="col-sm-3 col-form-label">Radio de búsqueda de lugares cercanos</label>
+                <label for="locationRadio" id="locationRadioLabel" class="col-sm-3 col-form-label">Radio de búsqueda de lugares cercanos <span class='sr-only'>en metros</span></label>
                 <div class="col-sm-9">
                     <div class="input-group">
                         <input type="number" name="locationRadio" id="locationRadio" aria-labelledby="locationRadioLabel" class="form-control" min="20" value="100" step="20" />
@@ -95,7 +95,7 @@
                     <div class="form-group row">
                         <label for="mapFontFamily" id="mapFontFamilyLabel" class="col-sm-3 col-form-label">Fuente del texto</label>
                         <div class="col-sm-9">
-                            <select class="custom-select" name="mapFontFamily">
+                            <select class="custom-select" name="mapFontFamily" aria-labelledby="mapFontFamilyLabel">
                                 <option value="Arial" selected>Arial</option>
                                 <option value="OpenDyslexic">OpenDyslexic</option>
                                 <option value="Tahoma">Tahoma</option>

@@ -60,7 +60,8 @@ export class SVGMap {
 
     fetchData() {
         if (typeof this._data == 'undefined') {
-            return $.getJSON('/map/data', (data) => {
+            let radius = Cookies.get('locationRadio') || 100;
+            return $.getJSON(`/map/data/${radius}`, (data) => {
                 return data;
             });
         } else {
@@ -260,7 +261,34 @@ export class SVGMap {
             currlocationg.find('circle').attr('cx', x);
             currlocationg.find('circle').attr('cy', y);
         }
-    } 
+    }
+
+    drawOrientation(x, y, alpha) {
+        let currorientationg = $(this.container + "#orientationg");
+
+        if (currorientationg.length == 0) {
+            let orientationg = this.svg.select('#SVG_MAIN_CONTENT').members[0].group().front();
+            orientationg.attr('id', 'orientationg');
+            const arrow = orientationg.image('/images/arrow.svg');
+            arrow.move(x - 8, y - 24);
+            arrow.attr('width', 16);
+            arrow.attr('height', 16);
+        } else {
+            currorientationg.find('image').attr('x', x - 8);
+            currorientationg.find('image').attr('y', y - 24);
+        }
+
+        let phase = (alpha < 0) ? alpha + 360 : alpha;
+
+        $(SVGMap.instance.container + '#orientationg image').css({
+            'transform-origin': `${x}px ${y}px`,
+            'transform': `rotateZ(${270 - phase}deg)`
+        });
+
+        currorientationg.attr('data-orientation', 270 - phase);
+        currorientationg.attr('data-x', x);
+        currorientationg.attr('data-y', y);
+    }
 
     groupMarkers(level) {
         var i = 0;
@@ -335,6 +363,8 @@ export class SVGMap {
             let [x, y] = $(this).attr('data-coords').split(':');
             self.zoomAndMove(x, y, self.zoomlevel);
         });
+
+        this.updateSidebar();
     }
 
     updateSidebar() {
@@ -356,11 +386,11 @@ export class SVGMap {
                 $("#currentViewPanel ul").append(li);
             });
         } else {
-            $(this.container + "a.building-wrapper").each(function() {
+            $(this.container + "a.feature-object").each(function() {
                 let minx = SVGMap.instance.svg.viewbox().x;
                 let miny = SVGMap.instance.svg.viewbox().y;
-                let maxx = minx + SVGMap.instance.svg.bbox().width;
-                let maxy = miny + SVGMap.instance.svg.bbox().height;
+                let maxx = minx + SVGMap.instance.svg.viewbox().width;
+                let maxy = miny + SVGMap.instance.svg.viewbox().height;
     
                 let coords = $(this).attr('data-coords');
                 let centerx = parseFloat(coords.split(':')[0]);
@@ -369,12 +399,12 @@ export class SVGMap {
                 let inviewx = (centerx >= minx && centerx <= maxx);
                 let inviewy = (centery >= miny && centery <= maxy);
     
-                /*console.log($(this).attr('data-name'), 'x', minx, maxx, centerx);
+                console.log($(this).attr('data-name'), 'x', minx, maxx, centerx);
                 console.log($(this).attr('data-name'), 'y', miny, maxy, centery);
-                console.log($(this).attr('data-name'), 'inviewx', inviewx, 'inviewy', inviewy);*/
+                console.log($(this).attr('data-name'), 'inviewx', inviewx, 'inviewy', inviewy);
 
                 let inview = (inviewx && inviewy);
-                //console.log($(this).attr('data-name'), inview);
+                console.log($(this).attr('data-name'), inview);
     
                 $(this).attr('data-inview', inview);
                 

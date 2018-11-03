@@ -13,7 +13,7 @@ function loadSettings() {
     let buildingColor = Cookies.get('buildingColor') || '#90A4AE';
     let strokeColor = Cookies.get('strokeColor') || '#455A64';
     let textColor = Cookies.get('textColor') || '#212121';
-    let backgroundColor = Cookies.get('backgroundColor') || '#351A1A';
+    let backgroundColor = Cookies.get('backgroundColor') || '#ECEFF1';
 
     let css = `
         body {

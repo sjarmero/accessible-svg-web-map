@@ -1,4 +1,5 @@
 import { navigationMode } from './navigation.js';
+import { SVGLocation } from '/js/map/SVG/SVGLocation.js';
 import { SVGMap } from '/js/map/SVG/SVGMap.js';
 
 const searchIcon = 'fas fa-search';
@@ -142,6 +143,22 @@ export function setupRouteEvents() {
                 }
             });
         }
+    });
+
+    $('.focus-location button').on('click', function(e) {
+        e.preventDefault();
+
+        let locationService = new SVGLocation();
+        locationService.getCurrentPosition(function(lat, long) {
+            let [x, y] = proj4('EPSG:4326', 'EPSG:25830', [long, lat]);
+            SVGMap.instance.moveTo(x, -y);
+        });
+    });
+
+    $('.focus-orientation button').on('click', function(e) {
+        e.preventDefault();
+
+        $('.route-orientation:first-child').trigger('focus');
     });
 };
 

@@ -17,12 +17,22 @@ export class SVGControls {
             }, 100);
 
             
+            let lastLocation = null;
             let svgl = new SVGLocation();
             svgl.watch(function(lat, long) {
                 let [x, y] = proj4('EPSG:4326', 'EPSG:25830', [long, lat]);
+                lastLocation = {x: x, y: -y};
 
                 SVGMap.instance.drawLocation(x, -y);
             });
+
+            svgl.watchOrientation(function(alpha, beta, gamma) {
+                if (lastLocation != null) {
+                    SVGMap.instance.drawOrientation(lastLocation.x, lastLocation.y, alpha);
+                }
+            });
+            
+            SVGMap.instance.updateSidebar();
         };
 
         SVGMap.instance.draw();

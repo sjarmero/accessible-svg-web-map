@@ -79,8 +79,9 @@ app.get('/map/data/nn4f/:bid,:radius', async (request, response) => {
     response.json(data);
 });
 
-app.get('/map/data', async (request, response) => {
-    const result = await db.all();
+app.get('/map/data/:radius', async (request, response) => {
+    let {radius} = request.params;
+    const result = await db.all(radius);
     response.json(result);
 });
 
