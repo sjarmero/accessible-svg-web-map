@@ -95,15 +95,13 @@ export function setupRouteEvents() {
 
     $('#searchModal').on('hide.bs.modal', function(e) {
         let chosen = $('#searchModal input[name="featureSelection"]:checked').val();
-        let id = $('#searchModal input[name="featureSelection"]:checked').attr('id').split('feature-')[1];
-
-        console.log(chosen);
-
+        
         if (typeof chosen == 'undefined') {
             changeIcon($(form), errIcon);
             $(form).find('button').removeClass('btn-primary btn-success btn-danger');
             $(form).find('button').addClass('btn-danger');        
         } else {
+            let id = $('#searchModal input[name="featureSelection"]:checked').attr('id').split('feature-')[1];
             $(form).find('input').val(chosen);
             changeIcon($(form), okIcon);
             $(form).find('button').removeClass('btn-primary btn-success btn-danger');
