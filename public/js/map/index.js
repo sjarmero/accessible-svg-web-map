@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var SVGControls_1 = require("../SVG/SVGControls");
 var search_1 = require("./search");
 var SVGVoiceControls_1 = require("../SVG/SVGVoiceControls");
+var SVGMap_1 = require("../SVG/SVGMap");
 $(document).ready(function () {
     loadSettings();
     $("form[action='']").on('submit', function (e) {
@@ -54,4 +55,65 @@ $(document).ready(function () {
             $(this).blur();
         });
     }
+    /*
+        Cuando se añade un nuevo elemento SVG, se notifica
+        al observer, que recorre los elementos añadidos
+        agregando el listener si no estaba ya escuchando.
+    */
+    var observer = new MutationObserver(function (list) {
+        for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
+            var elements = list_1[_i];
+            for (var _a = 0, _b = elements.addedNodes; _a < _b.length; _a++) {
+                var element = _b[_a];
+                if ($(element).find("a.building-wrapper").attr("data-listened") != "true") {
+                    $(element).find("a.building-wrapper").on('click', function (e) {
+                        if ($(this).hasClass('non-clickable'))
+                            return;
+                        search_1.showBuildingInfo($(this).attr('data-building'));
+                    });
+                    $(element).find('a.building-wrapper').on('focus', function (e) {
+                        var id = $(this).attr('data-building');
+                        var _a = $(this).attr('data-coords').split(':'), cx = _a[0], cy = _a[1];
+                        search_1.focusBuilding(id, cx, cy, false);
+                    });
+                    $(element).find("a.building-wrapper").attr("data-listened", "true");
+                }
+            }
+        }
+    });
+    observer.observe($(SVGMap_1.SVGMap.instance.container).get(0), { attributes: false, childList: true, subtree: true });
+    /*
+        Cuando se añade un nuevo elemento SVG a la lista de elementos
+        alternativa, se notifica al observer para que añada los eventos
+        si no han sido añadidos ya.
+    */
+    var listObserver = new MutationObserver(function (list) {
+        for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
+            var elements = list_2[_i];
+            var _loop_1 = function (liElement) {
+                var element = $(liElement).find('a');
+                if ($(element).attr("data-listened") != 'true') {
+                    if ($(element).attr('data-type') == 'group') {
+                        $(element).on('click', function (e) {
+                            e.preventDefault();
+                            SVGMap_1.SVGMap.instance.zoomlevel += 2;
+                            SVGMap_1.SVGMap.instance.zoomAndMove($(element).attr('data-x'), $(element).attr('data-y'), SVGMap_1.SVGMap.instance.zoomlevel);
+                        });
+                    }
+                    else {
+                        $(element).on('click', function (e) {
+                            e.preventDefault();
+                            search_1.focusBuilding($(element).attr('data-id'), $(element).attr('data-x'), $(element).attr('data-y'), false);
+                        });
+                    }
+                    $(element).attr("data-listened", "true");
+                }
+            };
+            for (var _a = 0, _b = elements.addedNodes; _a < _b.length; _a++) {
+                var liElement = _b[_a];
+                _loop_1(liElement);
+            }
+        }
+    });
+    listObserver.observe($("#currentViewPanel ul").get(0), { attributes: false, childList: true, subtree: false });
 });
