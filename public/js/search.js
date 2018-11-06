@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var SVGControls_1 = require("../SVG/SVGControls");
-var SVGMap_1 = require("../SVG/SVGMap");
+var SVGControls_1 = require("./SVG/SVGControls");
+var SVGMap_1 = require("./SVG/SVGMap");
 function search(query, viaspeech) {
     if (viaspeech === void 0) { viaspeech = false; }
     $.getJSON('/map/data/s/name/' + query, function (data) {

@@ -1,0 +1,50 @@
+.form-control::placeholder, input[type=text]::placeholder {
+    color: #595959 !important;
+}
+
+input[type=text], select {
+    color: #353535 !important;
+    background-color: white !important;
+}
+
+.btn-light {
+    color: #353535 !important;
+}
+
+.btn-secondary {
+    background-color: #51595E !important;
+}
+
+.btn-primary {
+    background-color: #0054B7 !important;
+}
+
+.btn-success {
+    color: white !important;
+}
+
+.input-group-prepend :not(.btn) .fas, .input-group-prepend :not(.btn) .fa {
+    color: #494E59 !important;
+}
+
+.input-group-text {
+    color: #494E59 !important;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #353535 !important;
+}
+
+.navbar-light .navbar-nav .nav-item.active {
+    border-bottom: solid 3px #535863;
+}
+
+a, .btn-link, .btn-outline-primary {
+    color: #00428C;
+}
+
+    .btn-outline-primary:hover {
+        background-color: #00428C;
+        border-color: #00428C;
+        color: white;
+    }

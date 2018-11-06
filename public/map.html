@@ -12,11 +12,13 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
         <link rel="stylesheet" href="/fonts/import.css" />
         <link rel="stylesheet" href="/css/index.css" />
+
+        <link rel="stylesheet" href="/css/colors.css" />
 </head>
 <body>
     <nav class="inline accessibility-links">
         <a href="#voicePanel" class="sr-only sr-only-focusable">Ir al panel del control por voz</a>
-        <a href="#searchPanel" class="sr-only sr-only-focusable">Ir a panel de búsqueda</a>
+        <a href="#searchform" class="sr-only sr-only-focusable">Ir a panel de búsqueda</a>
         <a href="#mainnav" class="sr-only sr-only-focusable">Ir a menú principal</a>
         <a href="#mapPanel" class="sr-only sr-only-focusable">Ir al panel del mapa</a>
     </nav>
@@ -40,7 +42,7 @@
                 </li>
             </ul>
 
-            <form class="form-inline mr-auto py-2 d-flex" id="searchform">
+            <form class="form-inline mr-auto my-auto d-flex" id="searchform">
                 <input class="form-control mr-sm-2 flex-fill" type="search" placeholder="Buscar en el mapa" aria-label="Escribe un nombre para buscarlo en el mapa" id="queryTxt" autocomplete="off" />
                 <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
             </form>
@@ -54,7 +56,7 @@
         </div>
     </nav>
 
-    <main class="container-fluid" style="margin-top: 22px;">
+    <main class="container-fluid">
         <div class="row">
             <section id="controlPanel" class="col-lg-4 col-12 order-12 order-lg-1 page-mode" data-mode="0">
                 <section id="voicePanel">
@@ -130,19 +132,30 @@
     </main>
 
     <script src="/js/jquery.js"></script>
-    <script src="/jquery-mousewheel/jquery.mousewheel.js"></script>
-    <script src="/bootstrap/js/popper.js"></script>
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/svg.js/dist/svg.min.js"></script>
-    <script src="/js/map/invents.js"></script>
-    <script src="/proj4/dist/proj4.js"></script>
-    <script src="/js-cookie/src/js.cookie.js"></script>
-    <!--<script src="/js/map/controller.js"></script>
-    <script src="/js/map/map.js"></script>-->
+    <script src='/jquery-mousewheel/jquery.mousewheel.js'></script>
+    <script src='/bootstrap/js/popper.js'></script>
+    <script src='/bootstrap/js/bootstrap.min.js'></script>
+    <script src='/proj4/dist/proj4.js'></script>
+    <script src='/svg.js/dist/svg.min.js'></script>
+    <script src='/js-cookie/src/js.cookie.js'></script>
+    <script src='/js/SVG/invents.js'></script>
+    <script src='/js/settings/load.js'></script>
 
-    <script src="/js/settings/load.js"></script>
-    <script src="/js/map/index.js" type="module"></script>
-    <script src="/js/map/voice.js" type="module"></script>
+    <script src="bundle/map-bundle.js"></script>
+    <!--<script>
+        requirejs([
+            '/js/jquery.js',
+            '/jquery-mousewheel/jquery.mousewheel.js',
+            '/bootstrap/js/popper.js',
+            '/bootstrap/js/bootstrap.min.js',
+            '/proj4/dist/proj4.js',
+            '/svg.js/dist/svg.min.js',
+            '/js-cookie/src/js.cookie.js',
+            '/js/SVG/invents.js',
+            '/js/settings/load.js', 
+            '/js/map/index.js'
+        ]);
+    </script>-->
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
 </body>

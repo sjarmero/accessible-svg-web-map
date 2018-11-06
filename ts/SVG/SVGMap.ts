@@ -1,18 +1,23 @@
-/*
-    Manages map: draw, zoom, pan, markers...
-*/
-
-let _instance = null;
-const ZOOM_LEVEL_BASE = 0.000246153846;
-const ZOOM_LEVEL_STEP = 0.4514682741;
-const MAX_GROUP_LEVEL = 4;
+declare var SVG, Cookies;
 
 export class SVGMap {
-    constructor() {
-        if (!_instance) {
-            _instance = this;
-        }
+    readonly ZOOM_LEVEL_BASE = 0.000246153846;
+    readonly ZOOM_LEVEL_STEP = 0.4514682741;
+    readonly MAX_GROUP_LEVEL = 4;
 
+    private static _instance : SVGMap;
+
+    private _svg : any;
+    private _zoomlevel : number;
+    private _container : string;
+    private guides_drawn : boolean;
+    private marker_groups : number[][];
+    private auto_marker_groups : number[][];
+    private auto_grouped_buildings : any[];
+    private _data : any;
+    private onmapdrawn : any;
+
+    constructor() {
         this._svg = SVG('map');
         this._svg.attr('version', '1.1');
         this._svg.attr('role', 'graphics-document document');
@@ -22,19 +27,17 @@ export class SVGMap {
         this.marker_groups = Array.apply(null, Array(20)).map(element => []);
         this.auto_marker_groups = Array.apply(null, Array(20)).map(element => []);
         this.auto_grouped_buildings = [];
-
-        return _instance;
     }
 
     static get instance() {
-        if (!_instance) {
-            _instance = new SVGMap();
+        if (!this._instance) {
+            this._instance = new SVGMap();
         }
 
-        return _instance;
+        return this._instance;
     }
 
-    get svg() {
+    get svg() : any {
         return this._svg;
     }
 
@@ -42,7 +45,7 @@ export class SVGMap {
         this._svg = v;
     }
 
-    get zoomlevel() {
+    get zoomlevel() : number {
         return this._zoomlevel;
     }
 
@@ -50,7 +53,7 @@ export class SVGMap {
         this._zoomlevel = v;
     }
 
-    get container() {
+    get container() : string {
         return this._container;
     }
 
@@ -71,7 +74,7 @@ export class SVGMap {
         }
     }
 
-    get data() {
+    get data() : any {
         return this._data;
     }
 
@@ -79,7 +82,7 @@ export class SVGMap {
         this._data = v;
     }
 
-    get guidesDrawn() {
+    get guidesDrawn() : boolean {
         return this.guides_drawn;
     }
 
@@ -87,11 +90,11 @@ export class SVGMap {
         this.guides_drawn = v;
     }
 
-    get fullw() {
+    get fullw() : number{
         return this.svg.viewbox().width;
     }
 
-    get fullh() {
+    get fullh() : number {
         return this.svg.viewbox().height;
     }
 
@@ -100,7 +103,7 @@ export class SVGMap {
     }
 
     drawGuides() {
-        if (this.zoomlevel >= MAX_GROUP_LEVEL) return;
+        if (this.zoomlevel >= this.MAX_GROUP_LEVEL) return;
 
         $(this.container + ".jails").remove();
 
@@ -119,9 +122,9 @@ export class SVGMap {
             }
         }
     }
-
+    
     calculateAutoGroups() {
-        if (this.zoomlevel >= MAX_GROUP_LEVEL) return;
+        if (this.zoomlevel >= this.MAX_GROUP_LEVEL) return;
 
         this.drawGuides();
 
@@ -367,53 +370,66 @@ export class SVGMap {
         this.updateSidebar();
     }
 
+    isInview(e) {
+        let minx = SVGMap.instance.svg.viewbox().x;
+        let miny = SVGMap.instance.svg.viewbox().y;
+        let maxx = minx + SVGMap.instance.svg.viewbox().width;
+        let maxy = miny + SVGMap.instance.svg.viewbox().height;
+
+        let coords = $(e).attr('data-coords');
+        let centerx = parseFloat(coords.split(':')[0]);
+        let centery = parseFloat(coords.split(':')[1]);
+
+        let inviewx = (centerx >= minx && centerx <= maxx);
+        let inviewy = (centery >= miny && centery <= maxy);
+
+        /*console.log($(this).attr('data-name'), 'x', minx, maxx, centerx);
+        console.log($(this).attr('data-name'), 'y', miny, maxy, centery);
+        console.log($(this).attr('data-name'), 'inviewx', inviewx, 'inviewy', inviewy);*/
+
+        let inview = (inviewx && inviewy);
+        //console.log($(this).attr('data-name'), inview);
+        return inview;
+    }
+
     updateSidebar() {
         $("#currentViewPanel ul").empty();
-        if (this.zoomlevel < MAX_GROUP_LEVEL) {
-            $(this.container + ".gmarker").each(function() {
-                let name = $(this).attr('data-name');
-                let lat = $(this).attr('data-coords').split(':')[0];
-                let long = $(this).attr('data-coords').split(':')[1];
-                let li = document.createElement("li");
-                let a = document.createElement("a");
-                $(a).html(`Grupo: ${name}`);
-                $(a).attr('href', '#');
-                $(a).attr('data-type', 'group');
-                $(a).attr('data-listened', false);
-                $(a).attr('data-x', lat);
-                $(a).attr('data-y', long);
-                $(li).append(a);
-                $("#currentViewPanel ul").append(li);
-            });
-        } else {
-            $(this.container + "a.feature-object").each(function() {
-                let minx = SVGMap.instance.svg.viewbox().x;
-                let miny = SVGMap.instance.svg.viewbox().y;
-                let maxx = minx + SVGMap.instance.svg.viewbox().width;
-                let maxy = miny + SVGMap.instance.svg.viewbox().height;
-    
-                let coords = $(this).attr('data-coords');
-                let centerx = parseFloat(coords.split(':')[0]);
-                let centery = parseFloat(coords.split(':')[1]);
-    
-                let inviewx = (centerx >= minx && centerx <= maxx);
-                let inviewy = (centery >= miny && centery <= maxy);
-    
-                console.log($(this).attr('data-name'), 'x', minx, maxx, centerx);
-                console.log($(this).attr('data-name'), 'y', miny, maxy, centery);
-                console.log($(this).attr('data-name'), 'inviewx', inviewx, 'inviewy', inviewy);
-
-                let inview = (inviewx && inviewy);
-                console.log($(this).attr('data-name'), inview);
-    
-                $(this).attr('data-inview', inview);
+        if (this.zoomlevel < this.MAX_GROUP_LEVEL) {
+            $(this.container + ".gmarker").each((i, e) => {
+                let inview = this.isInview(e);
+                $(e).attr('data-inview', String(inview));
                 
                 if (inview) {
+                    let name = $(e).attr('data-name');
+                    let lat = $(e).attr('data-coords').split(':')[0];
+                    let long = $(e).attr('data-coords').split(':')[1];
                     let li = document.createElement("li");
                     let a = document.createElement("a");
-                    $(a).html(`Edificio: ${$(this).attr('data-name')}`);
+                    $(a).html(`Grupo: ${name}`);
                     $(a).attr('href', '#');
-                    $(a).attr('data-id', $(this).attr('data-id'));
+                    $(a).attr('data-type', 'group');
+                    $(a).attr('data-listened', String(false));
+                    $(a).attr('data-x', lat);
+                    $(a).attr('data-y', long);
+                    $(li).append(a);
+                    $("#currentViewPanel ul").append(li);
+                }
+            });
+        } else {
+            $(this.container + "a.feature-object").each((i, e) => {
+                let inview = this.isInview(e);
+                $(this).attr('data-inview', String(inview));
+                
+                if (inview) {
+                    let coords = $(e).attr('data-coords');
+                    let centerx = parseFloat(coords.split(':')[0]);
+                    let centery = parseFloat(coords.split(':')[1]);
+            
+                    let li = document.createElement("li");
+                    let a = document.createElement("a");
+                    $(a).html(`Edificio: ${$(e).attr('data-name')}`);
+                    $(a).attr('href', '#');
+                    $(a).attr('data-id', $(e).attr('data-id'));
                     $(a).attr('data-x', centerx);
                     $(a).attr('data-y', centery);
                     $(li).append(a);
@@ -425,7 +441,7 @@ export class SVGMap {
 
     getZoomValues(level, raisedbyuser) {
         var vbx = $("#map").width();
-        vbx /= ZOOM_LEVEL_BASE + ((level - 1) * ZOOM_LEVEL_STEP);
+        vbx /= this.ZOOM_LEVEL_BASE + ((level - 1) * this.ZOOM_LEVEL_STEP);
 
         return { vbx: vbx, wdiff: (raisedbyuser) ? (this.svg.viewbox().width - vbx) / 2 : 0};
     }
@@ -485,6 +501,5 @@ export class SVGMap {
             this.groupMarkers(level);
             this.updateSidebar();
         }, 400);
-
     }
 }

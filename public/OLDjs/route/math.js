@@ -1,7 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+
 // Devuelve el ángulo entre dos puntos en radianes
-function angulo(p1, p2) {
+export function angulo(p1, p2) {
     /*
     let x = v1.x - v2.x;
     let y = v1.y - v2.y;
@@ -9,23 +8,29 @@ function angulo(p1, p2) {
     let a = (t * (180 / Math.PI)) % 360;
 
     return (a < 0) ? a + 360 : a;*/
-    var h = { x: p1.x, y: p2.y };
-    var a = { x: (h.x - p1.x), y: (h.y - p1.y) };
-    var b = { x: (h.x - p2.x), y: (h.y - p2.y) };
-    var c = { x: (p2.x - p1.x), y: (p2.y - p1.y) };
-    var alpha = Math.atan2(modulo(b), modulo(a));
+
+    let h = {x: p1.x, y: p2.y};
+
+    let a = {x: (h.x - p1.x), y: (h.y - p1.y)};
+    let b = {x: (h.x - p2.x), y: (h.y - p2.y)};
+    let c = {x: (p2.x - p1.x), y: (p2.y - p1.y)};
+    let alpha = Math.atan2(modulo(b), modulo(a));
+
     /*SVGMap.instance.svg.line(p1.x, p1.y, h.x, h.y).stroke({ width: 1, color: 'pink'});
     SVGMap.instance.svg.line(p2.x, p2.y, h.x, h.y).stroke({ width: 1, color: 'yellow'});
     SVGMap.instance.svg.line(p1.x, p1.y, p2.x, p2.y).stroke({ width: 1, color: 'red'});*/
+
     return alpha;
 }
-exports.angulo = angulo;
+
 // Grados a rotar el mapa para que desde A se mire a P
 // Habrá que añadirle el ángulo calculado entre P y A
-function perspectiva(p, a) {
-    var ydiff = p.y - a.y;
-    var xdiff = p.x - a.x;
+export function perspectiva(p, a) {
+    let ydiff = p.y - a.y;
+    let xdiff = p.x - a.x;
+
     console.log('perspectiva', xdiff, ydiff);
+
     /*if (Math.abs(xdiff) <= 50) {
         if (ydiff > 0) {
             return 180;
@@ -39,48 +44,49 @@ function perspectiva(p, a) {
             return 90;
         }
     }*/
+
     if (Math.abs(ydiff) > Math.abs(xdiff)) {
         if (ydiff > 0) {
             return 180;
-        }
-        else {
+        } else {
             return 0;
         }
-    }
-    else {
+    } else {
         if (xdiff > 0) {
             return 270;
-        }
-        else {
+        } else {
             return 90;
         }
     }
 }
-exports.perspectiva = perspectiva;
-function toDeg(rad) {
+
+export function toDeg(rad) {
     return rad * 180 / Math.PI;
 }
-exports.toDeg = toDeg;
-function toRad(deg) {
+
+export function toRad(deg) {
     return deg * Math.PI / 180;
 }
-exports.toRad = toRad;
-function modulo(v) {
+
+export function modulo(v) {
     return Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));
 }
-exports.modulo = modulo;
+
 // cx y cy son puntos de pivote, respecto a los que rotar
-function rotar(x, y, cx, cy, degrees) {
-    var rad = toRad(degrees);
+export function rotar(x, y, cx, cy, degrees) {
+    let rad = toRad(degrees);
     degrees = parseFloat(degrees);
-    var s = Math.sin(rad);
-    var c = Math.cos(rad);
+
+    let s = Math.sin(rad);
+    let c = Math.cos(rad);
+
     // translate point back to origin:
-    var tx = x - cx;
-    var ty = y - cy;
+    let tx = x - cx;
+    let ty = y - cy;
+
     // rotate point
-    var xnew = (tx * c) - (ty * s);
-    var ynew = (tx * s) + (ty * c);
+    let xnew = (tx * c) - (ty * s);
+    let ynew = (tx * s) + (ty * c);
+
     return [(xnew + cx), (ynew + cy)];
 }
-exports.rotar = rotar;

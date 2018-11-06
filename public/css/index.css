@@ -19,8 +19,8 @@ nav.inline {
     line-height: 2em;
 }
 
-nav.accessibility-links {
-    background-color: #f8f9fa!important;
+.navbar {
+    height: 59px;
 }
 
 section section {
@@ -33,16 +33,8 @@ section section {
     padding-bottom: 1em;
 }
 
-    #controlPanel #searchform input {
-        width: 75%;
-    }
-
-    #controlPanel #searchform .btn {
-        width: calc(25% - 8px);
-    }
-
     #controlPanel .h1 {
-        font-size: 32px;
+        font-size: 2em;
     }
 
     #controlPanel #resultsPanel th {
@@ -74,7 +66,7 @@ section section {
         }
 
         #controlPanel #currentViewPanel ul li a:focus {
-            background-color: #7986CB;
+            background-color: #434B72;
             color: white;
         }
 
@@ -85,8 +77,7 @@ section section {
 
 #map > svg {
     width: calc(100% + 15px);
-    height: 100vh !important;
-    height: calc(100vh - 56px);
+    height: 100vh!important;
     background-color: #ECEFF1;
 }
 
@@ -95,14 +86,14 @@ section section {
     }
 
     #map > svg > #SVG_MAIN_CONTENT .map-marker text {
-        fill: #212121;
+        fill: #0C0C0C;
         background-color: black;
         text-shadow: 0px 0px 0px black;
         font-size: 0.3em;
     }
 
     #map > svg > #SVG_MAIN_CONTENT .gmarker circle {
-        fill: #C51162;
+        fill: #07003A;
     }
 
     #map > svg > #SVG_MAIN_CONTENT .gmarker text {
@@ -150,20 +141,6 @@ section section {
             box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .75);
         }
 
-#centermark {
-    width: 16px;
-    height: 16px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-left: -8px;
-    margin-top: -8px;
-    z-index: 999;
-    line-height: 16px;
-    font-size: 16px;
-    user-select: none;
-}
-
 #results-table {
     width: 100%;
 }
@@ -182,7 +159,8 @@ section section {
 }
 
 .specific-radio-controls .badge:focus {
-    background-color: #007bff;
+    background-color: #00428C;
+    text-decoration: underline;
 }
 
 @keyframes rotation {
@@ -193,7 +171,7 @@ section section {
 .rotating-spinner {
 	animation-name: rotation;
     animation-duration: 2s;
-    animation-iteration-count: infinite;
+    animation-iteration-count: 2;
     animation-timing-function: ease-in-out;
 }
 

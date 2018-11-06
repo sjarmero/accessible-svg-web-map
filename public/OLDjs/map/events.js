@@ -72,7 +72,9 @@ export function setupEvents() {
     let move_event = ('ontouchstart' in window) ? 'touchmove' : 'mousemove';
     let up_event = ('ontouchstart' in window) ? 'touchend' : 'mouseup';
     let down_event = ('ontouchstart' in window) ? 'touchstart' :  'mousedown';
+
     const CTM = $(SVGMap.instance.container).get(0).getScreenCTM();
+    console.log(CTM);
 
     $(SVGMap.instance.container).on(down_event, function(e) {
         e.preventDefault();

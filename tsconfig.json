@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "outDir": "public/js/",
+        "target": "es5",
+        "lib": ["es6", "dom"]
+    },
+
+    "include": [
+        "ts/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}

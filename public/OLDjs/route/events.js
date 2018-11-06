@@ -107,7 +107,6 @@ export function setupRouteEvents() {
             $(form).find('button').removeClass('btn-primary btn-success btn-danger');
             $(form).find('button').addClass('btn-success');
             
-            
             if (form == '#sourceForm') {
                 verified[0] = true;
                 source = id;
