@@ -5,6 +5,7 @@
         
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Cálculo de rutas en el mapa accesible de la Universidad de Alicante." />
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
@@ -36,20 +37,20 @@
                                 <div class="itinerary">
                                     <span>◈</span>
                                     <form class="input-group" id="sourceForm">
-                                        <input class="form-control" type="text" placeholder="Nombre del punto de origen" aria-label="Nombre del punto de origen" id="routeSource" autocomplete="off" required="true" />
+                                        <input class="form-control" type="text" placeholder="Nombre del punto de origen" aria-label="Nombre del punto de origen" id="routeSource" autocomplete="off" required />
                                         <div class="input-group-prepend" id="routeSourcePrepend"><button class="btn routeBtn" aria-label="Buscar punto de partida" data-search="sourceForm"><i class="fas fa-search"></i></button></div>
                                     </form> 
                                 </div>
                                 <div class="itinerary">
                                     <span>◈</span>
                                     <form class="input-group" id="targetForm">
-                                        <input class="form-control" type="text" placeholder="Nombre del punto de destino" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required="true" />
+                                        <input class="form-control" type="text" placeholder="Nombre del punto de destino" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required />
                                         <div class="input-group-prepend" id="routeTargetPrepend"><button class="btn routeBtn" aria-label="Buscar punto de destino" data-search="targetForm"><i class="fas fa-search"></i></button></div>
                                     </form>     
                                 </div>
 
                                 <div class="d-flex" style="margin-top: 1em;">
-                                    <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" required="true" aria-label="Seleccionar discapacidad">
+                                    <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" size="1" aria-label="Seleccionar discapacidad">
                                         <option selected value="0">Ninguna discapacidad</option>
                                         <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
                                         <option value="2">Física (silla de ruedas, muletas...)</option>
@@ -117,7 +118,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <div class="h5 modal-title" id="modalTitle"></div>
+                <div class="h5 modal-title" id="modalTitle">Elección de punto</div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar diálogo">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -145,7 +146,7 @@
     <!--<script src="/js/map/controller.js"></script>
         <script src="/js/map/map.js"></script>-->
         
-    <script src="/bundle/route-bundle.js"></script>
+    <script src="/js/bundle/route-bundle.js"></script>
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
 </body>

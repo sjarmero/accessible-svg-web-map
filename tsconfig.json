@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "public/js/",
+        "outDir": "compiled-js/",
         "target": "es5",
         "lib": ["es6", "dom"]
     },

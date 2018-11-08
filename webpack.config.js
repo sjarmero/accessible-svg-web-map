@@ -3,8 +3,7 @@ const path = require('path');
 module.exports = {
   entry: {
     'map': ['./ts/map/MapComponent.ts', './ts/map/index.ts'],
-    'route': ['./ts/map/MapComponent.ts', './ts/route/index.ts'],
-    'settings':  ['./ts/settings/settings.ts']
+    'route': ['./ts/map/MapComponent.ts', './ts/route/index.ts']
   }, 
   module: {
     rules: [
@@ -20,6 +19,6 @@ module.exports = {
   },
   output: {
     filename: '[name]-bundle.js',
-    path: path.resolve(__dirname, 'public/bundle')
+    path: path.resolve(__dirname, 'public/js/bundle')
   }
 };

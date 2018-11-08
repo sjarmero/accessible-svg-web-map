@@ -342,10 +342,11 @@ export class SVGMap {
         }
 
         for (const marker of late_removal) {
-            this.svg.select('#marker-' + marker).hide();
+            $(`#marker-${marker}`).remove();
+            /*this.svg.select('#marker-' + marker).hide();
 
             $("#link-feature-" + marker).attr("tabindex", "-1");
-            $("#link-feature-" + marker).addClass("non-clickable");
+            $("#link-feature-" + marker).addClass("non-clickable");*/
         }
 
         var self = this;

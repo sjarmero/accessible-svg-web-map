@@ -5,7 +5,7 @@
         
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+        <meta name="description" content="Página principal del mapa accesible de la Universidad de Alicante." />
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
         
@@ -14,6 +14,13 @@
         <link rel="stylesheet" href="/css/index.css" />
 
         <link rel="stylesheet" href="/css/colors.css" />
+
+        <style>
+            #map > svg {
+                margin-top: 22px;
+                height: calc(100vh - 70px);
+            }
+        </style>
 </head>
 <body>
     <nav class="inline accessibility-links">
@@ -74,6 +81,11 @@
                         <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
                     </div>
                 </section>
+                                
+                <section id="dataPanel" style="display: none;">
+                    <strong class="h3">Información sobre el edificio</strong>
+                    <table tabindex="0" aria-live="assertive"></table>
+                </section>
 
                 <section id="currentViewPanel">
                     <strong class="h3">Elementos a la vista</strong>
@@ -84,11 +96,6 @@
                 <section id="resultsPanel" style="display: none;" tabindex="0">
                     <strong class="h4">Resultados de búsqueda</strong>
                     <table tabindex="0"></table>
-                </section>
-                
-                <section id="dataPanel" style="display: none;">
-                    <strong class="h4">Información sobre el edificio</strong>
-                    <table tabindex="0" aria-live="assertive"></table>
                 </section>
             </section>
 
@@ -141,21 +148,7 @@
     <script src='/js/SVG/invents.js'></script>
     <script src='/js/settings/load.js'></script>
 
-    <script src="bundle/map-bundle.js"></script>
-    <!--<script>
-        requirejs([
-            '/js/jquery.js',
-            '/jquery-mousewheel/jquery.mousewheel.js',
-            '/bootstrap/js/popper.js',
-            '/bootstrap/js/bootstrap.min.js',
-            '/proj4/dist/proj4.js',
-            '/svg.js/dist/svg.min.js',
-            '/js-cookie/src/js.cookie.js',
-            '/js/SVG/invents.js',
-            '/js/settings/load.js', 
-            '/js/map/index.js'
-        ]);
-    </script>-->
+    <script src="js/bundle/map-bundle.js"></script>
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
 </body>
