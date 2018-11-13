@@ -455,7 +455,7 @@ export class SVGMap {
                     let a = document.createElement("a");
                     $(a).html(`Edificio: ${$(e).attr('data-name')}`);
                     $(a).attr('href', '#');
-                    $(a).attr('data-id', $(e).attr('data-id'));
+                    $(a).attr('data-id', String($(e).attr('data-building')));
                     $(a).attr('data-x', centerx);
                     $(a).attr('data-y', centery);
                     $(li).append(a);
