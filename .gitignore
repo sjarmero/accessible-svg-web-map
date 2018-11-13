@@ -1,4 +1,9 @@
+# Propios
+public/js
+compiled-js
+
 # Logs
+log
 logs
 *.log
 npm-debug.log*
