@@ -1,5 +1,5 @@
-import { SVGMap } from '../SVG/SVGMap';
-import { SVGControls } from '../SVG/SVGControls';
+import { SVGMap } from '../SVG/SVGMap.js';
+import { SVGControls } from '../SVG/SVGControls.js';
 
 $(document).ready(function() {
     (<any>window).gsvg = SVGMap.instance.svg;
@@ -68,8 +68,7 @@ $(document).ready(function() {
     console.log(CTM);
 
     $(SVGMap.instance.container).on(down_event, function(e) {
-        e.preventDefault();
-        
+        e.preventDefault();    
         moving = ("ontouchstart" in window) ? (e.touches.length == 1) : true;
 
         ox = ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX;
@@ -77,10 +76,7 @@ $(document).ready(function() {
     });
 
     $(SVGMap.instance.container).on(up_event, function(e) {
-        if (moved) {
-            SVGMap.instance.groupMarkers(SVGMap.instance.zoomlevel);
-        }
-
+        e.preventDefault();
         moving = false;
     });
 

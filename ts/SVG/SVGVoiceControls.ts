@@ -2,7 +2,7 @@
     Clase que engloba funciones de síntesis
     y reconocimiento de voz.
 */
-import { voiceParse } from './SVGVoicePatterns';
+import { voiceParse } from './SVGVoicePatterns.js';
 
 declare var webkitSpeechGrammarList, webkitSpeechRecognition;
 

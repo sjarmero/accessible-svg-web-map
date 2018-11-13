@@ -1,9 +1,10 @@
-import { SVGControls } from "../SVG/SVGControls";
-import { search, showBuildingInfo, focusBuilding } from "./search";
-import { SVGVoiceControls } from "../SVG/SVGVoiceControls";
-import { SVGMap } from "../SVG/SVGMap";
+import { SVGControls } from "../SVG/SVGControls.js";
+import { search, showBuildingInfo, focusBuilding } from "./search.js";
+import { SVGVoiceControls } from "../SVG/SVGVoiceControls.js";
+import { SVGMap } from "../SVG/SVGMap.js";
 
 $(document).ready(function() {
+    console.log('Index');
     loadSettings();
 
     $("form[action='']").on('submit', (e) => {
@@ -124,5 +125,6 @@ $(document).ready(function() {
         }
     });
 
-    listObserver.observe($("#currentViewPanel ul").get(0), { attributes: false, childList: true, subtree: false });
+    console.log('Running observer...');
+    listObserver.observe($("#currentViewPanel ul").get(0), { attributes: false, childList: true, subtree: true });
 });

@@ -65,7 +65,7 @@
 
     <main class="container-fluid">
         <div class="row">
-            <section id="controlPanel" class="col-lg-4 col-12 order-12 order-lg-1 page-mode" data-mode="0">
+            <section id="controlPanel" class="col-lg-4 col-12 order-12 order-lg-1 page-mode" data-mode="0" style="margin-top: 22px;">
                 <section id="voicePanel">
                     <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
                     <span id="dictateStatus">Haz click para comenzar a escuchar</span>
@@ -148,7 +148,9 @@
     <script src='/js/SVG/invents.js'></script>
     <script src='/js/settings/load.js'></script>
 
-    <script src="js/bundle/map-bundle.js"></script>
+    <script src="js/map/MapComponent.js" type="module"></script>
+    <script src="js/map/index.js" type="module"></script>
+    <!--<script src="js/bundle/map-bundle.js"></script>-->
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
 </body>

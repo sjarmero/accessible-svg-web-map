@@ -1,8 +1,7 @@
-import { rotar } from './math';
-import { SVGMap } from '../SVG/SVGMap';
-import { navigationMode } from './navigation';
-import { SVGLocation } from '../SVG/SVGLocation';
-import { SVGControls } from '../SVG/SVGControls';
+import { rotar } from './math.js';
+import { SVGMap } from '../SVG/SVGMap.js';
+import { navigationMode } from './navigation.js';
+import { SVGLocation } from '../SVG/SVGLocation.js';
 
 const searchIcon = 'fas fa-search';
 const loadingIcon = 'fas fa-spinner rotating-spinner';
@@ -169,77 +168,62 @@ $(document).ready(function() {
     /* 
         Observers
     */
-    let accum = 150;
+    let accum = 4;
+
     let observer = new MutationObserver((list) => {
         for (const mutation of list) {
             if (mutation.type === 'attributes') {
                 let element = mutation.target;
                 if ($(element).attr('id') === 'orientationg') {
+                    if (accum != 4) { accum++; return; }
+
+                    accum = 0;
+
                     let orientation = $(element).attr('data-orientation');
                     let x = parseFloat($(element).attr('data-x'));
                     let y = parseFloat($(element).attr('data-y'));
 
-                    let orientationl = $('#orientationLine');
-                    if (orientationl.length == 0) {
-                        let line = SVGMap.instance.svg.line(x, y, x, y).stroke({ width: 0 }).fill('black');
-                        line.attr('id', 'orientationLine');
-                        line.front();
-                    } else {
-                        // Rotamos el punto final de la linea
-                        let [rx, ry] = rotar(x, y - 300, x, y, orientation);
+                    let votes = {};
 
-                        orientationl.attr('x1', x);
-                        orientationl.attr('x2', rx);
-                        orientationl.attr('y1', y);
-                        orientationl.attr('y2', ry);
-                    }
-
-                    // Encontramos el edificio de referencia
-                    if (accum === 150) {
-                        console.log('Orientando...');
-                        accum = 0;
-                        let x2 = parseFloat(orientationl.attr('x2'));
-                        let y2 = parseFloat(orientationl.attr('y2'));
-
-                        let m = (y2 - y) / (x2 - x);
-                        let eq = (v) => { return (m*v) - (m*x) + y; }
-
-                        for (let eqx = x; eqx <= (x + 150); eqx++) {
-                            let eqy = eq(eqx);
-                            let foundf = null;
-
-                            for (const feature of SVGMap.instance.svg.select('.feature-object').members) {
-                                if (feature.inside(eqx, eqy)) {
-                                    foundf = feature;
-                                    break;
-                                }
-                            }
-
-                            if (foundf != null) {
-                                console.log('Orientado a', foundf);
-
-                                $('.route-steps .route-orientation').remove();
-
-                                let stepDiv = document.createElement('div');
-                                let stepSpan = document.createElement('span'); 
-
-                                let order = `<span class='sr-only'>Información sobre tu orientación.</span>
-                                    Estás mirando hacia ${$(foundf.node).attr('data-name')}.
-                                `;
-
-                                $(stepSpan).html(order);
-                                $(stepDiv).append(stepSpan);
-                                $(stepDiv).addClass('route-step route-orientation');
-                                $(stepDiv).attr('role', 'listitem');
-                                $(stepDiv).attr('tabindex', '0');
-                                $(stepDiv).attr('data-step', -1);
-
-                                $(".route-steps").prepend(stepDiv);
+                    for (let i = -1; i < 3; i++) {
+                        let result = lookingAt(x, y, orientation + (i * 10))
+                        if (result != null) {
+                            if (votes[result] == undefined) {
+                                votes[result] = 1;
+                            } else {
+                                votes[result] = votes[result] + 1;
                             }
                         }
                     }
 
-                    accum++;
+                    let winner = null, maxVotes = 0;
+                    for (const participant of Object.keys(votes)) {
+                        if (votes[participant] > maxVotes) {
+                            maxVotes = votes[participant];
+                            winner = participant;
+                        }
+                    }
+
+                    let foundf = winner;
+
+                    $('.route-steps .route-orientation').remove();
+                    if (foundf != null && foundf != undefined) {
+                        let stepDiv = document.createElement('div');
+                        let stepSpan = document.createElement('span'); 
+
+                        let order = `<span class='sr-only'>Información sobre tu orientación.</span>
+                            Estás mirando hacia ${$(`#${foundf}`).attr('data-name')}.
+                        `;
+
+                        $(stepSpan).html(order);
+                        $(stepDiv).append(stepSpan);
+                        $(stepDiv).addClass('route-step route-orientation');
+                        $(stepDiv).attr('role', 'listitem');
+                        $(stepDiv).attr('tabindex', '0');
+                        $(stepDiv).attr('data-step', -1);
+
+                        $(".route-steps").prepend(stepDiv);
+                    }
                 }
             }
         }
@@ -250,4 +234,31 @@ $(document).ready(function() {
 
 function changeIcon(container, newClass) {
     container.find('button i').attr("class", newClass);
+}
+
+function lookingAt(x, y, orientation) : string {    
+    // Rotamos el punto final de la linea
+    let [rx, ry] = rotar(x, y - 150, x, y, orientation);
+    
+    let m = (ry - y) / (rx - x);
+    let eq = (v) => { return (m*v) - (m*x) + y; }
+
+    // Encontramos el edificio de referencia
+    for (let eqx = x; eqx <= (x + 150); eqx++) {
+        let eqy = eq(eqx);
+        let foundf = null;
+
+        for (const feature of SVGMap.instance.svg.select('.feature-object').members) {
+            if (feature.inside(eqx, eqy)) {
+                foundf = feature;
+                break;
+            }
+        }
+
+        if (foundf != null) {
+            return foundf;
+        }
+    }
+
+    return null;
 }

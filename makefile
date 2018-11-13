@@ -19,6 +19,7 @@ BLUE=\033[1;34m
 CC=\033[0m # Clear Color
 
 all: compile independent pack
+debug: compile independent copy-debug
 
 compile:
 	@echo "${BLUE}Compiling TypeScript files into compiled-js/ ${CC}"
@@ -34,3 +35,12 @@ pack:
 	@echo "${BLUE}Creating bundles (defined in webpack.config.js)${CC}"
 	npx webpack --config webpack.config.js
 	@echo "\n"
+
+copy-debug:
+	@echo "${BLUE}Copying compiled files to public/js for DEBUG ${CC}"
+	cp -r compiled-js/* public/js/
+	@echo "\n"
+
+clean:
+	rm -rf /public/js/*
+	rm -rf compiled-js/*

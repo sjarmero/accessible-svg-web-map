@@ -1,5 +1,5 @@
-import { SVGControls } from "../SVG/SVGControls";
-import { SVGMap } from "../SVG/SVGMap";
+import { SVGControls } from "../SVG/SVGControls.js";
+import { SVGMap } from "../SVG/SVGMap.js";
 
 export function search(query, viaspeech = false) {
     $.getJSON('/map/data/s/name/' + query, (data) => {

@@ -1,5 +1,5 @@
-import { angulo, perspectiva, toDeg, modulo} from './math';
-import { SVGMap } from '../SVG/SVGMap';
+import { angulo, perspectiva, toDeg, modulo} from './math.js';
+import { SVGMap } from '../SVG/SVGMap.js';
 
 let guide = [];
 export function navigationMode(data) {
@@ -41,7 +41,6 @@ export function navigationMode(data) {
     let lastRotacion = -1;
     guide = [];
     for (let i = 0; i < data.length; i++) {
-        console.log('i', i, data[i], data[i+1]);
 
         if ((i + 1) == data.length) {
             guide.push(data[i]);
@@ -79,8 +78,6 @@ export function navigationMode(data) {
                 ajuste = toDeg(angulo(poi, a));
                 if (poip == 90) { ajuste = 90 - ajuste; }
                 if (poip == 270) { ajuste = 90 - ajuste; }
-
-                console.log('poia', ajuste);
                 
                 if (ajuste > 20) { continue; }
 
@@ -130,8 +127,6 @@ export function navigationMode(data) {
     const gm = svg.select('#SVG_MAIN_CONTENT').members[0].group().attr('id', 'route');
     const polyline = [];
     let count = 1;
-
-    console.log('guide', guide);
 
     for (const step of guide) {
         let {vcenterx, vcentery} = step;
@@ -208,7 +203,6 @@ export function navigationMode(data) {
 
     $(".route-steps .route-step").on('focus', function(e) {
         let data = guide[parseInt($(this).attr('data-step')) - 1];
-        console.log('step data', data);
 
         $("#map svg #SVG_MAIN_CONTENT, .map-marker").css({
             'transform-origin': `${data.vcenterx}px ${data.vcentery}px`
