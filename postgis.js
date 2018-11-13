@@ -200,6 +200,7 @@ const dataByBuilding = async function(id) {
 const searchByName = async function(name) {
     let data;
     try {
+        name = name.replace(/ /g, '%');
         data = await client.query("select gid as id, feature_property.val as name, ST_X(ST_Centroid(ST_Envelope(geom))) as centerx, (-1) * ST_Y(ST_Centroid(ST_Envelope(geom))) as centery from public.edificios join accessibility.feature_property on (edificios.gid = feature_property.code) where feature_property.p_code = 'name' and lower(feature_property.val) like '%"+ name.toLowerCase() +"%';");
     } catch (e) {
         console.log("[POSTGIS] searchByName");
