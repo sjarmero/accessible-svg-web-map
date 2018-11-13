@@ -183,7 +183,7 @@ export class SVGMap {
         if (currlocationg.length == 0) {
             let locationg = this.svg.select('#SVG_MAIN_CONTENT').members[0].group().front();
             locationg.attr('id', 'locationg');
-            const circle = locationg.circle().radius(10);
+            const circle = locationg.circle().radius((Cookies.get('locationCircleSize') || 10));
             circle.cx(x).cy(y);
             circle.fill('deeppink');
         } else {

@@ -14,13 +14,6 @@
         <link rel="stylesheet" href="/css/index.css" />
 
         <link rel="stylesheet" href="/css/colors.css" />
-
-        <style>
-            #map > svg {
-                margin-top: 22px;
-                height: calc(100vh - 70px);
-            }
-        </style>
 </head>
 <body>
     <nav class="inline accessibility-links">
@@ -69,6 +62,13 @@
                 <section id="voicePanel">
                     <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
                     <span id="dictateStatus">Haz click para comenzar a escuchar</span>
+                </section>
+
+                <section id="locationPanel" class='focus-location'>
+                    <button class='btn btn-secondary' style='width: 100%;'>
+                        <span class='fas fa-search-location'></span>
+                        Centrar mapa en la ubicación
+                    </button>
                 </section>
 
                 <section id="padPanel" class="page-mode" data-mode="0">
@@ -138,7 +138,7 @@
         </div>
     </main>
 
-    <script src="/js/jquery.js"></script>
+    <script src="/jquery/dist/jquery.min.js"></script>
     <script src='/jquery-mousewheel/jquery.mousewheel.js'></script>
     <script src='/bootstrap/js/popper.js'></script>
     <script src='/bootstrap/js/bootstrap.min.js'></script>
@@ -149,6 +149,7 @@
     <script src='/js/settings/load.js'></script>
 
     <script src="js/map/MapComponent.js" type="module"></script>
+    <script src="js/map/textual.js" type="module"></script>
     <script src="js/map/index.js" type="module"></script>
     <!--<script src="js/bundle/map-bundle.js"></script>-->
 

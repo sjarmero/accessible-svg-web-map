@@ -48,3 +48,7 @@ a, .btn-link, .btn-outline-primary {
         border-color: #00428C;
         color: white;
     }
+
+svg #locationg circle {
+    fill: #0842A1;
+}

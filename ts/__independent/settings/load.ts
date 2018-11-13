@@ -15,6 +15,9 @@ function loadSettings() {
     let textColor = Cookies.get('textColor') || '#0C0C0C';
     let backgroundColor = Cookies.get('backgroundColor') || '#ECEFF1';
 
+    /* Círculo de localización */
+    let locationCircleColor = Cookies.get('locationCircleColor') || '#0842A1';
+
     let css = `
         body {
             font-family: '${fontFamily}', sans-serif !important;
@@ -36,6 +39,10 @@ function loadSettings() {
 
         #map svg .map-marker text {
             fill: ${textColor} !important;
+        }
+
+        #map svg #locationg circle {
+            fill: ${locationCircleColor} !important;
         }
     `;
 

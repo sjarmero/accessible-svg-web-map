@@ -2,6 +2,9 @@ import { SVGControls } from "../SVG/SVGControls.js";
 import { search, showBuildingInfo, focusBuilding } from "./search.js";
 import { SVGVoiceControls } from "../SVG/SVGVoiceControls.js";
 import { SVGMap } from "../SVG/SVGMap.js";
+import { SVGLocation } from "../SVG/SVGLocation.js";
+
+declare var proj4; 
 
 $(document).ready(function() {
     console.log('Index');
@@ -22,6 +25,17 @@ $(document).ready(function() {
         e.preventDefault();
         let query = $("#queryTxt").val();
         search(query);
+    });
+
+    // Localización 
+    let locationService = new SVGLocation();
+    $('.focus-location button').on('click', function(e) {
+        e.preventDefault();
+
+        locationService.getCurrentPosition(function(lat, long) {
+            let [x, y] = (<any>proj4('EPSG:4326', 'EPSG:25830', [long, lat]));
+            SVGMap.instance.moveTo(x, -y);
+        });
     });
 
     // Voz

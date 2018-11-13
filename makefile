@@ -21,7 +21,7 @@ CC=\033[0m # Clear Color
 all: compile independent pack
 debug: compile independent copy-debug
 
-compile:
+compile: folder-prepare
 	@echo "${BLUE}Compiling TypeScript files into compiled-js/ ${CC}"
 	tsc
 	@echo "\n"
@@ -36,11 +36,17 @@ pack:
 	npx webpack --config webpack.config.js
 	@echo "\n"
 
-copy-debug:
+copy-debug: folder-prepare
 	@echo "${BLUE}Copying compiled files to public/js for DEBUG ${CC}"
 	cp -r compiled-js/* public/js/
 	@echo "\n"
 
+folder-prepare:
+	@echo "${BLUE}Preparing folder structure${CC}"
+	mkdir -p compiled-js/
+	mkdir -p public/js
+	@echo "\n"
+
 clean:
-	rm -rf /public/js/*
-	rm -rf compiled-js/*
+	rm -rf /public/js
+	rm -rf compiled-js

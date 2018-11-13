@@ -14,6 +14,11 @@ $(document).ready(function() {
         updatePreview();
     });
 
+    $(':input').on('change', function() {
+        console.log('change!');
+        updatePreview();
+    })
+
     $('#settingsForm').on('submit', function(e) {
         e.preventDefault();
 
@@ -41,6 +46,8 @@ function updatePreview() {
     let strokeColor = $("input[name='strokeColor']").val();
     let backgroundColor = $("input[name='backgroundColor']").val();
     let textColor = $("input[name='textColor']").val();
+    let locationCircleColor = $("input[name='locationCircleColor']").val();
+    let locationCircleSize = $("input[name='locationCircleSize']").val();
 
     $('#previewSvg #building').css(<any>{
         'fill': buildingColor,
@@ -54,4 +61,10 @@ function updatePreview() {
     $('#previewSvg #text').css(<any>{
         fill: textColor
     });
+
+    $('#previewSvg #location').css(<any>{
+        fill: locationCircleColor
+    });
+
+    $('#previewSvg #location').attr('r', <any>locationCircleSize);
 }
