@@ -76,8 +76,6 @@ $(document).ready(function() {
 
                 SVGControls.instance.voiceControl.say('El mapa está ahora escuchando.');
             }
-
-            $(this).blur();
         });
     }
 

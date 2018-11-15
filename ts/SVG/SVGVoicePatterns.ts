@@ -50,6 +50,20 @@ const SVGVoiceGrammars = [
             { name: 'origin', position: 4},
             { name: 'target', position: 6}
         ]
+    },
+
+    {
+        name: 'repeatStep',
+        pattern: /(repetir|volver) (paso|a decir)/i,
+        extract: []
+    },
+
+    {
+        name: 'readStep',
+        pattern: /(repetir|volver a decir) (paso)+ (\d+)/i,
+        extract: [
+            { name: 'stepNo', position: 3 }
+        ]
     }
 ];
 

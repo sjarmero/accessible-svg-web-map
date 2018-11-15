@@ -6,6 +6,30 @@ import { voiceParse } from './SVGVoicePatterns.js';
 
 declare var webkitSpeechGrammarList, webkitSpeechRecognition;
 
+class Queue {
+    private base : any[];
+    
+    constructor() {
+        this.base = [];
+    }
+
+    front() {
+        if (this.base.length > 0) {
+            return this.base.shift();
+        } else {
+            return null;
+        }
+    }
+
+    push(e : any) {
+        this.base.push(e);
+    }
+
+    length() {
+        return this.base.length;
+    }
+}
+
 export class SVGVoiceControls {
     readonly time_per_word : number = 500;
 
@@ -15,6 +39,9 @@ export class SVGVoiceControls {
     private voice : any;
     private container : any;
     private onTranscript : any;
+
+    private tts : Queue;
+    private work : any;
 
     constructor() {
         // Synth
@@ -32,6 +59,10 @@ export class SVGVoiceControls {
 
         // Speech
         this.container = document.getElementById('speech');
+
+        this.tts = new Queue();
+        console.log('this.tts', this.tts);
+        this.resetWorker(250);
     }
 
     static compatible() {
@@ -46,18 +77,40 @@ export class SVGVoiceControls {
         this.on = v;
     }
 
+    resetWorker(time) {
+        if (this.work) {
+            console.log('Reset to', time);
+            clearInterval(this.work);
+        }
+
+        this.work = setInterval(() => {
+            const sentence = this.tts.front();
+            if (sentence) {
+                this.pronounce(sentence);
+            }
+        }, time);
+    }
+
     // Speech
+
     say(sentence) {
+        this.tts.push(sentence);
+    }
+
+    pronounce(sentence) {
         let prevOn = SVGVoiceControls.isOn();
         SVGVoiceControls.setOn(false);
         this.stop();
         this.container.innerHTML = "";
-        this.container.innerHTML = sentence;
 
+        let time = (this.time_per_word) * (sentence.split(" ").length);
+        this.resetWorker(time + (2 * this.time_per_word));
         setTimeout(() => {
             SVGVoiceControls.setOn(prevOn);
             this.start(this.onTranscript);
-        }, (this.time_per_word) * (sentence.split(" ").length));
+        }, time);
+
+        this.container.innerHTML = sentence;
     }
 
     // Synth

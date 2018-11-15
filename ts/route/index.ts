@@ -2,6 +2,8 @@ import { rotar } from './math.js';
 import { SVGMap } from '../SVG/SVGMap.js';
 import { navigationMode } from './navigation.js';
 import { SVGLocation } from '../SVG/SVGLocation.js';
+import { SVGVoiceControls } from '../SVG/SVGVoiceControls.js';
+import { SVGControls } from '../SVG/SVGControls.js';
 
 const searchIcon = 'fas fa-search';
 const loadingIcon = 'fas fa-spinner rotating-spinner';
@@ -135,17 +137,7 @@ $(document).ready(function() {
         console.log(acc, source, target);
 
         if (acc) {
-            $.getJSON(`/map/data/pi/${source},${target},${$("#impairmentSelect").val()}`, function(path) {
-                console.log('path', path);
-                navigationMode(path.data);
-
-                if ($("#impairmentSelect").val() != 0 && path.disability == 0) {
-                    $("#nonAccessibleWarning").css("display", "block");
-                    $("#nonAccessibleWarning").html($("#nonAccessibleWarning").html());
-                } else {
-                    $("#nonAccessibleWarning").css("display", "none");
-                }
-            });
+            startNavigation(source, target);
         }
     });
 
@@ -164,6 +156,38 @@ $(document).ready(function() {
 
         $('.route-orientation:first-child').trigger('focus');
     });
+
+
+    /*
+        Voice
+    */
+
+    if (SVGVoiceControls.compatible()) {
+        $("#dictateBtn").on('click', function(e) {
+            e.preventDefault();
+
+            if ($(this).attr('data-dictating') == 'true') {
+                SVGVoiceControls.setOn(false);
+                $(this).attr('data-dictating', 'false');
+                $(this).removeClass("active");
+                $("#dictateStatus").html("Haz click para comenzar a escuchar");
+
+                SVGControls.instance.voiceControl.say('El mapa ha dejado de escuchar.');
+            } else {
+                SVGVoiceControls.setOn(true);
+                $(this).attr('data-dictating', 'true');
+                $(this).addClass("active");
+                $("#dictateStatus").html("Escuchando...");
+
+                SVGControls.instance.voiceControl.say('El mapa está ahora escuchando.');
+                voiceListener();
+            }
+        });
+    } else {
+        $('#dictateBtn').css(<any>{
+            display: 'none'
+        })
+    }
 
     /* 
         Observers
@@ -261,4 +285,124 @@ function lookingAt(x, y, orientation) : string {
     }
 
     return null;
+}
+
+function startNavigation(source, target) {
+    $.getJSON(`/map/data/pi/${source},${target},${$("#impairmentSelect").val()}`, function(path) {
+        console.log('path', path);
+        navigationMode(path.data);
+
+        if ($("#impairmentSelect").val() != 0 && path.disability == 0) {
+            $("#nonAccessibleWarning").css("display", "block");
+            $("#nonAccessibleWarning").html($("#nonAccessibleWarning").html());
+        } else {
+            $("#nonAccessibleWarning").css("display", "none");
+        }
+    });
+}
+
+function voiceListener() {
+    SVGControls.instance.voiceControl.start(({confidence, transcript}) => {
+        console.log('Voice received:');
+        console.log(confidence, transcript);
+
+        let parsed = SVGControls.instance.voiceControl.parseAction(transcript);
+        if (parsed) {
+            console.log('[ROUTE] Parsed as', parsed);
+            let {name} = parsed;
+
+            switch (name) {
+                case 'unknown':
+                    return;
+
+                case 'route':
+                    let { origin, target } = parsed;
+                    routeByVoice(origin, target);
+                    return;
+
+                case 'repeatStep':
+
+                    return;
+
+                case 'readStep':
+                
+                    return;
+
+                case 'zoom':
+                    SVGControls.instance.navigationHandler((parsed.direction === 'acercar') ? 'zoom-in' : 'zoom-out');
+                    return;
+
+                default:
+                    SVGControls.instance.navigationHandler(parsed.direction);
+                    return;
+            }
+        }
+    });
+}
+
+function routeByVoice(origin, target) {
+    selectByVoice(origin, 'origen', (selOrigin) => {
+        selectByVoice(target, 'destino', (selTarget) => {
+            if (selOrigin != null && selTarget != null) {
+                SVGControls.instance.voiceControl.say(`Calculando ruta`);
+                console.log('Ruta de ', selOrigin, 'a', selTarget);
+
+                $("#impairmentSelect").val(1);
+                startNavigation(selOrigin.id, selTarget.id);
+            } else {
+                console.log('[ERROR]', selOrigin, selTarget);
+                SVGControls.instance.voiceControl.say(`No se ha podido obtener la ruta.`);
+            }
+        });
+    });
+}
+
+function selectByVoice(place, mode, callback) {
+    $.getJSON(`/map/data/s/name/${place}`, function(data) {
+        let {results} = data;
+        console.log('Results', results);
+       
+        if (results.length == 0) {
+            SVGControls.instance.voiceControl.say(`No se han encontrado lugares con el nombre ${place}.`);
+            callback(null);
+        } else if (results.length == 1) {
+            SVGControls.instance.voiceControl.say(`Seleccionado ${results[0].name} como ${mode}`);
+            callback(results[0]);
+        } else {
+            SVGControls.instance.voiceControl.say(`Se han encontrado varios lugares relacionados con ${place}. Selecciona uno de ellos:`);
+        
+            for (let i = 0; i < results.length; i++) {
+                SVGControls.instance.voiceControl.say(`Resultado número ${i + 1}. ${results[i].name}`);
+            }
+
+            SVGControls.instance.voiceControl.say(`Di 'número' seguido del número de lugar a seleccionar. Di 'cancelar' para salir.`);
+
+            selectOption((selectedIndex) => {
+                if (selectedIndex != -1 && selectedIndex < results.length) {
+                    let result = results[selectedIndex];
+                    console.log('Seleccionado', result);
+                    SVGControls.instance.voiceControl.say(`Has seleccionado ${result.name} como ${mode}.`);
+                    callback(result);
+                } else {
+                    callback(null);
+                }
+            });
+        }
+    });
+}
+
+function selectOption(callback) {
+    return SVGControls.instance.voiceControl.start(({confidence, transcript}) => {
+        console.log('Voice received:');
+        console.log(confidence, transcript);
+
+        if (transcript.match(/cancelar/i) != null) { callback(-1); return; }
+        let t = transcript.match(/número (\d+)/i);
+        if (t != null) {
+            callback(parseInt(t[1]) - 1);
+        } else {
+            t = transcript.match(/número (\w+)/i);
+            callback(SVGControls.instance.toDigit(t[1]) - 1);
+        }
+    });
 }
