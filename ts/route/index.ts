@@ -321,11 +321,19 @@ function voiceListener() {
                     return;
 
                 case 'repeatStep':
+                    let step = $('.route-steps .route-step:focus');
+                    if (step.length == 1) {
+                        console.log('Repitiendo paso', step);
+                        step.blur();
+                        step.trigger('focus');
+                    }
 
                     return;
 
                 case 'readStep':
-                
+                    let { stepNo } = parsed;
+                    stepNo = (parseInt(stepNo) == NaN) ? SVGControls.instance.toDigit(stepNo) : parseInt(stepNo);
+                    $(`.route-steps .route-step[data-step=${stepNo}]`).trigger('focus');
                     return;
 
                 case 'zoom':
