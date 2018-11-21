@@ -71,9 +71,7 @@ export function observeOrientation(map, callback) {
                     accum = 0;
                     let foundf = vote(element);
 
-                    if (foundf != null && foundf != undefined) {
-                        callback(foundf);
-                    }
+                    callback(foundf);
                 }
             }
         }

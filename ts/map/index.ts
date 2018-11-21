@@ -145,11 +145,15 @@ $(document).ready(function() {
     listObserver.observe($("#currentViewPanel ul").get(0), { attributes: false, childList: true, subtree: true });
 
     observeOrientation($(SVGMap.instance.container).get(0), (lookingAtFeature) => {
-        let order = `<span class='sr-only'>Información sobre tu orientación.</span>
-            Estás mirando hacia ${$(`#${lookingAtFeature}`).attr('data-name')}.
-        `;
-
         $('#orientationContainer').html('');
-        $('#orientationContainer').html(order);
+
+
+        if (lookingAtFeature != null && lookingAtFeature != undefined) {
+            let order = `<span class='sr-only'>Información sobre tu orientación.</span>
+                Estás mirando hacia ${$(`#${lookingAtFeature}`).attr('data-name')}.
+            `;
+
+            $('#orientationContainer').html(order);
+        }
     });
 });
