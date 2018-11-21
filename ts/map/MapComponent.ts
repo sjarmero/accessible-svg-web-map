@@ -1,5 +1,8 @@
 import { SVGMap } from '../SVG/SVGMap.js';
 import { SVGControls } from '../SVG/SVGControls.js';
+import { Location } from '../location/Location.js';
+
+declare var proj4;
 
 $(document).ready(function() {
     (<any>window).gsvg = SVGMap.instance.svg;
@@ -138,6 +141,22 @@ $(document).ready(function() {
             }
 
             setTimeout(() => zooming = false, 400);
+        }
+    });
+
+    // Localización 
+    let locationService = new Location();
+    let lastLocation = null;
+    locationService.watch(function(lat, long) {
+        let [x, y] = proj4('EPSG:4326', 'EPSG:25830', [long, lat]);
+        lastLocation = {x: x, y: -y};
+
+        SVGMap.instance.drawLocation(x, -y);
+    });
+
+    locationService.watchOrientation(function(alpha, beta, gamma) {
+        if (lastLocation != null) {
+            SVGMap.instance.drawOrientation(lastLocation.x, lastLocation.y, alpha);
         }
     });
 });

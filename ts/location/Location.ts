@@ -1,4 +1,4 @@
-export class SVGLocation {
+export class Location {
     private orientationAccum : number;
 
     constructor() {

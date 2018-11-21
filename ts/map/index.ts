@@ -2,16 +2,32 @@ import { SVGControls } from "../SVG/SVGControls.js";
 import { search, showBuildingInfo, focusBuilding } from "./search.js";
 import { SVGVoiceControls } from "../SVG/SVGVoiceControls.js";
 import { SVGMap } from "../SVG/SVGMap.js";
-import { SVGLocation } from "../SVG/SVGLocation.js";
+import { observeOrientation } from "../location/LocationComponent.js";
+import { Location } from '../location/Location.js';
 
-declare var proj4; 
-
+declare var proj4;
 $(document).ready(function() {
     console.log('Index');
     loadSettings();
 
     $("form[action='']").on('submit', (e) => {
         e.preventDefault();
+    });
+
+    // Localización 
+    let locationService = new Location();
+    $('.focus-location button').on('click', function(e) {
+        e.preventDefault();
+
+        locationService.getCurrentPosition(function(lat, long) {
+            let [x, y] = (<any>proj4('EPSG:4326', 'EPSG:25830', [long, lat]));
+            SVGMap.instance.moveTo(x, -y);
+        });
+    });
+
+    $('.focus-orientation button').on('click', function(e) {
+        e.preventDefault();
+        $('#orientationContainer').trigger('focus');
     });
 
     // Navigation buttons
@@ -25,17 +41,6 @@ $(document).ready(function() {
         e.preventDefault();
         let query = $("#queryTxt").val();
         search(query);
-    });
-
-    // Localización 
-    let locationService = new SVGLocation();
-    $('.focus-location button').on('click', function(e) {
-        e.preventDefault();
-
-        locationService.getCurrentPosition(function(lat, long) {
-            let [x, y] = (<any>proj4('EPSG:4326', 'EPSG:25830', [long, lat]));
-            SVGMap.instance.moveTo(x, -y);
-        });
     });
 
     // Voz
@@ -137,6 +142,14 @@ $(document).ready(function() {
         }
     });
 
-    console.log('Running observer...');
     listObserver.observe($("#currentViewPanel ul").get(0), { attributes: false, childList: true, subtree: true });
+
+    observeOrientation($(SVGMap.instance.container).get(0), (lookingAtFeature) => {
+        let order = `<span class='sr-only'>Información sobre tu orientación.</span>
+            Estás mirando hacia ${$(`#${lookingAtFeature}`).attr('data-name')}.
+        `;
+
+        $('#orientationContainer').html('');
+        $('#orientationContainer').html(order);
+    });
 });

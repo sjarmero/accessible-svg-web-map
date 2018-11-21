@@ -252,6 +252,19 @@ const nearestNamesForFeature = async function(bid, radius) {
     return data.rows;
 }
 
+const routesSVG = async function() {
+    let data;
+    try {
+        data = await client.query(`select id::integer, sub_id, ST_asSVG(the_geom) as svg from routes_noded;`);
+    } catch (e) {
+        console.log("[POSTGIS] routesSVG");
+        console.log(e);
+        return {};
+    }
+
+    return data.rows;
+}
+
 const propertyParser = property => {
     return {
         "display": property['p_name'],
@@ -268,5 +281,6 @@ module.exports = {
     searchByName: searchByName,
     djPath: djPath,
     djPathWithPoi: djPathWithPoi,
-    nearestNamesForFeature: nearestNamesForFeature
+    nearestNamesForFeature: nearestNamesForFeature,
+    routesSVG: routesSVG
 }

@@ -1,6 +1,8 @@
 import { angulo, perspectiva, toDeg, modulo} from './math.js';
 import { SVGMap } from '../SVG/SVGMap.js';
 
+const STEP_FACTOR = 0.5;
+
 let guide = [];
 export function navigationMode(data) {
     $("#SVG_MAIN_CONTENT #route").empty();
@@ -158,15 +160,15 @@ export function navigationMode(data) {
 
         switch (step.direction) {
             case 0:
-                order += `Camina <span class="steps-expression" data-steps='${Math.ceil(step.distance)}'>${Math.ceil(step.distance)} pasos</span> hacia delante`;
+                order += `Camina <span class="steps-expression" data-meters='${Math.ceil(step.distance)}'></span> hacia delante`;
                 break;
 
             case 1:
-                order += `Gira a la izquierda y camina <span class="steps-expression" data-steps='${Math.ceil(step.distance)}'>${Math.ceil(step.distance)} pasos</span>`;
+                order += `Gira a la izquierda y camina <span class="steps-expression" data-meters='${Math.ceil(step.distance)}'></span>`;
                 break;
 
             case 2:
-                order += `Gira a la derecha y camina <span class="steps-expression" data-steps='${Math.ceil(step.distance)}'>${Math.ceil(step.distance)} pasos</span>`;
+                order += `Gira a la derecha y camina <span class="steps-expression" data-meters='${Math.ceil(step.distance)}'></span>`;
                 break;
 
             case -1:
@@ -188,14 +190,23 @@ export function navigationMode(data) {
         i++;
     }
 
+    $(".steps-expression").each(function() {
+        let meters = parseInt($(this).attr('data-meters'));
+
+        if ($("#metricUnitSelect").val() == 0) {
+            $(this).html(`${meters / STEP_FACTOR} pasos`);
+        } else {
+            $(this).html(`${meters} metros`);
+        }
+    });
+
     $("#metricUnitSelect").on('change', function(e) {
         $(".steps-expression").each(function() {
-            let steps = parseInt($(this).attr('data-steps'));
+            let meters = parseInt($(this).attr('data-meters'));
 
             if ($("#metricUnitSelect").val() == 0) {
-                $(this).html(`${steps} pasos`);
+                $(this).html(`${meters / STEP_FACTOR} pasos`);
             } else {
-                let meters = steps / 2;
                 $(this).html(`${meters} metros`);
             }
         });

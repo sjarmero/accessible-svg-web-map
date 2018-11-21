@@ -1,6 +1,5 @@
 import { SVGMap } from './SVGMap.js';
 import { SVGVoiceControls } from './SVGVoiceControls.js';
-import { SVGLocation } from './SVGLocation.js';
 
 declare var proj4;
 
@@ -33,22 +32,6 @@ export class SVGControls {
             setTimeout(function() {
                 SVGMap.instance.groupMarkers(SVGMap.instance.zoomlevel);
             }, 100);
-
-            
-            let lastLocation = null;
-            let svgl = new SVGLocation();
-            svgl.watch(function(lat, long) {
-                let [x, y] = proj4('EPSG:4326', 'EPSG:25830', [long, lat]);
-                lastLocation = {x: x, y: -y};
-
-                SVGMap.instance.drawLocation(x, -y);
-            });
-
-            svgl.watchOrientation(function(alpha, beta, gamma) {
-                if (lastLocation != null) {
-                    SVGMap.instance.drawOrientation(lastLocation.x, lastLocation.y, alpha);
-                }
-            });
             
             SVGMap.instance.updateSidebar();
         };

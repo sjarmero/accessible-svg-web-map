@@ -1,9 +1,9 @@
-import { rotar } from './math.js';
 import { SVGMap } from '../SVG/SVGMap.js';
 import { navigationMode } from './navigation.js';
-import { SVGLocation } from '../SVG/SVGLocation.js';
+import { Location } from '../location/Location.js';
 import { SVGVoiceControls } from '../SVG/SVGVoiceControls.js';
 import { SVGControls } from '../SVG/SVGControls.js';
+import { observeOrientation } from '../location/LocationComponent.js';
 
 const searchIcon = 'fas fa-search';
 const loadingIcon = 'fas fa-spinner rotating-spinner';
@@ -144,7 +144,7 @@ $(document).ready(function() {
     $('.focus-location button').on('click', function(e) {
         e.preventDefault();
 
-        let locationService = new SVGLocation();
+        let locationService = new Location();
         locationService.getCurrentPosition(function(lat, long) {
             let [x, y] = (<any>proj4('EPSG:4326', 'EPSG:25830', [long, lat]));
             SVGMap.instance.moveTo(x, -y);
@@ -163,6 +163,10 @@ $(document).ready(function() {
     */
 
     if (SVGVoiceControls.compatible()) {
+        $('#voicePanel').css({
+            display: 'block'
+        });
+        
         $("#dictateBtn").on('click', function(e) {
             e.preventDefault();
 
@@ -192,99 +196,28 @@ $(document).ready(function() {
     /* 
         Observers
     */
-    let accum = 4;
+    observeOrientation($(SVGMap.instance.container).get(0), (lookingAtFeature) => {
+        let stepDiv = document.createElement('div');
+        let stepSpan = document.createElement('span'); 
 
-    let observer = new MutationObserver((list) => {
-        for (const mutation of list) {
-            if (mutation.type === 'attributes') {
-                let element = mutation.target;
-                if ($(element).attr('id') === 'orientationg') {
-                    if (accum != 4) { accum++; return; }
+        let order = `<span class='sr-only'>Información sobre tu orientación.</span>
+            Estás mirando hacia ${$(`#${lookingAtFeature}`).attr('data-name')}.
+        `;
 
-                    accum = 0;
+        $('.route-steps .route-orientation').remove();
+        $(stepSpan).html(order);
+        $(stepDiv).append(stepSpan);
+        $(stepDiv).addClass('route-step route-orientation');
+        $(stepDiv).attr('role', 'listitem');
+        $(stepDiv).attr('tabindex', '0');
+        $(stepDiv).attr('data-step', -1);
 
-                    let orientation = $(element).attr('data-orientation');
-                    let x = parseFloat($(element).attr('data-x'));
-                    let y = parseFloat($(element).attr('data-y'));
-
-                    let votes = {};
-
-                    for (let i = -1; i < 3; i++) {
-                        let result = lookingAt(x, y, orientation + (i * 10))
-                        if (result != null) {
-                            if (votes[result] == undefined) {
-                                votes[result] = 1;
-                            } else {
-                                votes[result] = votes[result] + 1;
-                            }
-                        }
-                    }
-
-                    let winner = null, maxVotes = 0;
-                    for (const participant of Object.keys(votes)) {
-                        if (votes[participant] > maxVotes) {
-                            maxVotes = votes[participant];
-                            winner = participant;
-                        }
-                    }
-
-                    let foundf = winner;
-
-                    $('.route-steps .route-orientation').remove();
-                    if (foundf != null && foundf != undefined) {
-                        let stepDiv = document.createElement('div');
-                        let stepSpan = document.createElement('span'); 
-
-                        let order = `<span class='sr-only'>Información sobre tu orientación.</span>
-                            Estás mirando hacia ${$(`#${foundf}`).attr('data-name')}.
-                        `;
-
-                        $(stepSpan).html(order);
-                        $(stepDiv).append(stepSpan);
-                        $(stepDiv).addClass('route-step route-orientation');
-                        $(stepDiv).attr('role', 'listitem');
-                        $(stepDiv).attr('tabindex', '0');
-                        $(stepDiv).attr('data-step', -1);
-
-                        $(".route-steps").prepend(stepDiv);
-                    }
-                }
-            }
-        }
+        $(".route-steps").prepend(stepDiv);
     });
-
-    observer.observe($(SVGMap.instance.container).get(0), { attributes: true, childList: false, subtree: true });
 });
 
 function changeIcon(container, newClass) {
     container.find('button i').attr("class", newClass);
-}
-
-function lookingAt(x, y, orientation) : string {    
-    // Rotamos el punto final de la linea
-    let [rx, ry] = rotar(x, y - 150, x, y, orientation);
-    
-    let m = (ry - y) / (rx - x);
-    let eq = (v) => { return (m*v) - (m*x) + y; }
-
-    // Encontramos el edificio de referencia
-    for (let eqx = x; eqx <= (x + 150); eqx++) {
-        let eqy = eq(eqx);
-        let foundf = null;
-
-        for (const feature of SVGMap.instance.svg.select('.feature-object').members) {
-            if (feature.inside(eqx, eqy)) {
-                foundf = feature;
-                break;
-            }
-        }
-
-        if (foundf != null) {
-            return foundf;
-        }
-    }
-
-    return null;
 }
 
 function startNavigation(source, target) {

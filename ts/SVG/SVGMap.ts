@@ -16,6 +16,7 @@ export class SVGMap {
     private auto_grouped_buildings : any[];
     private _data : any;
     private onmapdrawn : any;
+    private locationdrawn : boolean;
 
     constructor() {
         this._svg = SVG('map');
@@ -27,6 +28,7 @@ export class SVGMap {
         this.marker_groups = Array.apply(null, Array(20)).map(element => []);
         this.auto_marker_groups = Array.apply(null, Array(20)).map(element => []);
         this.auto_grouped_buildings = [];
+        this.locationdrawn = false;
     }
 
     static get instance() {
@@ -172,7 +174,16 @@ export class SVGMap {
                 }
             }
 
-            this.onmapdrawn();
+            $.getJSON(`/map/data/rsvg`, (data) => {
+                for (const route of data) {
+                    let path = this.svg.path(route.svg).back();
+                    path.stroke({ width: 1, color: '#612F00' });
+                    path.fill('transparent');
+                }
+
+                this.onmapdrawn();
+            });
+
         });
     }
 
@@ -181,11 +192,18 @@ export class SVGMap {
         let currlocationg = $(this.container + "#locationg");
 
         if (currlocationg.length == 0) {
+            if (this.svg.select('#SVG_MAIN_CONTENT').members.length == 0) {
+                setTimeout(() => { this.drawLocation(x, y); }, 200);
+                return;
+            }
+
             let locationg = this.svg.select('#SVG_MAIN_CONTENT').members[0].group().front();
             locationg.attr('id', 'locationg');
             const circle = locationg.circle().radius((Cookies.get('locationCircleSize') || 10));
             circle.cx(x).cy(y);
             circle.fill('deeppink');
+
+            this.locationdrawn = true;
         } else {
             currlocationg.find('circle').attr('cx', x);
             currlocationg.find('circle').attr('cy', y);
@@ -193,18 +211,23 @@ export class SVGMap {
     }
 
     drawOrientation(x, y, alpha) {
+        if (!this.locationdrawn || this.svg.select('#SVG_MAIN_CONTENT').members.length == 0) return;
+
         let currorientationg = $(this.container + "#orientationg");
+        let pointSize : number = parseFloat((Cookies.get('locationCircleSize') || 10));
 
         if (currorientationg.length == 0) {
             let orientationg = this.svg.select('#SVG_MAIN_CONTENT').members[0].group().front();
             orientationg.attr('id', 'orientationg');
+
             const arrow = orientationg.image('/images/arrow.svg');
-            arrow.move(x - 8, y - 24);
-            arrow.attr('width', 16);
-            arrow.attr('height', 16);
+            console.log(pointSize);
+            arrow.move(x, y - (pointSize * 2));
+            arrow.attr('width', pointSize * 2);
+            arrow.attr('height', pointSize * 2);
         } else {
-            currorientationg.find('image').attr('x', x - 8);
-            currorientationg.find('image').attr('y', y - 24);
+            currorientationg.find('image').attr('x', x - pointSize);
+            currorientationg.find('image').attr('y', y - (pointSize * 2) - 6);
         }
 
         let phase = (alpha < 0) ? alpha + 360 : alpha;

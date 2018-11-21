@@ -79,6 +79,12 @@ app.get('/map/data/nn4f/:bid,:radius', async (request, response) => {
     response.json(data);
 });
 
+app.get('/map/data/rsvg', async (request, response) => {
+    const name = request.params.name;
+    const data = await db.routesSVG();
+    response.json(data);
+});
+
 app.get('/map/data/:radius', async (request, response) => {
     let {radius} = request.params;
     const result = await db.all(radius);
