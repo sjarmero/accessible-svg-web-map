@@ -269,7 +269,30 @@ function voiceListener() {
                 case 'readStep':
                     let { stepNo } = parsed;
                     stepNo = (parseInt(stepNo) == NaN) ? SVGControls.instance.toDigit(stepNo) : parseInt(stepNo);
+                    console.log('Leyendo paso', stepNo);
                     $(`.route-steps .route-step[data-step=${stepNo}]`).trigger('focus');
+                    return;
+
+                case 'nextStep':
+                    var currentStep = $('.route-steps .route-step:focus');
+                    if (currentStep.length == 1) {
+                        let sno : number = parseInt(currentStep.attr('data-step'));
+                        if ($(`.route-step[data-step=${sno + 1}]`).length == 1) {
+                            $(`.route-step[data-step=${sno + 1}]`).trigger('focus');
+                        }
+                    }
+
+                    return;
+
+                case 'previousStep':
+                    var currentStep = $('.route-steps .route-step:focus');
+                    if (currentStep.length == 1) {
+                        let sno : number = parseInt(currentStep.attr('data-step'));
+                        if ($(`.route-step[data-step=${sno - 1}]`).length == 1) {
+                            $(`.route-step[data-step=${sno - 1}]`).trigger('focus');
+                        }
+                    }
+
                     return;
 
                 case 'zoom':
@@ -287,6 +310,7 @@ function voiceListener() {
 function routeByVoice(origin, target) {
     selectByVoice(origin, 'origen', (selOrigin) => {
         selectByVoice(target, 'destino', (selTarget) => {
+            voiceListener();
             if (selOrigin != null && selTarget != null) {
                 SVGControls.instance.voiceControl.say(`Calculando ruta`);
                 console.log('Ruta de ', selOrigin, 'a', selTarget);
@@ -336,15 +360,17 @@ function selectByVoice(place, mode, callback) {
 }
 
 function selectOption(callback) {
-    return SVGControls.instance.voiceControl.start(({confidence, transcript}) => {
+    SVGControls.instance.voiceControl.start(({confidence, transcript}) => {
         console.log('Voice received:');
         console.log(confidence, transcript);
 
         if (transcript.match(/cancelar/i) != null) { callback(-1); return; }
         let t = transcript.match(/número (\d+)/i);
         if (t != null) {
+            SVGControls.instance.voiceControl.stop();
             callback(parseInt(t[1]) - 1);
         } else {
+            SVGControls.instance.voiceControl.stop();
             t = transcript.match(/número (\w+)/i);
             callback(SVGControls.instance.toDigit(t[1]) - 1);
         }

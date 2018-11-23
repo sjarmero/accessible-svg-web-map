@@ -64,6 +64,18 @@ const SVGVoiceGrammars = [
         extract: [
             { name: 'stepNo', position: 2 }
         ]
+    },
+
+    {
+        name: 'nextStep',
+        pattern: /siguiente paso/i,
+        extract: []
+    },
+
+    {
+        name: 'previousStep',
+        pattern: /paso anterior/i,
+        extract: []
     }
 ];
 

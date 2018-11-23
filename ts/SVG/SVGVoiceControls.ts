@@ -38,7 +38,7 @@ export class SVGVoiceControls {
     private list : any;
     private voice : any;
     private container : any;
-    private onTranscript : any;
+    public onTranscript : any;
 
     private tts : Queue;
     private work : any;

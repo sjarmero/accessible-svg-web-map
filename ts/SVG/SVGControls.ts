@@ -174,15 +174,89 @@ export class SVGControls {
     }
 
 
-    toDigit(number) {
-        let n = ['uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez'];
-        console.log(n.length, number);
-        for (let i = 0; i < n.length; i++) {
-            if (n[i] == number) {
-                return (i + 1);
+
+    toDigit(text) {
+        text = normalizar(text);
+    
+        let tmp = cifra(text);
+        if (tmp) return tmp;
+    
+        tmp = irregular(text);
+        if (tmp) return tmp;
+    
+        tmp = multiplo(text);
+        if (tmp) return tmp;
+    
+        tmp = compuesto(text);
+        if (tmp) return tmp;
+    
+        return -1;
+    }
+}
+
+const cifras = ["uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"];
+const irregulares = ["once", "doce", "trece", "catorce", "quince", "", "", "", "", "veinte"];
+const multiplos = ["dieci", "veinti"];
+const compuestos = ["treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+
+function normalizar(text) {
+    return text.toLowerCase()
+            .replace("á", "a")
+            .replace("é", "e")
+            .replace("í", "i")
+            .replace("ó", "o")
+            .replace("ú", "u");
+}
+
+function cifra(text) {
+    for (let i = 0; i < cifras.length; i++) {
+        if (cifras[i] === text) {
+            return i + 1;
+        }
+    }
+
+    return null;
+}
+
+function irregular(text) {
+    for (let i = 0; i < irregulares.length; i++) {
+        if (irregulares[i] === text) {
+            return i + 11;
+        }
+    }
+
+    return null;
+}
+
+function multiplo(text) {
+    for (let i = 0; i < multiplos.length; i++) {
+        let m = multiplos[i];
+        let p = text.indexOf(m);
+        if (p != -1) {
+            console.log('Pasando por cifra()', text.substr(p + m.length, text.length - p), m.length, text.length - 1);
+            let tmp = cifra(text.substr(p + m.length, text.length - p));
+            console.log('cifra', tmp);
+            return ((i + 1) * 10) + tmp;
+        }
+    }
+
+    return null;
+}
+
+function compuesto(text) {
+    for (let i = 0; i < compuestos.length; i++) {
+        let c = compuestos[i];
+        let p = text.indexOf(c);
+
+        if (p != -1) {
+            let q = text.indexOf("y");
+            console.log(q, p, p + c.length);
+            if (q - (p + c.length) != 1) {
+                return (i + 1) * 10;
+            } else {
+                let tmp = cifra(text.substr(q + 2, text.length));
+                return ((i + 3) * 10) + tmp;
             }
         }
-
-        return -1;
     }
 }
