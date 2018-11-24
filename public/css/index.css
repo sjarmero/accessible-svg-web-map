@@ -106,8 +106,12 @@ section section {
         stroke-width: 0.05em;
     }
 
-    #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building,  #map > svg > #SVG_MAIN a.active .building, #map > svg > #SVG_MAIN_CONTENT a.gmarker:focus circle, #map > svg > #SVG_MAIN_CONTENT a.gmarker:hover circle,  #map > svg > #SVG_MAIN a.active.gmarker circle {
-        stroke: blue;
+    #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building, #map > svg > #SVG_MAIN_CONTENT a.gmarker:focus circle, #map > svg > #SVG_MAIN_CONTENT a.gmarker:hover circle,  #map > svg > #SVG_MAIN a.active.gmarker circle {
+        stroke: blue !important;
+    }
+
+    #map > svg > #SVG_MAIN_CONTENT a.active .building {
+        stroke: blue !important;
     }
 
 #pad {

@@ -174,16 +174,7 @@ export class SVGMap {
                 }
             }
 
-            $.getJSON(`/map/data/rsvg`, (data) => {
-                for (const route of data) {
-                    let path = this.svg.path(route.svg).back();
-                    path.stroke({ width: 1, color: '#612F00' });
-                    path.fill('transparent');
-                }
-
-                this.onmapdrawn();
-            });
-
+            this.onmapdrawn();
         });
     }
 

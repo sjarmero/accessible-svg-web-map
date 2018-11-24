@@ -6,8 +6,8 @@ import { voiceParse } from './SVGVoicePatterns.js';
 
 declare var webkitSpeechGrammarList, webkitSpeechRecognition;
 
-class Queue {
-    private base : any[];
+class Queue<T> {
+    private base : T[];
     
     constructor() {
         this.base = [];
@@ -30,6 +30,11 @@ class Queue {
     }
 }
 
+interface SpeechOrder {
+    sentence : String;
+    callback : Function;
+}
+
 export class SVGVoiceControls {
     readonly time_per_word : number = 500;
 
@@ -40,7 +45,7 @@ export class SVGVoiceControls {
     private container : any;
     public onTranscript : any;
 
-    private tts : Queue;
+    private tts : Queue<SpeechOrder>;
     private work : any;
 
     constructor() {
@@ -84,33 +89,37 @@ export class SVGVoiceControls {
         }
 
         this.work = setInterval(() => {
-            const sentence = this.tts.front();
-            if (sentence) {
-                this.pronounce(sentence);
+            const order = this.tts.front();
+            if (order) {
+                this.pronounce(order);
             }
         }, time);
     }
 
     // Speech
 
-    say(sentence) {
-        this.tts.push(sentence);
+    say(sentence : String, callback : Function = null) {
+        this.tts.push({
+            sentence: sentence,
+            callback: callback
+        });
     }
 
-    pronounce(sentence) {
+    pronounce(order : SpeechOrder) {
         let prevOn = SVGVoiceControls.isOn();
         SVGVoiceControls.setOn(false);
         this.stop();
         this.container.innerHTML = "";
 
-        let time = (this.time_per_word) * (sentence.split(" ").length);
+        let time = (this.time_per_word) * (order.sentence.split(" ").length);
         this.resetWorker(time + (2 * this.time_per_word));
         setTimeout(() => {
+            if (order.callback) order.callback();
             SVGVoiceControls.setOn(prevOn);
             this.start(this.onTranscript);
         }, time);
 
-        this.container.innerHTML = sentence;
+        this.container.innerHTML = order.sentence;
     }
 
     // Synth

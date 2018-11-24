@@ -12,7 +12,8 @@ export function search(query, viaspeech = false) {
         $("#resultsPanel table").empty();
         
         let i = 1;
-        let str = "Estos son los resultados para la búsqueda " + query;
+        
+        if (viaspeech) SVGControls.instance.voiceControl.say(`Estos son los resultados para la búsqueda ${query}`);
         for (const result of results) {
             var row = document.createElement("tr");
             
@@ -33,15 +34,12 @@ export function search(query, viaspeech = false) {
             
             $("#resultsPanel table").append(row);
             
-            if (viaspeech) {
-                str += "\n Resultado número " + i + ": " + result.name;
-            }
+            if (viaspeech) SVGControls.instance.voiceControl.say(`Resultado número ${i}: ${result.name}`);
             
             i++;
         }
         
         if (viaspeech) {
-            str += "\n Selecciona un resultado para verlo en el mapa.";
             SVGControls.instance.onSearchResultSelected = (selection) => {
                 let centerx = $(".result-view[data-result-id='"+ selection +"']").attr('data-centerx');
                 let centery = $(".result-view[data-result-id='"+ selection +"']").attr('data-centery');
@@ -50,12 +48,12 @@ export function search(query, viaspeech = false) {
                 focusBuilding(id, centerx, centery, SVGControls.instance.voiceControl);
             };
 
-            SVGControls.instance.voiceControl.say(str);
+            SVGControls.instance.voiceControl.say("Di 'seleccionar número' seguido del número del resultado a seleccionar.");
         }
 
         $("#data-status").html("Búsqueda de '"+ query +"'");
 
-        $("#resultsPanel").trigger('focus');
+        if (!viaspeech) $("#resultsPanel").trigger('focus');
 
         $("button.result-view").on('click', function(e) {
             e.preventDefault();

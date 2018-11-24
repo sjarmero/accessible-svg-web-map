@@ -58,7 +58,7 @@ $(document).ready(function() {
 
         SVGControls.instance.onRouteCommand = (data) => {
             if (data == null) {
-                window.location.href = "/route";
+                window.location.href = "/route?voice";
                 return;
             }
         };
@@ -95,6 +95,10 @@ $(document).ready(function() {
                 if($(element).find("a.building-wrapper").attr("data-listened") != "true") {
                     $(element).find("a.building-wrapper").on('click', function(e) {
                         if ($(this).hasClass('non-clickable')) return;
+
+                        $(element).find("a.building-wrapper").removeClass("active");
+                        $(this).addClass("active");
+
                         showBuildingInfo($(this).attr('data-building'));
                     });
 

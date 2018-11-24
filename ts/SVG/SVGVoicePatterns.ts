@@ -1,13 +1,13 @@
 const SVGVoiceGrammars = [
     {
         name: 'antiloop',
-        pattern: /(No te he entendido)|(El mapa está ahora escuchando)/i,
+        pattern: /^(No te he entendido)|(El mapa está ahora escuchando)/i,
         extract: []
     },
 
     {
         name: 'move',
-        pattern: /(mover) (mapa |mapas |plano )?(a |hacia |para )?(la derecha|la izquierda|arriba|abajo)/i,
+        pattern: /^(mover) (mapa |mapas |plano )?(a |hacia |para )?(la derecha|la izquierda|arriba|abajo)/i,
         extract: [
             { name: 'direction', position: 4 }
         ]
@@ -15,7 +15,7 @@ const SVGVoiceGrammars = [
 
     {
         name: 'zoom',
-        pattern: /(alejar|acercar)( mapa)?/i,
+        pattern: /^(alejar|acercar)( mapa)?/i,
         extract: [
             { name: 'direction', position: 1 }
         ]
@@ -23,7 +23,7 @@ const SVGVoiceGrammars = [
 
     {
         name: 'search',
-        pattern: /(buscar) ([\w | \d]+)+/i,
+        pattern: /^(buscar) ([\w | \d]+)+/i,
         extract: [
             { name: 'query', position: 2 }
         ]
@@ -31,7 +31,7 @@ const SVGVoiceGrammars = [
 
     {
         name: 'select',
-        pattern: /(seleccionar |elegir |escoger |ver )(número |resultado )*(\w+)+/i,
+        pattern: /^(seleccionar |elegir |escoger |ver )(número |resultado )*(\w+)+/i,
         extract: [
             { name: 'item', position: 3 }
         ]
@@ -39,13 +39,13 @@ const SVGVoiceGrammars = [
 
     {
         name: 'access-routes',
-        pattern: /i((acceder a)|(acceso a)|(ir a)) (((cálculo de)|(calcular)|(calculo de))+ )*(ruta)/i,
+        pattern: /^((acceder a)|(acceso a)|(ir a)) (((cálculo de)|(calcular)|(calculo de))+ )*(ruta)/i,
         extract: []
     },
 
     {
         name: 'route',
-        pattern: /((ir )|(calcular ruta ))*desde ((\w|\d| )+) hasta ((\w|\d| )+)/i,
+        pattern: /^((ir )|(calcular ruta ))*desde ((\w|\d| )+) hasta ((\w|\d| )+)/i,
         extract: [
             { name: 'origin', position: 4},
             { name: 'target', position: 6}
@@ -54,13 +54,13 @@ const SVGVoiceGrammars = [
 
     {
         name: 'repeatStep',
-        pattern: /(repetir|volver) (paso|a decir)/i,
+        pattern: /^(repetir|volver) (paso|a decir)/i,
         extract: []
     },
 
     {
         name: 'readStep',
-        pattern: /(decir paso número)+ (\d+)/i,
+        pattern: /^(decir paso número)+ (\d+)/i,
         extract: [
             { name: 'stepNo', position: 2 }
         ]
@@ -68,13 +68,19 @@ const SVGVoiceGrammars = [
 
     {
         name: 'nextStep',
-        pattern: /siguiente paso/i,
+        pattern: /^siguiente paso/i,
         extract: []
     },
 
     {
         name: 'previousStep',
-        pattern: /paso anterior/i,
+        pattern: /^paso anterior/i,
+        extract: []
+    },
+
+    {
+        name: 'orientation',
+        pattern: /^(hacia d(ó|o)nde estoy mirando)/i,
         extract: []
     }
 ];

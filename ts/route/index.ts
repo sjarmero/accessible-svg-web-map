@@ -295,6 +295,10 @@ function voiceListener() {
 
                     return;
 
+                case 'orientation':
+                    $('.route-orientation').trigger('focus');
+                    return;
+
                 case 'zoom':
                     SVGControls.instance.navigationHandler((parsed.direction === 'acercar') ? 'zoom-in' : 'zoom-out');
                     return;
@@ -312,11 +316,11 @@ function routeByVoice(origin, target) {
         selectByVoice(target, 'destino', (selTarget) => {
             voiceListener();
             if (selOrigin != null && selTarget != null) {
-                SVGControls.instance.voiceControl.say(`Calculando ruta`);
-                console.log('Ruta de ', selOrigin, 'a', selTarget);
-
-                $("#impairmentSelect").val(1);
-                startNavigation(selOrigin.id, selTarget.id);
+                SVGControls.instance.voiceControl.say(`Calculando ruta`, () => {;
+                    console.log('Ruta de ', selOrigin, 'a', selTarget);
+                    $("#impairmentSelect").val(1);
+                    startNavigation(selOrigin.id, selTarget.id);
+                });
             } else {
                 console.log('[ERROR]', selOrigin, selTarget);
                 SVGControls.instance.voiceControl.say(`No se ha podido obtener la ruta.`);
