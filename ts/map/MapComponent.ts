@@ -67,34 +67,38 @@ $(document).ready(function() {
     let up_event = ('ontouchstart' in window) ? 'touchend' : 'mouseup';
     let down_event = ('ontouchstart' in window) ? 'touchstart' :  'mousedown';
 
-    const CTM = (<any>$(SVGMap.instance.container).get(0)).getScreenCTM();
-    console.log(CTM);
-
     $(SVGMap.instance.container).on(down_event, function(e) {
         e.preventDefault();    
         moving = ("ontouchstart" in window) ? (e.touches.length == 1) : true;
 
-        ox = ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX;
-        oy = ("ontouchstart" in window) ? e.targetTouches[0].pageY: e.pageY;
+        let {x, y} = screenToSVG({x: ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX, y: ("ontouchstart" in window) ? e.targetTouches[0].pageY: e.pageY });
+        ox = x;
+        oy = y;
     });
 
     $(SVGMap.instance.container).on(up_event, function(e) {
         e.preventDefault();
         moving = false;
+
+        SVGMap.instance.updateSidebar();
     });
 
     $(SVGMap.instance.container).on(move_event, function(e) {
         if (moving) {
-            let x = ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX;
-            let y = ("ontouchstart" in window) ? e.targetTouches[0].pageY: e.pageY;
+            let {x, y} = screenToSVG({x: ("ontouchstart" in window) ? e.targetTouches[0].pageX: e.pageX, y: ("ontouchstart" in window) ? e.targetTouches[0].pageY: e.pageY });
 
-            let xdiff = (x - ox) / -35;
-            let ydiff = (y - oy) / -35;
-            
+            let xdiff = (x - ox) * -0.36;
+            let ydiff = (y - oy) * -0.36;
+
             SVGMap.instance.move(xdiff, ydiff, false);
 
             moved = true;
         }
+    });
+
+    let lastCursorPos;
+    $(SVGMap.instance.container).on('mousemove', function(e) {
+        lastCursorPos = {x: e.pageX, y: e.pageY };
     });
 
     // Scroll to zoom
@@ -106,14 +110,17 @@ $(document).ready(function() {
         let wheel = (typeof (<any>e.originalEvent).detail == 'number' && (<any>e.originalEvent).detail !== 0) ? (<any>e.originalEvent).detail : (<any>e.originalEvent).wheelDelta;
         console.log('wheel', wheel);
 
+        let {x, y} = screenToSVG(lastCursorPos);
         if (wheel > 0) {
-            SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel + 1, true);
+            SVGMap.instance.zoom(SVGMap.instance.zoomlevel + 1, x, y, true);
         } else {
-            SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel - 1, true);
+            SVGMap.instance.zoom(SVGMap.instance.zoomlevel - 1, x, y, true);
         }
 
         zooming = true;
-        setTimeout(() => zooming = false, 400);
+        setTimeout(() =>  {
+            zooming = false
+        }, 400);
 
     });
 
@@ -160,3 +167,28 @@ $(document).ready(function() {
         }
     });
 });
+
+interface Point {
+    x : number;
+    y : number;
+}
+
+function screenToSVG(point : Point) : Point {
+    const CTM = (<any>$(SVGMap.instance.container).get(0)).getScreenCTM();
+
+    let p = (<any>$(SVGMap.instance.container).get(0)).createSVGPoint();
+    p.x = point.x;
+    p.y = point.y;
+
+    return p.matrixTransform(CTM.inverse());
+}
+
+function SVGtoScreen(point : Point) : Point {
+    const CTM = (<any>$(SVGMap.instance.container).get(0)).getScreenCTM();
+
+    let p = (<any>$(SVGMap.instance.container).get(0)).createSVGPoint();
+    p.x = point.x;
+    p.y = point.y;
+
+    return p.matrixTransform(CTM);
+}

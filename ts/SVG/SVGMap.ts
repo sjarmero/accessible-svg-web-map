@@ -513,6 +513,35 @@ export class SVGMap {
         }, 400);
     }
 
+    zoom(level, x, y, raisedbyuser = true) {
+        if (level < 2 || level > 21) return;
+        
+        $(this.container + ".jails").remove();
+        this.zoomlevel = level;
+
+        let {vbx} = this.getZoomValues(level, raisedbyuser);
+        let oldx = this.svg.viewbox().x;
+        let oldy = this.svg.viewbox().y;
+
+        let cx = (this.svg.viewbox().x + (this.svg.viewbox().width)/2);
+        let cy = (this.svg.viewbox().y + (this.svg.viewbox().height/2));
+
+        let dcx = x - cx;
+        let dcy = y - cy;
+
+        console.log(x, y, cx, cy, dcx, dcy);
+
+        var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
+        handler.viewbox(this.svg.viewbox().x + dcx, this.svg.viewbox().y + dcy, vbx, vbx);
+
+        window.location.href = "#zoom=" + level;
+
+        setTimeout(() => {
+            this.groupMarkers(level);
+            this.updateSidebar();
+        }, 400);
+    }
+
     /*
         Increases viewbox in value of x and y.
     */
@@ -522,7 +551,6 @@ export class SVGMap {
         
         setTimeout(() => {
             this.groupMarkers(this.zoomlevel);
-            this.updateSidebar();
         }, 400);
     }
 
