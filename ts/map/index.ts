@@ -74,12 +74,13 @@ $(document).ready(function() {
 
                 SVGControls.instance.voiceControl.say('El mapa ha dejado de escuchar.');
             } else {
-                SVGControls.instance.startVoice();
                 $(this).attr('data-dictating', 'true');
                 $(this).addClass("active");
                 $("#dictateStatus").html("Escuchando...");
 
-                SVGControls.instance.voiceControl.say('El mapa está ahora escuchando.');
+                SVGControls.instance.voiceControl.say('El mapa está ahora escuchando.', null, () => {
+                    SVGControls.instance.startVoice();
+                });
             }
         });
     }
@@ -93,7 +94,7 @@ $(document).ready(function() {
         for (const elements of list) {
             for (const element of (<any>elements).addedNodes) {
                 if($(element).find("a.building-wrapper").attr("data-listened") != "true") {
-                    $(element).find("a.building-wrapper").on('click', function(e) {
+                    $(element).find("a.building-wrapper").on('click touchstart', function(e) {
                         if ($(this).hasClass('non-clickable')) return;
 
                         $(element).find("a.building-wrapper").removeClass("active");

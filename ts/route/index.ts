@@ -12,6 +12,7 @@ const errIcon = 'fas fa-times red';
 
 declare var proj4;
 
+let lastSentence;
 $(document).ready(function() {
     loadSettings();
         
@@ -171,20 +172,20 @@ $(document).ready(function() {
             e.preventDefault();
 
             if ($(this).attr('data-dictating') == 'true') {
-                SVGVoiceControls.setOn(false);
+                SVGControls.instance.stopVoice();
                 $(this).attr('data-dictating', 'false');
                 $(this).removeClass("active");
                 $("#dictateStatus").html("Haz click para comenzar a escuchar");
 
                 SVGControls.instance.voiceControl.say('El mapa ha dejado de escuchar.');
             } else {
-                SVGVoiceControls.setOn(true);
                 $(this).attr('data-dictating', 'true');
                 $(this).addClass("active");
                 $("#dictateStatus").html("Escuchando...");
 
-                SVGControls.instance.voiceControl.say('El mapa está ahora escuchando.');
-                voiceListener();
+                SVGControls.instance.voiceControl.say('El mapa está ahora escuchando.', null, () => {
+                    voiceListener();
+                });
             }
         });
     } else {
@@ -238,7 +239,20 @@ function startNavigation(source, target) {
 }
 
 function voiceListener() {
+    SVGVoiceControls.setOn(true);
     SVGControls.instance.voiceControl.start(({confidence, transcript}) => {
+        /*
+            En Android, la transcripción llega dos veces.
+            Para evitar dar respuesta las dos veces, vamos
+            a ignorar toda transcripción que sea igual a la
+            anterior en un intervalo de X segundos.
+        */
+        if (transcript == lastSentence) return;
+        lastSentence = transcript;
+        setTimeout(() => {
+            lastSentence = null;
+        }, 1000);    
+
         console.log('Voice received:');
         console.log(confidence, transcript);
 
@@ -249,6 +263,7 @@ function voiceListener() {
 
             switch (name) {
                 case 'unknown':
+                    SVGControls.instance.voiceControl.say('No te he entendido');
                     return;
 
                 case 'route':
@@ -260,6 +275,7 @@ function voiceListener() {
                     let step = $('.route-steps .route-step:focus');
                     if (step.length == 1) {
                         console.log('Repitiendo paso', step);
+                        SVGControls.instance.voiceControl.wait(step.html().split(" ").length * SVGVoiceControls.time_per_word)
                         step.blur();
                         step.trigger('focus');
                     }
@@ -270,6 +286,7 @@ function voiceListener() {
                     let { stepNo } = parsed;
                     stepNo = (parseInt(stepNo) == NaN) ? SVGControls.instance.toDigit(stepNo) : parseInt(stepNo);
                     console.log('Leyendo paso', stepNo);
+                    SVGControls.instance.voiceControl.wait(step.html().split(" ").length * SVGVoiceControls.time_per_word);
                     $(`.route-steps .route-step[data-step=${stepNo}]`).trigger('focus');
                     return;
 
@@ -278,6 +295,7 @@ function voiceListener() {
                     if (currentStep.length == 1) {
                         let sno : number = parseInt(currentStep.attr('data-step'));
                         if ($(`.route-step[data-step=${sno + 1}]`).length == 1) {
+                            SVGControls.instance.voiceControl.wait($(`.route-step[data-step=${sno + 1}]`).html().split(" ").length * SVGVoiceControls.time_per_word);
                             $(`.route-step[data-step=${sno + 1}]`).trigger('focus');
                         }
                     }
@@ -289,6 +307,7 @@ function voiceListener() {
                     if (currentStep.length == 1) {
                         let sno : number = parseInt(currentStep.attr('data-step'));
                         if ($(`.route-step[data-step=${sno - 1}]`).length == 1) {
+                            SVGControls.instance.voiceControl.wait($(`.route-step[data-step=${sno - 1}]`).html().split(" ").length * SVGVoiceControls.time_per_word);
                             $(`.route-step[data-step=${sno - 1}]`).trigger('focus');
                         }
                     }
@@ -319,6 +338,7 @@ function routeByVoice(origin, target) {
                 SVGControls.instance.voiceControl.say(`Calculando ruta`, () => {;
                     console.log('Ruta de ', selOrigin, 'a', selTarget);
                     $("#impairmentSelect").val(1);
+                    SVGControls.instance.voiceControl.wait(5000);
                     startNavigation(selOrigin.id, selTarget.id);
                 });
             } else {
@@ -335,11 +355,13 @@ function selectByVoice(place, mode, callback) {
         console.log('Results', results);
        
         if (results.length == 0) {
-            SVGControls.instance.voiceControl.say(`No se han encontrado lugares con el nombre ${place}.`);
-            callback(null);
+            SVGControls.instance.voiceControl.say(`No se han encontrado lugares con el nombre ${place}.`, () => {
+                callback(null);
+            });
         } else if (results.length == 1) {
-            SVGControls.instance.voiceControl.say(`Seleccionado ${results[0].name} como ${mode}`);
-            callback(results[0]);
+            SVGControls.instance.voiceControl.say(`Seleccionado ${results[0].name} como ${mode}`, () => {
+                callback(results[0]);
+            });
         } else {
             SVGControls.instance.voiceControl.say(`Se han encontrado varios lugares relacionados con ${place}. Selecciona uno de ellos:`);
         
@@ -347,17 +369,17 @@ function selectByVoice(place, mode, callback) {
                 SVGControls.instance.voiceControl.say(`Resultado número ${i + 1}. ${results[i].name}`);
             }
 
-            SVGControls.instance.voiceControl.say(`Di 'número' seguido del número de lugar a seleccionar. Di 'cancelar' para salir.`);
-
-            selectOption((selectedIndex) => {
-                if (selectedIndex != -1 && selectedIndex < results.length) {
-                    let result = results[selectedIndex];
-                    console.log('Seleccionado', result);
-                    SVGControls.instance.voiceControl.say(`Has seleccionado ${result.name} como ${mode}.`);
-                    callback(result);
-                } else {
-                    callback(null);
-                }
+            SVGControls.instance.voiceControl.say(`Di 'número' seguido del número de lugar a seleccionar. Di 'cancelar' para salir.`, null, () => {
+                selectOption((selectedIndex) => {
+                    if (selectedIndex != -1 && selectedIndex < results.length) {
+                        let result = results[selectedIndex];
+                        console.log('Seleccionado', result);
+                        SVGControls.instance.voiceControl.say(`Has seleccionado ${result.name} como ${mode}.`);
+                        callback(result);
+                    } else {
+                        callback(null);
+                    }
+                });
             });
         }
     });

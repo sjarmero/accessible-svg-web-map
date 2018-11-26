@@ -16,7 +16,7 @@ $(document).ready(function() {
     var altk = false;
 
     // Navigation keyboard shortcuts
-    $("body").not("input").not("textarea").keydown(function(e) {     
+    $("body").not("input").not("textarea").not(".btn").keydown(function(e) {     
         altk = altk || (e.which == 18);
         if (!altk) return;
 
@@ -53,7 +53,7 @@ $(document).ready(function() {
     });
 
     // Alt key release
-    $("body").not("input").not("textarea").keyup(function(e) {
+    $("body").not("input").not("textarea").not(".btn").keyup(function(e) {
         if (e.which == 18) {
             altk = false;
         }
@@ -142,7 +142,7 @@ $(document).ready(function() {
             if (distance > odistance) {
                 SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel + 1, true);
                 zooming = true;
-            } else {
+            } else if (distance < odistance) {
                 SVGMap.instance.resizeToLevel(SVGMap.instance.zoomlevel - 1, true);
                 zooming = true;
             }

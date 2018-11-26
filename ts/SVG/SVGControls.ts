@@ -12,9 +12,11 @@ export class SVGControls {
     private routeCommand : any;
     private uvc : any;
     private srfvs : any;
+    private lastSentence : string;
 
     constructor() {
-        this.voice = new SVGVoiceControls();
+        console.log('Creating SVGControls', this.voice);
+        this.voice = (this.voice) ? this.voice : new SVGVoiceControls();
 
         proj4.defs('EPSG:25830', "+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs");
     }
@@ -87,6 +89,18 @@ export class SVGControls {
         if (SVGVoiceControls.compatible()) {
             SVGVoiceControls.setOn(true);
             this.voice.start(({confidence, transcript}) => {
+                /*
+                    En Android, la transcripción llega dos veces.
+                    Para evitar dar respuesta las dos veces, vamos
+                    a ignorar toda transcripción que sea igual a la
+                    anterior en un intervalo de X segundos.
+                */
+                if (transcript == this.lastSentence) return;
+                this.lastSentence = transcript;
+                setTimeout(() => {
+                    this.lastSentence = null;
+                }, 1000);    
+                
                 console.log('Voice received:');
                 console.log(confidence, transcript);
 

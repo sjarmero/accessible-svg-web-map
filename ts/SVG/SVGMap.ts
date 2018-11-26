@@ -374,7 +374,7 @@ export class SVGMap {
                     text.attr('role', 'presentation');
 
                     let self = this;
-                    $(a.node).on('click', function(e) {
+                    $(a.node).on('click touchstart', function(e) {
                         e.preventDefault();
                         let [x, y] = $(this).attr('data-coords').split(':');
                         self.zoomAndMove(x, y, self.zoomlevel + 2);

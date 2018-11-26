@@ -3,6 +3,7 @@
     y reconocimiento de voz.
 */
 import { voiceParse } from './SVGVoicePatterns.js';
+import { SVGControls } from './SVGControls.js';
 
 declare var webkitSpeechGrammarList, webkitSpeechRecognition;
 
@@ -33,10 +34,11 @@ class Queue<T> {
 interface SpeechOrder {
     sentence : String;
     callback : Function;
+    voiceInit : Function;
 }
 
 export class SVGVoiceControls {
-    readonly time_per_word : number = 500;
+    public static readonly time_per_word : number = 600;
 
     private static on : boolean = false;
 
@@ -47,8 +49,11 @@ export class SVGVoiceControls {
 
     private tts : Queue<SpeechOrder>;
     private work : any;
+    private prevOn : boolean;
+    private savedPrev : boolean;
 
     constructor() {
+        console.log('Creating SVGVoiceControls');
         // Synth
         if (SVGVoiceControls.compatible()) {
             this.list = new webkitSpeechGrammarList();
@@ -66,7 +71,6 @@ export class SVGVoiceControls {
         this.container = document.getElementById('speech');
 
         this.tts = new Queue();
-        console.log('this.tts', this.tts);
         this.resetWorker(250);
     }
 
@@ -84,11 +88,16 @@ export class SVGVoiceControls {
 
     resetWorker(time) {
         if (this.work) {
-            console.log('Reset to', time);
             clearInterval(this.work);
         }
 
         this.work = setInterval(() => {
+            if (!this.savedPrev) {
+                console.log('Saving state', SVGVoiceControls.isOn());
+                this.prevOn = SVGVoiceControls.isOn();
+                this.savedPrev = true;
+            }
+
             const order = this.tts.front();
             if (order) {
                 this.pronounce(order);
@@ -98,34 +107,53 @@ export class SVGVoiceControls {
 
     // Speech
 
-    say(sentence : String, callback : Function = null) {
+    say(sentence : String, callback : Function = null, voiceInitOverride : Function = null) {
         this.tts.push({
             sentence: sentence,
-            callback: callback
+            callback: callback,
+            voiceInit: voiceInitOverride
         });
     }
 
     pronounce(order : SpeechOrder) {
-        let prevOn = SVGVoiceControls.isOn();
+        console.log('Pronounce', order);
         SVGVoiceControls.setOn(false);
         this.stop();
         this.container.innerHTML = "";
 
-        let time = (this.time_per_word) * (order.sentence.split(" ").length);
-        this.resetWorker(time + (2 * this.time_per_word));
-        setTimeout(() => {
-            if (order.callback) order.callback();
-            SVGVoiceControls.setOn(prevOn);
-            this.start(this.onTranscript);
-        }, time);
+        let time = (SVGVoiceControls.time_per_word) * (order.sentence.split(" ").length);
+        this.resetWorker(time + (2 * SVGVoiceControls.time_per_word));
 
-        this.container.innerHTML = order.sentence;
+        setTimeout(() => {
+            this.container.innerHTML = order.sentence;
+        }, 150);
+
+        setTimeout(() => {
+            if (this.tts.length() == 0) {
+                if (order.voiceInit) {
+                    console.log('Overriding voice init');
+                    this.onTranscript = null;
+                    this.stop();
+                    order.voiceInit();
+                } else {
+                    console.log('Reverting to ' + this.prevOn);
+                    SVGVoiceControls.setOn(this.prevOn);
+                    if (order.callback) order.callback();
+                    this.start(this.onTranscript);
+                }
+
+                this.savedPrev = false;
+            } else {
+                if (order.callback){
+                    order.callback();
+                }
+            }
+        }, time + 300);
     }
 
     // Synth
 
     start(callback) {
-        console.log(SVGVoiceControls.isOn());
         if (!SVGVoiceControls.isOn()) return;
 
         this.onTranscript = callback;
@@ -138,7 +166,8 @@ export class SVGVoiceControls {
             var confidence = event.results[last][0].confidence;
 
             if (confidence >= 0.75) {
-                callback({confidence: confidence, transcript: transcript });
+                console.log("Calling transcript callback with", transcript);
+                this.onTranscript({confidence: confidence, transcript: transcript });
             } else {
                 console.log("Ignoring because of low confidence:");
                 console.log(`(${confidence}) ${transcript}`);
@@ -165,9 +194,20 @@ export class SVGVoiceControls {
         this.voice.stop();
     }
 
+    wait(time : number) {
+        /*console.log('Wait', time);
+        SVGVoiceControls.setOn(false);
+        this.voice.stop();
+
+        setTimeout(() => {
+            console.log('Wait over');
+            SVGVoiceControls.setOn(true);
+            this.start(this.onTranscript);
+        }, time + 300);*/
+    }
+
     parseAction(sentence) {
         let parsed = voiceParse(sentence);
-        console.log(parsed);
         if (parsed.name == 'move') {
             switch (parsed.direction) {
                 case 'la derecha':
