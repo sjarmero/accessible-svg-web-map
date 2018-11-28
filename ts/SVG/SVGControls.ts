@@ -95,15 +95,17 @@ export class SVGControls {
                     a ignorar toda transcripción que sea igual a la
                     anterior en un intervalo de X segundos.
                 */
-                if (transcript == this.lastSentence) return;
+                
+                if (transcript == this.lastSentence) {
+                    console.log('Discarding', transcript);
+                    return;
+                };
+
                 this.lastSentence = transcript;
                 setTimeout(() => {
                     this.lastSentence = null;
-                }, 1000);    
+                }, 1000);
                 
-                console.log('Voice received:');
-                console.log(confidence, transcript);
-
                 let parsed = this.voice.parseAction(transcript);
                 if (parsed) {
                     console.log('Parsed as', parsed);
@@ -132,6 +134,18 @@ export class SVGControls {
 
                         case 'zoom':
                             this.navigationHandler((parsed.direction === 'acercar') ? 'zoom-in' : 'zoom-out');
+                            return;
+
+                        case 'shutdown':
+                            SVGVoiceControls.setOn(false);
+                            this.voice.stop();
+        
+                            $(this).attr('data-dictating', 'false');
+                            $(this).removeClass("active");
+                            $("#dictateStatus").html("Haz click para comenzar a escuchar");
+            
+                            SVGControls.instance.voiceControl.say('El mapa ha dejado de escuchar.', null, () => {});
+
                             return;
 
                         default:

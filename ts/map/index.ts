@@ -162,3 +162,14 @@ $(document).ready(function() {
         }
     });
 });
+
+$(window).on("beforeunload", function() {
+    console.log('Disconnecting voice if set...');
+    if (SVGVoiceControls.compatible()) {
+        SVGVoiceControls.setOn(false);
+        SVGControls.instance.voiceControl.stop();
+        SVGControls.instance.voiceControl.onTranscript = null;
+
+        console.log('Voice disconnected');
+    }
+});

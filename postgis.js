@@ -30,7 +30,7 @@ const allGeo = async function() {
     } catch (e) {
         console.log("[POSTGIS] allGeo");
         console.log(e);
-        return {};
+        return [];
     }
 
     var buildings = [];
@@ -73,7 +73,7 @@ const allData = async function(radius) {
     } catch (e) {
         console.log("[POSTGIS] allData");
         console.log(e);
-        return {};
+        return [];
     }
 
     var buildings = [];
@@ -140,7 +140,7 @@ const groupsForFeature = async function(id) {
     } catch (e) {
         console.log("[POSTGIS] groupsForFeature");
         console.log(e);
-        return {};
+        return [];
     }
 
     const groups = [];
@@ -159,7 +159,7 @@ const all = async function(radius) {
     } catch (e) {
         console.log("[POSTGIS] all");
         console.log(e);
-        return {};
+        return [];
     }
 
     const result = {
@@ -180,7 +180,7 @@ const dataByBuilding = async function(id) {
     } catch (e) {
         console.log("[POSTGIS] dataByBuilding");
         console.log(e);
-        return {};
+        return [];
     }
     
     const properties_array = {};
@@ -220,7 +220,7 @@ const djPath = async function(bid1, bid2, disability) {
     } catch (e) {
         console.log("[POSTGIS] djPath");
         console.log(e);
-        return {};
+        return [];
     }
 
     return data.rows;
@@ -233,7 +233,7 @@ const djPathWithPoi = async function(bid1, bid2, disability) {
     } catch (e) {
         console.log("[POSTGIS] djPathWithPoi");
         console.log(e);
-        return {};
+        return [];
     }
 
     return data.rows;
@@ -246,7 +246,7 @@ const nearestNamesForFeature = async function(bid, radius) {
     } catch (e) {
         console.log("[POSTGIS] djPathWithPoi");
         console.log(e);
-        return {};
+        return [];
     }
 
     return data.rows;
@@ -259,7 +259,7 @@ const routesSVG = async function() {
     } catch (e) {
         console.log("[POSTGIS] routesSVG");
         console.log(e);
-        return {};
+        return [];
     }
 
     return data.rows;

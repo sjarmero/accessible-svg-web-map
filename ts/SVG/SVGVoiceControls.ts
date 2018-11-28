@@ -3,7 +3,6 @@
     y reconocimiento de voz.
 */
 import { voiceParse } from './SVGVoicePatterns.js';
-import { SVGControls } from './SVGControls.js';
 
 declare var webkitSpeechGrammarList, webkitSpeechRecognition;
 
@@ -38,7 +37,7 @@ interface SpeechOrder {
 }
 
 export class SVGVoiceControls {
-    public static readonly time_per_word : number = 600;
+    public static readonly time_per_word : number = 550;
 
     private static on : boolean = false;
 
@@ -159,14 +158,13 @@ export class SVGVoiceControls {
         this.onTranscript = callback;
 
         this.voice.onresult = (event) => {
-            this.voice.stop();
-
+            console.log('Voice result!');
             var last = event.results.length - 1;
             var transcript = event.results[last][0].transcript;
             var confidence = event.results[last][0].confidence;
 
             if (confidence >= 0.75) {
-                console.log("Calling transcript callback with", transcript);
+                console.log("Calling transcript callback with", [transcript]);
                 this.onTranscript({confidence: confidence, transcript: transcript });
             } else {
                 console.log("Ignoring because of low confidence:");
@@ -174,11 +172,11 @@ export class SVGVoiceControls {
             }
         }
 
-        this.voice.onend = function() {
+        this.voice.onend = () => {
             console.log('Voice end and on=' + SVGVoiceControls.isOn());
             if (SVGVoiceControls.isOn()) {
                 setTimeout(() => {
-                    this.start(callback);
+                    this.voice.start();
                 }, 1000);
             }
         }
@@ -195,7 +193,7 @@ export class SVGVoiceControls {
     }
 
     wait(time : number) {
-        /*console.log('Wait', time);
+        console.log('Wait', time);
         SVGVoiceControls.setOn(false);
         this.voice.stop();
 
@@ -203,7 +201,7 @@ export class SVGVoiceControls {
             console.log('Wait over');
             SVGVoiceControls.setOn(true);
             this.start(this.onTranscript);
-        }, time + 300);*/
+        }, time + 300);
     }
 
     parseAction(sentence) {

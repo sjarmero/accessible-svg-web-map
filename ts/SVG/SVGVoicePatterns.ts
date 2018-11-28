@@ -82,6 +82,12 @@ const SVGVoiceGrammars = [
         name: 'orientation',
         pattern: /^(hacia d(ó|o)nde estoy mirando)/i,
         extract: []
+    },
+
+    {
+        name: 'shutdown',
+        pattern: /^(apagar|dejar de escuchar)/i,
+        extract: []
     }
 ];
 

@@ -59,7 +59,7 @@ app.get('/map/data/p/:id1,:id2,:disability', async (request, response) => {
 app.get('/map/data/pi/:id1,:id2,:disability', async (request, response) => {
     let {id1, id2, disability} = request.params;
     let data = await db.djPathWithPoi(id1, id2, disability);
-    
+    console.log(data.length);
     if (typeof data == 'undefined' || data.length == 0) {
         disability = 0;
         data = await db.djPath(id1, id2, 0);

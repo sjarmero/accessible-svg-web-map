@@ -17,7 +17,6 @@ export function navigationMode(data) {
     let rotacionMapa = perspectiva(p, a);
     let originalRotacion = rotacionMapa;
     let ajuste = toDeg(angulo(p, a));
-    let originalAjuste = ajuste;
     if (rotacionMapa == 90) { ajuste = 90 - ajuste; }
     if (rotacionMapa == 270) { ajuste = 90 - ajuste; }
 
