@@ -79,6 +79,18 @@ function loadTextualData() {
         let nearestAttr = $(this).attr('data-nearest');
 
         var td = document.createElement('td');
+
+        $(td).html($(td).html() + `
+            <div class='specific-radio-controls mt-3'>
+                <span class='badge badge-secondary' tabindex='0'>A <span class='specific-radio'><span class='sr-only'>Radio de búsqueda </span>${$(this).attr('data-nearest-radius')}</span> metros</span>
+                <div class='btn-group' role='group' aria-label='Controles de radio de búsqueda alrededor de ${$(this).attr('data-name')}'>
+                    <button type='button' class='btn btn-link' data-radio='+'>Aumentar radio</button>
+                    <button type='button' class='btn btn-link' data-radio='-'>Reducir radio</button>
+                </div>
+            </div>
+        `);
+        
+
         let newnames = '<div class="names" tabindex=0>Cerca de ';
         if (typeof nearestAttr !== 'undefined' && nearestAttr !== '') { 
             let nearest = nearestAttr.split(',');
@@ -102,17 +114,6 @@ function loadTextualData() {
 
         $(td).html(newnames);
 
-        $(td).html($(td).html() + `
-            <br />
-            <div class='specific-radio-controls mt-3'>
-                <span class='badge badge-secondary' tabindex='0'>A <span class='specific-radio'><span class='sr-only'>Radio de búsqueda </span>${$(this).attr('data-nearest-radius')}</span> metros</span>
-                <div class='btn-group' role='group' aria-label='Controles de radio de búsqueda alrededor de ${$(this).attr('data-name')}'>
-                    <button type='button' class='btn btn-link' data-radio='+'>Aumentar radio</button>
-                    <button type='button' class='btn btn-link' data-radio='-'>Reducir radio</button>
-                </div>
-            </div>
-        `);
-        
         $(td).appendTo(tr);
 
         $(tr).attr('tabindex', 0);

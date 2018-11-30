@@ -23,6 +23,12 @@ $(document).ready(function() {
     let source, target;
     let form;
 
+    // Navigation buttons
+    $("#pad .btn").click(function(e) {
+        e.preventDefault();
+        SVGControls.instance.navigationHandler($(this).attr("data-map-nav"));
+    });
+
     $("#routeSource, #routeTarget").on('keypress', function(e) {
         if ((<any>e.originalEvent).code == "Tab") return;
         $(this).parent().find('button').removeClass('btn-primary btn-success btn-danger');
@@ -146,16 +152,21 @@ $(document).ready(function() {
         e.preventDefault();
 
         let locationService = new Location();
-        locationService.getCurrentPosition(function(lat, long) {
+
+        let oldContent = $("#locationStatus").html();
+        $("#locationStatus").html("Esperando ubicación...");
+        locationService.getCurrentPosition((lat, long) => {
             let [x, y] = (<any>proj4('EPSG:4326', 'EPSG:25830', [long, lat]));
             SVGMap.instance.moveTo(x, -y);
+
+            $("#locationStatus").html(oldContent);
         });
     });
 
     $('.focus-orientation button').on('click', function(e) {
         e.preventDefault();
 
-        $('.route-orientation:first-child').trigger('focus');
+        $('#orientationStatus').trigger('focus');
     });
 
 
@@ -201,21 +212,11 @@ $(document).ready(function() {
         $('.route-steps .route-orientation').remove();
 
         if (lookingAtFeature != null && lookingAtFeature != undefined) {
-            let stepDiv = document.createElement('div');
-            let stepSpan = document.createElement('span'); 
-
             let order = `<span class='sr-only'>Información sobre tu orientación.</span>
                 Estás mirando hacia ${$(`#${lookingAtFeature}`).attr('data-name')}.
             `;
 
-            $(stepSpan).html(order);
-            $(stepDiv).append(stepSpan);
-            $(stepDiv).addClass('route-step route-orientation');
-            $(stepDiv).attr('role', 'listitem');
-            $(stepDiv).attr('tabindex', '0');
-            $(stepDiv).attr('data-step', -1);
-
-            $(".route-steps").prepend(stepDiv);
+            $("#orientationStatus").html(order);
         }
     });
 });

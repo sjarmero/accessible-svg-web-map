@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="/css/index.css" />
         <link rel="stylesheet" href="/css/route.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <link rel="stylesheet" href="/css/overflow.css" />
 
         <link rel="stylesheet" href="/css/colors.css" />
 </head>
@@ -28,94 +29,105 @@
     </header>-->
 
     <main class="container-fluid">
-        <div class="row">
-            <section class="col-md-4 col-12">
-                <section id="routePanel">
-                        <div id="routeform">
-                            <header>
-                                <a href="/map"><i class="fas fa-long-arrow-alt-left"></i> Volver al mapa</a>
-                                <div class="itinerary">
-                                    <span>◈</span>
-                                    <form class="input-group" id="sourceForm">
-                                        <input class="form-control" type="text" placeholder="Nombre del punto de origen" aria-label="Nombre del punto de origen" id="routeSource" autocomplete="off" required />
-                                        <div class="input-group-prepend" id="routeSourcePrepend"><button class="btn routeBtn" aria-label="Buscar punto de partida" data-search="sourceForm"><i class="fas fa-search"></i></button></div>
-                                    </form> 
-                                </div>
-                                <div class="itinerary">
-                                    <span>◈</span>
-                                    <form class="input-group" id="targetForm">
-                                        <input class="form-control" type="text" placeholder="Nombre del punto de destino" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required />
-                                        <div class="input-group-prepend" id="routeTargetPrepend"><button class="btn routeBtn" aria-label="Buscar punto de destino" data-search="targetForm"><i class="fas fa-search"></i></button></div>
-                                    </form>     
-                                </div>
+        <div class="row overflow-row">
+            <div class="overflow-controls col-12">
+                <div class="row m-0" style="height: 100%;">
+                    <section id="routePanel" class="col-lg-4 col-8 page-mode" data-mode="0">
+                        <button class="overflow-toggle btn btn-dark" aria-label="Ocultar panel" title="Ocultar panel" data-toggle="true"><i class="fas fa-caret-left"></i></button>
 
-                                <div class="d-flex" style="margin-top: 1em;">
-                                    <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" size="1" aria-label="Seleccionar discapacidad">
-                                        <option selected value="0">Ninguna discapacidad</option>
-                                        <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
-                                        <option value="2">Física (silla de ruedas, muletas...)</option>
-                                    </select>
-    
-                                    <button class="btn btn-light flex-fill" type="submit" aria-label="Calcular ruta" id="calculateBtn">Calcular</button>
-                                </div>
-                            </header>
+                        <div class="overflow-controls-container">
+                            <section id="routePanel">
+                                <div id="routeform">
+                                    <header>
+                                        <div class="mini-header mb-3">
+                                            <a href="/map"><i class="fas fa-long-arrow-alt-left"></i> Volver al mapa</a>
+                                            <a href="/route" class="sr-only">Cálculo de rutas (te encuentras en esta página)</a>
+                                            <a href="/settings" style="float:right;" title="Ajustes" aria-label="Ir a Ajustes"><i class="fas fa-cog"></i></a>
+                                        </div>
+                                        <div class="itinerary">
+                                            <span>◈</span>
+                                            <form class="input-group" id="sourceForm">
+                                                <input class="form-control" type="text" placeholder="Nombre del punto de origen" aria-label="Nombre del punto de origen" id="routeSource" autocomplete="off" required />
+                                                <div class="input-group-prepend" id="routeSourcePrepend"><button class="btn routeBtn" aria-label="Buscar punto de partida" data-search="sourceForm"><i class="fas fa-search"></i></button></div>
+                                            </form> 
+                                        </div>
+                                        <div class="itinerary">
+                                            <span>◈</span>
+                                            <form class="input-group" id="targetForm">
+                                                <input class="form-control" type="text" placeholder="Nombre del punto de destino" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required />
+                                                <div class="input-group-prepend" id="routeTargetPrepend"><button class="btn routeBtn" aria-label="Buscar punto de destino" data-search="targetForm"><i class="fas fa-search"></i></button></div>
+                                            </form>     
+                                        </div>
 
-                            <div id="nonAccessibleWarning" aria-live="assertive" aria-hidden="true">
-                                <div class="d-flex">
-                                    <span class="fas fa-exclamation-triangle" aria-hidden="true" role="presentation"></span>
+                                        <div class="d-flex" style="margin-top: 1em;">
+                                            <select class="custom-select flex-fill" id="impairmentSelect" style="margin-right: 1em;" size="1" aria-label="Seleccionar discapacidad">
+                                                <option selected value="0">Ninguna discapacidad</option>
+                                                <option value="1">Visual (ceguera, daltonismo, baja visión...)</option>
+                                                <option value="2">Física (silla de ruedas, muletas...)</option>
+                                            </select>
 
-                                    <p>
-                                        <strong>La ruta que se muestra tiene problemas de accesibilidad</strong>, pero es la única que se ha podido encontrar.
-                                    </p>
+                                            <button class="btn btn-light flex-fill" type="submit" aria-label="Calcular ruta" id="calculateBtn">Calcular</button>
+                                        </div>
+                                    </header>
+
+                                    <div id="nonAccessibleWarning" aria-live="assertive" aria-hidden="true">
+                                        <div class="d-flex">
+                                            <span class="fas fa-exclamation-triangle" aria-hidden="true" role="presentation"></span>
+
+                                            <p>
+                                                <strong>La ruta que se muestra tiene problemas de accesibilidad</strong>, pero es la única que se ha podido encontrar.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
+                            </section>
+               
+                            <div id="pad" class="mt-3">
+                                <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba" title="Mover mapa hacia arriba">↑</a>
+                                <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda" title="Mover mapa hacia la izquierda">←</a>
+                                <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha" title="Mover mapa hacia la derecha">→</a>
+                                <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo" title="Mover mapa hacia abajo">↓</a>
+                                <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa" title="Acercar mapa">+</a>
+                                <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa" title="Alejar mapa">−</a>
                             </div>
-                    </div>
-                </section>
 
-                <section id="voicePanel" class="padding" style="display:none">
-                    <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
-                    <span id="dictateStatus">Haz click para comenzar a escuchar</span>
-                </section>
-                
-                <div id="pad" class="mt-3">
-                    <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
-                    <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
-                    <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
-                    <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
-                    <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
-                    <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
+                            <div class="p-3">
+                                <section id="voicePanel" class="d-flex flex-row py-2">
+                                    <button class="btn btn-outline-danger btn-action" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
+                                    <span id="dictateStatus" class="align-self-center">Haz click para comenzar a escuchar</span>
+                                </section>
+
+                                <section id="locationPanel" class="d-flex flex-row focus-location py-2">
+                                    <button class="btn btn-outline-info btn-action" style="margin-right: 8px;" aria-label="Centrar mapa en ubicación" title="Centrar mapa en ubicación"><span class="fas fa-search-location"></span></button>
+                                    <span id="locationStatus" class="align-self-center">Centrar mapa en ubicación</span>
+                                </section>
+
+                                <section id="orientationPanel" class="d-flex flex-row focus-orientation py-2">
+                                    <button class="btn btn-outline-info btn-action" style="margin-right: 8px;" aria-label="Conocer hacia dónde miras" title="¿Hacia dónde miro?"><span class="fas fa-compass"></span></button>
+                                    <span id="orientationStatus" tabindex="0" class="align-self-center">¿Hacia dónde miro?</span>
+                                </section>
+                            </div>
+
+                            <div class="padding">
+                                <div class="d-flex" style="margin-bottom: 1em;">
+                                    Distancia medida en 
+                                    <select class="custom-select" id="metricUnitSelect" aria-label="Seleccionar unidad de medida">
+                                        <option selected value="0">Pasos</option>
+                                        <option value="1">Metros</option>
+                                    </select>
+                                </div>
+
+                                <div class="route-steps" role="list"></div>
+                            </div>
+                        </div>
+                        </section>
+
+                        <section id="mapPanel" class="overflow-map col-12">
+                            <div id="map"></div>
+                        </section>
+                    </section>
                 </div>
-
-                <div class="padding">
-                    <div class="d-flex" style="margin-bottom: 1em;">
-                        Distancia medida en 
-                        <select class="custom-select" id="metricUnitSelect" aria-label="Seleccionar unidad de medida">
-                            <option selected value="0">Pasos</option>
-                            <option value="1">Metros</option>
-                        </select>
-                    </div>
-
-                    <div class='focus-location mb-4'>
-                        <button class='btn btn-secondary'>
-                            <span class='fas fa-search-location'></span>
-                            Centrar mapa en la ubicación
-                        </button>
-                    </div>
-
-                    <div class='focus-orientation mb-4'>
-                        <button class='btn btn-secondary'>
-                            <span class='fas fa-compass'></span>
-                            ¿Hacia dónde estoy mirando?
-                        </button>
-                    </div>
-
-                    <div class="route-steps" role="list"></div>
-                </div>
-            </section>
-
-            <section id="mapPanel" class="col-md-8 col-12">
-                <div id="map"></div>
-            </section>
+            </div>
         </div>
     </main>
 
@@ -150,6 +162,7 @@
 
     <script src="/js/map/MapComponent.js" type="module"></script>
     <script src="/js/route/index.js" type="module"></script>
+    <script src="js/overflow.js"></script>
     <!--<script src="/js/bundle/route-bundle.js"></script>-->
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>

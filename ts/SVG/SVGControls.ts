@@ -33,9 +33,8 @@ export class SVGControls {
         SVGMap.instance.onDrawn = function() {
             setTimeout(function() {
                 SVGMap.instance.groupMarkers(SVGMap.instance.zoomlevel);
+                SVGMap.instance.updateSidebar();
             }, 100);
-            
-            SVGMap.instance.updateSidebar();
         };
 
         SVGMap.instance.draw();

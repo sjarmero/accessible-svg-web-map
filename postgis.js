@@ -252,6 +252,19 @@ const nearestNamesForFeature = async function(bid, radius) {
     return data.rows;
 }
 
+const nearestNamesForPoint = async function(lat, long, radius) {
+    let data;
+    try {
+        data = await client.query(`select * from nearestNamesForPoint(${lat}, ${long}, ${radius});`);
+    } catch (e) {
+        console.log("[POSTGIS] nearestNamesForPoint");
+        console.log(e);
+        return [];
+    }
+
+    return data.rows;
+}
+
 const routesSVG = async function() {
     let data;
     try {
@@ -282,5 +295,6 @@ module.exports = {
     djPath: djPath,
     djPathWithPoi: djPathWithPoi,
     nearestNamesForFeature: nearestNamesForFeature,
-    routesSVG: routesSVG
+    routesSVG: routesSVG,
+    nearestNamesForPoint: nearestNamesForPoint
 }

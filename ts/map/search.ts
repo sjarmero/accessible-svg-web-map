@@ -77,26 +77,53 @@ export function focusBuilding(id, centerx, centery, speech?) {
 }
 
 export function showBuildingInfo(id) {
-    $.get('/map/data/b/' + id, properties => {
-        $("#dataPanel").css("display", "block");
-        $("#resultsPanel").css("display", "none");
+    toggleCard($("#featureInfoPanel .card"), 'hide', () => {
+        $.get('/map/data/b/' + id, properties => {
+            $(".feature-name").html(properties['name']['value']);
+            let props = $("#featureInfoPanel .card .props");
+            props.empty();
 
-        $("#dataPanel table").empty();
-
-        for (var property in properties) {
-            if (properties[property]['userinterest']) {
-                var row = document.createElement("tr");
-                
-                var headerCol = document.createElement("th");
-                var valueCol = document.createElement("td");
-                $(headerCol).html(properties[property]['display']);
-                $(valueCol).html(properties[property]['value']);
-
-                $(row).append(headerCol);
-                $(row).append(valueCol);
-
-                $("#dataPanel table").prepend(row);
+            for (const property in properties) {
+                if (properties[property]['userinterest']) {
+                    let i = document.createElement('div');
+                    $(i).attr("class", "d-flex prop");
+                    $(i).attr('tabindex', 0);
+                    $(i).html(`<strong class='bold col-4'>${properties[property]['display']}</strong> <div class="col-8">${properties[property]['value']}</div>`)
+                    $(props).append(i);
+                }
             }
-        }
+
+            toggleCard($("#featureInfoPanel .card"), 'show', () => {
+                $("#featureInfoPanel .card").trigger('focus'); 
+            });
+        });
     });
+}
+
+export function toggleCard(card, mode, callback = null) {
+    if(mode === 'hide') {
+        $(card).animate({
+            'opacity': 0,
+            'margin-bottom': '-10px'
+        }, 'fast', () => {
+            $(card).css({
+                'display': 'none'
+            });
+
+            if (callback) callback();
+        });
+
+    } else {
+        $(card).css({
+            'display': 'block'
+        });
+
+        $(card).animate({
+            'opacity': 1,
+            'margin-bottom': '0px'
+        }, () => {
+            if (callback) callback();
+        });
+
+    }
 }

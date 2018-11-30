@@ -6,6 +6,8 @@ import { observeOrientation } from "../location/LocationComponent.js";
 import { Location } from '../location/Location.js';
 
 declare var proj4;
+declare var Cookies;
+
 $(document).ready(function() {
     console.log('Index');
     loadSettings();
@@ -25,6 +27,33 @@ $(document).ready(function() {
         });
     });
 
+    // Búsqueda alrededor
+    $("#radioTxt").val(Cookies.get('locationRadio') || '300');
+
+    let lastLocation;
+    locationService.watch((lat, long) => {
+        let [x, y] = (<any>proj4('EPSG:4326', 'EPSG:25830', [long, lat]));
+        lastLocation = {x: x, y: y};
+
+        getCloseFeaturesData(x, y, $("#radioTxt").val());
+
+        $("#closeToYouPanel").removeClass("d-none");
+    });
+
+    $('.radius-control-up').on('click', function() {
+        let current : number = parseInt(<any>$('#radioTxt').val());
+        $('#radioTxt').val(current + 20);
+        getCloseFeaturesData(lastLocation.x, lastLocation.y, current + 20);
+    });
+
+    $('.radius-control-down').on('click', function() {
+        let current : number = parseInt(<any>$('#radioTxt').val());
+        if (current - 20 < 20) return;
+
+        $('#radioTxt').val(current - 20);
+        getCloseFeaturesData(lastLocation.x, lastLocation.y, current - 20);
+    });
+
     $('.focus-orientation button').on('click', function(e) {
         e.preventDefault();
         $('#orientationContainer').trigger('focus');
@@ -41,6 +70,25 @@ $(document).ready(function() {
         e.preventDefault();
         let query = $("#queryTxt").val();
         search(query);
+    });
+
+    $(".close-card").on('click', function(e) {
+        let card = $(this).closest('.card');
+
+        card.animate({
+            'margin-bottom': '-20px',
+            'opacity': '0'
+        }, 'fast', () => {
+            card.css({
+                'display': 'none'
+            });
+        });
+    });
+
+    $(".close-results").on('click', function(e) {
+        $("#resultsPanel").css({
+            'display': 'none'
+        });
     });
 
     // Voz
@@ -158,7 +206,7 @@ $(document).ready(function() {
                 Estás mirando hacia ${$(`#${lookingAtFeature}`).attr('data-name')}.
             `;
 
-            $('#orientationContainer').html(order);
+            $('#orientationStatus').html(order);
         }
     });
 });
@@ -173,3 +221,31 @@ $(window).on("beforeunload", function() {
         console.log('Voice disconnected');
     }
 });
+
+function getCloseFeaturesData(x, y, r) {
+    $.getJSON(`/map/data/nn4p/${x},${y},${r}`, function(response) {
+        let ul = $("#closeToYouPanel").find("ul");
+        ul.empty();
+
+        for (let i = 0; i < response.length; i++) {
+            const result = response[i];
+
+            let li = document.createElement('li');
+            let a = document.createElement('a');
+
+            $(a).attr('href', '#');
+            $(a).attr('title', `Ver en el mapa ${result.iname}`);
+            $(a).attr('data-x', result.icenterx);
+            $(a).attr('data-y', result.icentery);
+            $(a).attr('data-id', result.iid);
+            $(a).html(`<span class='sr-only'>Cerca de ti: </span>${result.iname} (a ${Math.ceil(result.distance)} metros)</a>`);
+        
+            $(a).on('click', function() {
+                focusBuilding($(this).attr('data-id'), $(this).attr('data-x'), $(this).attr('data-y'), false);
+            });
+
+            $(a).appendTo(li);
+            $(li).appendTo(ul);
+        }
+    });
+}

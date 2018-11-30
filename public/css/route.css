@@ -7,8 +7,11 @@
 }
 
 #routePanel {
+    pointer-events: auto;
     margin-top: 0px;
     padding-top: 0px;
+    background-color: white;
+    z-index: 1;
 }
 
 #routePanel header {
@@ -22,7 +25,6 @@
         color: white;
         font-size: 1em;
         margin-bottom: 1em;
-        display: block;
     }
 
     #routePanel header > div.itinerary {
@@ -106,14 +108,6 @@
     /*transition: transform-origin 0.25s linear;*/
 }
 
-#mapPanel {
-    margin-left: 0px;
-}
-
-#map svg {
-    width: 100%;
-}
-
 #searchModal .modal-body .check-group {
     padding: 0.5em;
     margin-top: 0.5em;
@@ -129,13 +123,4 @@
     #searchModal .modal-body .check-groupfocus {
         background-color: #007bff;
         color: white;
-    }
-
-.focus-location button, .focus-orientation button {
-    width: 100%;
-}
-
-    .focus-location button .fas, .focus-orientation button .fas {
-        float: left;
-        line-height: 24px;
     }

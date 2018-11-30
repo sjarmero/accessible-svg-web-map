@@ -1,7 +1,9 @@
 import { angulo, perspectiva, toDeg, modulo} from './math.js';
 import { SVGMap } from '../SVG/SVGMap.js';
 
-const STEP_FACTOR = 0.5;
+declare var Cookies;
+
+const STEP_FACTOR = Cookies.get('stepLength') || 0.5;
 
 let guide = [];
 export function navigationMode(data) {

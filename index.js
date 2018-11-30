@@ -79,6 +79,14 @@ app.get('/map/data/nn4f/:bid,:radius', async (request, response) => {
     response.json(data);
 });
 
+app.get('/map/data/nn4p/:lat,:long,:radius', async (request, response) => {
+    let {lat, long, radius} = request.params;
+    let data = await db.nearestNamesForPoint(lat, long, radius);
+    
+    response.json(data);
+});
+
+
 app.get('/map/data/rsvg', async (request, response) => {
     const name = request.params.name;
     const data = await db.routesSVG();

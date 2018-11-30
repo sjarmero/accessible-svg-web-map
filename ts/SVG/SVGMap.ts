@@ -406,8 +406,6 @@ export class SVGMap {
             $("#link-feature-" + marker).attr("tabindex", "-1");
             $("#link-feature-" + marker).addClass("non-clickable");
         }
-
-        this.updateSidebar();
     }
 
     isInview(e) {

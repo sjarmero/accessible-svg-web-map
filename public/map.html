@@ -12,103 +12,160 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
         <link rel="stylesheet" href="/fonts/import.css" />
         <link rel="stylesheet" href="/css/index.css" />
+        <link rel="stylesheet" href="/css/overflow.css" />
 
         <link rel="stylesheet" href="/css/colors.css" />
 </head>
 <body>
-    <nav class="inline accessibility-links">
+    <!--<nav class="inline accessibility-links">
         <a href="#voicePanel" class="sr-only sr-only-focusable">Ir al panel del control por voz</a>
         <a href="#searchform" class="sr-only sr-only-focusable">Ir a panel de búsqueda</a>
         <a href="#mainnav" class="sr-only sr-only-focusable">Ir a menú principal</a>
-    </nav>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" id="mainnav">
-        <a class="navbar-brand" href="/map">Mapa</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse " id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Página principal <span class="sr-only">(te encuentras en esta página)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/route">Calcular rutas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/settings">Ajustes</a>
-                </li>
-            </ul>
-
-            <form class="form-inline mr-auto my-auto d-flex" id="searchform">
-                <input class="form-control mr-sm-2 flex-fill" type="search" placeholder="Buscar en el mapa" aria-label="Escribe un nombre para buscarlo en el mapa" id="queryTxt" autocomplete="off" />
-                <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
-            </form>
-
-            <form class="form-inline py-2" id="modeSelectForm">
-                <select class="custom-select flex-fill" id="modeSelect" aria-label="Seleccionar modo de la página">
-                    <option selected value="0">Visual</option>
-                    <option value="1">Textual</option>
-                </select>
-            </form>
-        </div>
-    </nav>
-
+    </nav>-->
     <main class="container-fluid">
-        <div class="row">
-            <section id="controlPanel" class="col-lg-4 col-12 order-12 order-lg-1 page-mode" data-mode="0" style="margin-top: 22px;">
-                <section id="voicePanel">
-                    <button class="btn btn-outline-danger my-2 my-sm-0" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
-                    <span id="dictateStatus">Haz click para comenzar a escuchar</span>
-                </section>
+        <div class="row overflow-row">
+            <div class="overflow-controls col-12">
+                <div class="row m-0" style="height: 100%;">
+                    <section id="controlPanel" class="col-lg-4 col-10 page-mode" data-mode="0">
+                        <button class="overflow-toggle btn btn-dark" aria-label="Ocultar panel" title="Ocultar panel" data-toggle="true"><i class="fas fa-caret-left"></i></button>
 
-                <section id="locationPanel" class='focus-location'>
-                    <button class='btn btn-secondary' style='width: 100%;'>
-                        <span class='fas fa-search-location'></span>
-                        Centrar mapa en la ubicación
-                    </button>
-                </section>
-
-                <section class='focus-orientation mb-4'>
-                    <button class='btn btn-secondary mb-2' style='width: 100%;'>
-                        <span class='fas fa-compass'></span>
-                        ¿Hacia dónde estoy mirando?
-                    </button>
-
-                    <div id="orientationContainer" aria-live="assertive" tabined="0" style="text-align:center;"></div>
-                </section>
-
-                <section id="padPanel" class="page-mode" data-mode="0">
-                    <div id="pad">
-                        <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba">↑</a>
-                        <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda">←</a>
-                        <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha">→</a>
-                        <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo">↓</a>
-                        <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa">+</a>
-                        <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa">−</a>
-                    </div>
-                </section>
+                        <div class="overflow-controls-container">
+                            <nav class="navbar navbar-light bg-light" id="mainnav">
+                                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                        
+                                <a class="navbar-brand mr-auto pl-3" href="/map">Mapa</a>
                                 
-                <section id="dataPanel" style="display: none;">
-                    <strong class="h3">Información sobre el edificio</strong>
-                    <table tabindex="0" aria-live="assertive"></table>
-                </section>
+                                <div class="collapse navbar-collapse my-2" id="navbarSupportedContent">
+                                    <ul class="navbar-nav mb-2">
+                                        <li class="nav-item active">
+                                            <a class="nav-link" href="#">Página principal <span class="sr-only">(te encuentras en esta página)</span></a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/route">Calcular rutas</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/settings">Ajustes</a>
+                                        </li>
+                                    </ul>
+                        
+                                    <form class="form-inline mr-auto my-auto d-flex" id="searchform">
+                                        <input class="form-control flex-fill" type="search" placeholder="Buscar en el mapa" aria-label="Escribe un nombre para buscarlo en el mapa" id="queryTxt" autocomplete="off" style="width: 100%;" />
+                                        <button class="btn btn-outline-primary my-2" type="submit" aria-label="Botón de buscar" style="width: 100%;">Buscar</button>
+                                    </form>
 
-                <section id="resultsPanel" style="display: none;" tabindex="0">
-                    <strong class="h4">Resultados de búsqueda</strong>
-                    <table tabindex="0"></table>
-                </section>
+                                    <section class="my-3" id="resultsPanel" style="display: none;" tabindex="0">
+                                        <div class="d-flex justify-content-between">
+                                            <strong class="h5">Resultados</strong>
+                                            <a href="#" class="close-results black" aria-label="Cerrar tarjeta de información" title="Cerrar">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        </div>
 
-                <section id="currentViewPanel">
-                    <strong class="h3">Elementos a la vista</strong>
-                    <ul>
-                    </ul>
-                </section>
-            </section>
+                                        <table tabindex="0"></table>
+                                    </section>
+                        
+                                    <!--<form class="form-inline py-2" id="modeSelectForm">
+                                        <select class="custom-select flex-fill" id="modeSelect" aria-label="Seleccionar modo de la página">
+                                            <option selected value="0">Visual</option>
+                                            <option value="1">Textual</option>
+                                        </select>
+                                    </form>-->
+                                </div>
+                            </nav>
 
-            <section id="mapPanel" class="col-lg-8 col-12 order-1 order-lg-12">
+                            <div class="p-3">
+                                <section id="padPanel" class="page-mode my-3" data-mode="0">
+                                    <div id="pad">
+                                        <a href="#" class="btn" data-map-nav="up" aria-label="Mover mapa hacia arriba" title="Mover mapa hacia arriba">↑</a>
+                                        <a href="#" class="btn" data-map-nav="left" aria-label="Mover mapa hacia la izquierda" title="Mover mapa hacia la izquierda">←</a>
+                                        <a href="#" class="btn" data-map-nav="right" aria-label="Mover mapa hacia la derecha" title="Mover mapa hacia la derecha">→</a>
+                                        <a href="#" class="btn" data-map-nav="down" aria-label="Mover mapa hacia abajo" title="Mover mapa hacia abajo">↓</a>
+                                        <a href="#" class="btn" data-map-nav="zoom-in" aria-label="Acercar mapa" title="Acercar mapa">+</a>
+                                        <a href="#" class="btn" data-map-nav="zoom-out" aria-label="Alejar mapa" title="Alejar mapa">−</a>
+                                    </div>
+                                </section>
+
+                                <section id="voicePanel" class="d-flex flex-row py-2">
+                                    <button class="btn btn-outline-danger btn-action" style="margin-right: 8px;" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
+                                    <span id="dictateStatus" class="align-self-center">Haz click para comenzar a escuchar</span>
+                                </section>
+
+                                <section id="locationPanel" class="d-flex flex-row focus-location py-2">
+                                    <button class="btn btn-outline-info btn-action" style="margin-right: 8px;" aria-label="Centrar mapa en ubicación" title="Centrar mapa en ubicación"><span class="fas fa-search-location"></span></button>
+                                    <span id="dictateStatus" class="align-self-center">Centrar mapa en ubicación</span>
+                                </section>
+
+                                <section id="orientationPanel" class="d-flex flex-row focus-orientation py-2">
+                                    <button class="btn btn-outline-info btn-action" style="margin-right: 8px;" aria-label="Conocer hacia dónde miras" title="¿Hacia dónde miro?"><span class="fas fa-compass"></span></button>
+                                    <span id="dictateStatus" class="align-self-center">¿Hacia dónde miro?</span>
+                                </section>
+
+                                <section class="my-3 d-none" id="closeToYouPanel">
+                                    <strong class="h3">Cerca de ti</strong>
+
+                                    <div class="input-group mb-3" class="radius-control">
+                                        <input type="number" min="20" step="20" class="form-control" aria-label="Distancia en metros a la que se busca a tu alrededor" id="radioTxt">
+                                    
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">metros</span>
+                                        </div>
+
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-default input-group-text radius-control-up">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-default input-group-text radius-control-down">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <ul class="stacked-list">
+                                    </ul>
+                                </section>
+
+                                <section class="my-3" id="dataPanel" style="display: none;">
+                                    <strong class="h3">Información sobre el edificio</strong>
+                                    <table tabindex="0" aria-live="assertive"></table>
+                                </section>
+
+                                <section class="my-3" id="currentViewPanel">
+                                    <strong class="h3">Elementos a la vista</strong>
+                                    <ul class="stacked-list">
+                                    </ul>
+                                </section>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="featureInfoPanel" class="col-lg-8 col-2">
+                        <div id="featureInfoPanelBody">
+                            <div class="card" data-shown='false' tabindex="0">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <strong class="h5 card-title" tabindex="0">
+                                            <span class="sr-only">Información sobre </span><span class="feature-name">Edificio</span>
+                                        </strong>
+
+                                        <a href="#" class="close-card black" aria-label="Cerrar tarjeta de información" title="Cerrar">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                </div>
+
+                                <div class="props"></ul>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <section id="mapPanel" class="overflow-map col-12">
                 <div id="map" class="page-mode" data-mode="0"></div>
+
                 <div id="textual" class="page-mode" data-mode="1">
                     <strong class="h1" id="textualTitle">Modo textual del mapa</strong>
 
@@ -156,9 +213,10 @@
     <script src='/js/SVG/invents.js'></script>
     <script src='/js/settings/load.js'></script>
 
-    <script src="js/map/MapComponent.js" type="module"></script>
-    <script src="js/map/textual.js" type="module"></script>
-    <script src="js/map/index.js" type="module"></script>
+    <script src="/js/map/MapComponent.js" type="module"></script>
+    <script src="/js/map/textual.js" type="module"></script>
+    <script src="/js/map/index.js" type="module"></script>
+    <script src="/js/overflow.js"></script>
     <!--<script src="js/bundle/map-bundle.js"></script>-->
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>

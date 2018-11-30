@@ -9,25 +9,27 @@ $(document).ready(function() {
 
     SVGControls.instance.pageLoad();
     SVGMap.instance.moveTo(717444.93870502, -4251399.25399798);
-
+    
     /*
         Map Events
     */
     var altk = false;
 
     // Navigation keyboard shortcuts
-    $("body").not("input").not("textarea").not(".btn").keydown(function(e) {     
+    $("body").not("input").not("textarea").not(".btn").keydown(function(e) {   
         altk = altk || (e.which == 18);
         if (!altk) return;
 
         var mode = '';
         switch (e.which) {
             case 189:
+            case 109:
             case 171: // -
                 mode = 'zoom-out';
                 break;
 
             case 187:
+            case 107:
             case 173: // +
                 mode = 'zoom-in';
                 break;
@@ -80,7 +82,9 @@ $(document).ready(function() {
         e.preventDefault();
         moving = false;
 
-        SVGMap.instance.updateSidebar();
+        if (moved) {
+            SVGMap.instance.updateSidebar();
+        }
     });
 
     $(SVGMap.instance.container).on(move_event, function(e) {
@@ -92,7 +96,7 @@ $(document).ready(function() {
 
             SVGMap.instance.move(xdiff, ydiff, false);
 
-            moved = true;
+            moved = (xdiff != 0 || ydiff != 0);
         }
     });
 
