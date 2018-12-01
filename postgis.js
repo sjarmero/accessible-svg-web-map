@@ -117,7 +117,7 @@ const allGroups = async function() {
     const groups = Array.apply(null, Array(20)).map(element => []);
 
     for (const group of data.rows) {
-        const affects_raw = await client.query("SELECT count(*) from accessibility.groups join edificios on (edificios.geom <-> ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ' 0)') <= groups.radius and groups.id = "+ group.id +");")
+        const affects_raw = await client.query("SELECT count(*) from accessibility.groups join edificios on (edificios.geom <-> postgis.ST_SetSRID(ST_MakePoint(groups.lat, groups.long), 25830) <= groups.radius and groups.id = "+ group.id +");")
         groups[group.zoom_level].push({
             id: group.id,
             name: group.g_name,
@@ -136,7 +136,7 @@ const groupsForFeature = async function(id) {
     let data;
     
     try {
-        data = await client.query("SELECT groups.zoom_level from accessibility.groups join public.edificios on (edificios.geom <-> postgis.ST_GeometryFromText('POINT(' || groups.lat || ' ' || groups.long || ')') <= groups.radius and edificios.gid = " + id + ");");
+        data = await client.query("SELECT groups.zoom_level from accessibility.groups join public.edificios on (edificios.geom <-> postgis.ST_SetSRID(ST_MakePoint(groups.lat, groups.long), 25830) <= groups.radius and edificios.gid = " + id + ");");
     } catch (e) {
         console.log("[POSTGIS] groupsForFeature");
         console.log(e);
