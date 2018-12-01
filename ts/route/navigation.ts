@@ -137,7 +137,7 @@ export function navigationMode(data) {
         const circle = gm.circle().radius(5);
         circle.cx(vcenterx);
         circle.cy(vcentery);
-        circle.fill('#1A237E');
+        circle.fill(Cookies.get('routeColor') || '#1A237E');
         circle.attr('id', 'step-circle-' + count);
 
         polyline.push([vcenterx], [vcentery]);
@@ -145,7 +145,7 @@ export function navigationMode(data) {
         count++;
     }
 
-    gm.polyline(polyline).fill('transparent').stroke({width: 3, color: '#1A237E'}).back();
+    gm.polyline(polyline).fill('transparent').stroke({width: 3, color: (Cookies.get('routeColor') || '#1A237E')}).back();
 
     $(".route-steps").empty();
     let i = 1;
@@ -214,7 +214,8 @@ export function navigationMode(data) {
     });
 
     $(".route-steps .route-step").on('focus', function(e) {
-        let data = guide[parseInt($(this).attr('data-step')) - 1];
+        let step = parseInt($(this).attr('data-step'));
+        let data = guide[step - 1];
 
         $("#map svg #SVG_MAIN_CONTENT, .map-marker").css({
             'transform-origin': `${data.vcenterx}px ${data.vcentery}px`
@@ -224,6 +225,14 @@ export function navigationMode(data) {
             $(this).css({
                 'transform-origin': `${$(this).find('text').attr('x')}px ${$(this).find('text').attr('y')}px`        
             });
+        });
+
+        $('#map svg circle').css({
+            fill: (Cookies.get('routeColor') || '#1A237E')
+        });
+
+        $(`#map svg #step-circle-${step}`).css({
+            fill: (Cookies.get('routeHighlightColor') || '#2236FF')
         });
 
         SVGMap.instance.zoomAndMove(data.vcenterx, data.vcentery, 15, false);

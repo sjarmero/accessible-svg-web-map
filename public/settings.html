@@ -40,7 +40,7 @@
         </div>
     </nav>
 
-    <main class="container my-5">
+    <main class="container">
         <form id="settingsForm">
             <div class="row settings-title">
                 <div class="col">
@@ -51,10 +51,6 @@
                 <label for="fontFamily" id="fontFamilyLabel" class="col-sm-3 col-form-label">Fuente del texto</label>
                 <div class="col-sm-9">
                     <select class="custom-select" name="fontFamily" id="fontFamily" aria-labelledby="fontFamilyLabel">
-                        <option value="Arial" selected>Arial</option>
-                        <option value="OpenDyslexic">OpenDyslexic</option>
-                        <option value="Tahoma">Tahoma</option>
-                        <option value="Verdana">Verdana</option>
                     </select>
                 </div>
             </div>
@@ -173,6 +169,28 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="routeColor" id="routeColorLabel" class="col-sm-3 col-form-label">Color de la línea de ruta</label>
+                        <div class="col-sm-9">
+                            <div class="input-group colorpicker-group">
+                                <input type="text" class="form-control" id="routeColor" name="routeColor" value="#1A237E" aria-labelledby="routeColorLabel" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="routeHighlightColor" id="routeHighlightColorLabel" class="col-sm-3 col-form-label">Color de punto resaltado de la ruta</label>
+                        <div class="col-sm-9">
+                            <div class="input-group colorpicker-group">
+                                <input type="text" class="form-control" id="routeHighlightColor" name="routeHighlightColor" value="#2236FF" aria-labelledby="routeHighlightColorLabel" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="locationCircleSize" id="locationCircleSizeLabel" class="col-sm-3 col-form-label">Tamaño del punto de ubicación <span class='sr-only'>en metros</span></label>
                         <div class="col-sm-9">
                             <div class="input-group">
@@ -202,6 +220,12 @@
                         
                             <!-- Location -->
                             <circle r="10" fill="#0842A1" cx="120" cy="300" id="location"></circle>
+                        
+                            <!-- Route -->
+                            <circle r="10" fill="#0842A1" cx="120" cy="400" class="routeCircle"></circle>
+                            <circle r="10" fill="#0842A1" cx="200" cy="400" class="routeHighlightCircle"></circle>
+                            <circle r="10" fill="#0842A1" cx="200" cy="450" class="routeCircle"></circle>
+                            <path d="M 120 400 L 200 400 L 200 450" stroke="#0842A1" stroke-width="4" fill="transparent" class="routeLine"></path>
                         </svg>
                 </div>
             </div>
@@ -230,6 +254,7 @@
     <script src="/js-cookie/src/js.cookie.js"></script>
     <script src="/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
 
+    <script src="/js/settings/load.js"></script>
     <script src="/js/settings/settings.js"></script>
 </body>
 </html>

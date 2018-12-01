@@ -32,7 +32,7 @@
         margin-bottom: 1em;
     }
 
-    #routePanel header > div:before {
+    /*#routePanel header > div:before {
         content: "";
 
         border: solid 1.5px white;
@@ -42,7 +42,7 @@
         position: absolute;
         top: 89px;
         left: 23px;
-    }
+    }*/
 
     #routePanel header div span {
         display: block;

@@ -22,6 +22,9 @@ function toggleOverflow(e, isDisplayed, reloadWidth = true) {
             'left': `-${$('.overflow-controls-container').width()}px`
         });
 
+        $('.overflow-toggle').attr('title', 'Mostrar panel');
+        $('.overflow-toggle').attr('aria-label', 'Mostrar panel');
+
         if ($('#featureInfoPanelBody').length > 0) {            
             if ($(window).width() < 992) {
                 $('#featureInfoPanelBody .card').fadeIn();
@@ -42,6 +45,9 @@ function toggleOverflow(e, isDisplayed, reloadWidth = true) {
         $('.overflow-controls').animate({
             'left': '0px'
         });
+
+        $('.overflow-toggle').attr('title', 'Ocultar panel');
+        $('.overflow-toggle').attr('aria-label', 'Ocultar panel');
 
         if ($('#featureInfoPanelBody').length > 0) {
             if ($(window).width() < 992) {
