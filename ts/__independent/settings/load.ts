@@ -18,34 +18,54 @@ function loadSettings() {
     /* Círculo de localización */
     let locationCircleColor = Cookies.get('locationCircleColor') || '#0842A1';
 
-    let css = `
-        body {
-            font-family: '${fontFamily}', sans-serif !important;
-            font-size: ${textSize}px !important;
+    let fontImport = '';
+    $.getJSON('/fonts/fonts.json', (fonts) => {
+        console.log(fonts, fontFamily, fonts[fontFamily])
+        if (fonts[fontFamily]) {
+            for (const source of fonts[fontFamily].src) {
+                fontImport += "@font-face {";
+                fontImport += "font-family: 'OpenDyslexic';";
+
+                if (source.style) fontImport += `font-style: ${source.style};`;
+                if (source.weight) fontImport += `font-weight: ${source.weight};`;
+
+                fontImport += `src: url('${source.url}') format('${source.format}');`;
+                fontImport += "}";
+            }
         }
 
-        #map svg {
-            background-color: ${backgroundColor} !important;
-        }
+        let css = `
 
-        #map svg text {
-            font-family: '${mapFontFamily}', sans-serif !important;
-        }
+            ${fontImport}
 
-        #map svg .building {
-            fill: ${buildingColor} !important;
-            stroke: ${strokeColor} !important;
-        }
+            body {
+                font-family: "${fontFamily}"!important;
+                font-size: ${textSize}px !important;
+            }
 
-        #map svg .map-marker text {
-            fill: ${textColor} !important;
-        }
+            #map svg {
+                background-color: ${backgroundColor} !important;
+            }
 
-        #map svg #locationg circle {
-            fill: ${locationCircleColor} !important;
-        }
-    `;
+            #map svg text {
+                font-family: "${mapFontFamily}"!important;
+            }
 
-    $(style).html(css);
-    $(document.head).append(style);
+            #map svg .building {
+                fill: ${buildingColor} !important;
+                stroke: ${strokeColor} !important;
+            }
+
+            #map svg .map-marker text {
+                fill: ${textColor} !important;
+            }
+
+            #map svg #locationg circle {
+                fill: ${locationCircleColor} !important;
+            }
+        `;
+
+        $(style).html(css);
+        $(document.head).append(style);
+    });
 }

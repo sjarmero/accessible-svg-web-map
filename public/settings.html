@@ -40,7 +40,7 @@
         </div>
     </nav>
 
-    <main class="container my-5">
+    <main class="container">
         <form id="settingsForm">
             <div class="row settings-title">
                 <div class="col">
@@ -51,10 +51,6 @@
                 <label for="fontFamily" id="fontFamilyLabel" class="col-sm-3 col-form-label">Fuente del texto</label>
                 <div class="col-sm-9">
                     <select class="custom-select" name="fontFamily" id="fontFamily" aria-labelledby="fontFamilyLabel">
-                        <option value="Arial" selected>Arial</option>
-                        <option value="OpenDyslexic">OpenDyslexic</option>
-                        <option value="Tahoma">Tahoma</option>
-                        <option value="Verdana">Verdana</option>
                     </select>
                 </div>
             </div>
@@ -258,6 +254,7 @@
     <script src="/js-cookie/src/js.cookie.js"></script>
     <script src="/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
 
+    <script src="/js/settings/load.js"></script>
     <script src="/js/settings/settings.js"></script>
 </body>
 </html>
