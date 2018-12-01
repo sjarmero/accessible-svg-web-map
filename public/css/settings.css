@@ -2,22 +2,6 @@
     padding: 1em 1em 1em 0em;
 }
 
-.custom-select option[value='Arial'] {
-    font-family: 'Arial';
-}
-
-.custom-select option[value='Verdana'] {
-    font-family: 'Verdana';
-}
-
-.custom-select option[value='Tahoma'] {
-    font-family: 'Tahoma';
-}
-
-.custom-select option[value='OpenDyslexic'] {
-    font-family: 'OpenDyslexic';
-}
-
 .submit-row {
     text-align: right;
     margin-top: 2em;

@@ -1,0 +1,26 @@
+{
+    "Arial": {
+        "name": "Arial",
+        "src": [""] 
+    },
+
+    "OpenDyslexic": {
+        "name": "OpenDyslexic",
+        "src": [
+            {"url": "/fonts/OpenDyslexic-Regular.otf", "format": "opentype"},
+            {"url": "/fonts/OpenDyslexic-Bold.otf", "weight": "bold", "format": "opentype"},
+            {"url": "/fonts/OpenDyslexic-Italic.otf", "weight": "italic", "format": "opentype"},
+            {"url": "/fonts/OpenDyslexic-BoldItalic.otf", "weight": "bold", "style": "italic", "format": "opentype"}
+        ]
+    },
+
+    "Tahoma": {
+        "name": "Tahoma",
+        "src": [""] 
+    },
+
+    "Verdana": {
+        "name": "Verdana",
+        "src": [""] 
+    }
+}

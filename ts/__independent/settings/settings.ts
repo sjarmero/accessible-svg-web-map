@@ -1,13 +1,4 @@
 $(document).ready(function() {
-    $('#settingsForm').find('input:not([type="submit"]):not([type="reset"]), select').each(function() {
-        let name = $(this).attr('name');
-        let value = Cookies.get($(this).attr('name'));
-        console.log(name, value);
-        if (value) {
-            $(this).val(value);
-        }
-    });
-
     (<any>$('.colorpicker-group')).colorpicker({
         format: 'hex'
     }).on('colorpickerCreate colorpickerChange', function(e) {
@@ -37,6 +28,45 @@ $(document).ready(function() {
     $('#settingsForm').on('reset', function(e) {
         $('.colorpicker-group').each(function() {
             (<any>$(this)).colorpicker('setValue', $(this).find('input').attr('value'));
+        });
+    });
+
+    loadSettings();
+    
+    $.getJSON('/fonts/fonts.json', (fonts) => {
+        let fontImport = '';
+        for (const fontFamily of Object.keys(fonts)) {
+            for (const source of fonts[fontFamily].src) {
+                fontImport += "@font-face {";
+                fontImport += "font-family: 'OpenDyslexic';";
+
+                if (source.style) fontImport += `font-style: ${source.style};`;
+                if (source.weight) fontImport += `font-weight: ${source.weight};`;
+
+                fontImport += `src: url('${source.url}') format('${source.format}');`;
+                fontImport += "}";
+            }
+
+            let option = document.createElement('option');
+            if (fontFamily == 'Arial') $(option).attr('selected');
+            $(option).attr('value', fontFamily);
+            $(option).html(fontFamily);
+            $(option).attr('style', `font-family: "${fontFamily}";`);
+
+            $("#fontFamily").append(option);
+        }
+
+        let style = document.createElement('style');
+        $(style).html(fontImport);
+        $(document.head).append(style);
+
+        $('#settingsForm').find('input:not([type="submit"]):not([type="reset"]), select').each(function() {
+            let name = $(this).attr('name');
+            let value = Cookies.get($(this).attr('name'));
+            console.log(name, value);
+            if (value) {
+                $(this).val(value);
+            }
         });
     });
 });
