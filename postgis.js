@@ -3,10 +3,10 @@
 */
 const { Client } = require('pg');
 const client = new Client({
-    user: 'postgisuser',
-    host: 'localhost',
+    user: 'master',
+    host: 'postgis.clxlow4ckw0r.eu-west-3.rds.amazonaws.com',
     database: 'gisdb',
-    password: 'postgisuser',
+    password: 'HAG\-*bD8#)P{9{2',
     port: 5432,
 });
 
