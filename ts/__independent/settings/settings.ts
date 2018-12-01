@@ -48,6 +48,8 @@ function updatePreview() {
     let textColor = $("input[name='textColor']").val();
     let locationCircleColor = $("input[name='locationCircleColor']").val();
     let locationCircleSize = $("input[name='locationCircleSize']").val();
+    let routeColor = $("input[name='routeColor']").val();
+    let routeHighlightColor = $("input[name='routeHighlightColor']").val();
 
     $('#previewSvg #building').css(<any>{
         'fill': buildingColor,
@@ -67,4 +69,16 @@ function updatePreview() {
     });
 
     $('#previewSvg #location').attr('r', <any>locationCircleSize);
+
+    $('#previewSvg .routeCircle').css({
+        'fill': <any>routeColor
+    });
+    
+    $('#previewSvg .routeLine').css({
+        'stroke': <any>routeColor
+    });
+
+    $('#previewSvg .routeHighlightCircle').css({
+        'fill': <any>routeHighlightColor
+    })
 }
