@@ -1,0 +1,142 @@
+internal/modules/cjs/loader.js:582
+    throw err;
+    ^
+
+Error: Cannot find module 'rotating-file-stream'
+    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:580:15)
+    at Function.Module._load (internal/modules/cjs/loader.js:506:25)
+    at Module.require (internal/modules/cjs/loader.js:636:17)
+    at require (internal/modules/cjs/helpers.js:20:18)
+    at Object.<anonymous> (/home/ubuntu/tfg/index.js:10:11)
+    at Module._compile (internal/modules/cjs/loader.js:688:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)
+    at Module.load (internal/modules/cjs/loader.js:598:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:537:12)
+    at Function.Module._load (internal/modules/cjs/loader.js:529:3)
+[HTTPS] Listening on :3000
+[HTTP] Listening on :3001
+Connected to PostGIS Database
+[POSTGIS] djPathWithPoi
+{ error: function nearestnode(integer) does not exist
+    at Connection.parseE (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:553:11)
+    at Connection.parseMessage (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:378:19)
+    at Socket.<anonymous> (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:119:22)
+    at Socket.emit (events.js:182:13)
+    at addChunk (_stream_readable.js:283:12)
+    at readableAddChunk (_stream_readable.js:264:11)
+    at Socket.Readable.push (_stream_readable.js:219:10)
+    at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)
+  name: 'error',
+  length: 357,
+  severity: 'ERROR',
+  code: '42883',
+  detail: undefined,
+  hint:
+   'No function matches the given name and argument types. You might need to add explicit type casts.',
+  position: undefined,
+  internalPosition: '23',
+  internalQuery: 'select *         from nearestNode(buildingId1)',
+  where:
+   'PL/pgSQL function dijkstrapathwithpoi(integer,integer,boolean,integer) line 8 at SQL statement',
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_func.c',
+  line: '528',
+  routine: 'ParseFuncOrColumn' }
+0
+[POSTGIS] djPath
+{ error: operator does not exist: bigint = character varying
+    at Connection.parseE (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:553:11)
+    at Connection.parseMessage (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:378:19)
+    at Socket.<anonymous> (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:119:22)
+    at Socket.emit (events.js:182:13)
+    at addChunk (_stream_readable.js:283:12)
+    at readableAddChunk (_stream_readable.js:264:11)
+    at Socket.Readable.push (_stream_readable.js:219:10)
+    at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)
+  name: 'error',
+  length: 617,
+  severity: 'ERROR',
+  code: '42883',
+  detail: undefined,
+  hint:
+   'No operator matches the given name and argument type(s). You might need to add explicit type casts.',
+  position: undefined,
+  internalPosition: '142',
+  internalQuery:
+   'select entrances.geom               FROM public.entrances, public.edificios WHERE public.edificios.gid = buildingId and public.entrances.for = public.edificios.__gid',
+  where:
+   'PL/pgSQL function nearestnode(integer,integer) line 12 at SQL statement\nSQL statement "select *         from nearestNode(buildingId1, disability)"\nPL/pgSQL function dijkstrapath(integer,integer,boolean,integer) line 7 at SQL statement',
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_oper.c',
+  line: '728',
+  routine: 'op_error' }
+[POSTGIS] djPathWithPoi
+{ error: function nearestnode(integer) does not exist
+    at Connection.parseE (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:553:11)
+    at Connection.parseMessage (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:378:19)
+    at Socket.<anonymous> (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:119:22)
+    at Socket.emit (events.js:182:13)
+    at addChunk (_stream_readable.js:283:12)
+    at readableAddChunk (_stream_readable.js:264:11)
+    at Socket.Readable.push (_stream_readable.js:219:10)
+    at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)
+  name: 'error',
+  length: 357,
+  severity: 'ERROR',
+  code: '42883',
+  detail: undefined,
+  hint:
+   'No function matches the given name and argument types. You might need to add explicit type casts.',
+  position: undefined,
+  internalPosition: '23',
+  internalQuery: 'select *         from nearestNode(buildingId1)',
+  where:
+   'PL/pgSQL function dijkstrapathwithpoi(integer,integer,boolean,integer) line 8 at SQL statement',
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_func.c',
+  line: '528',
+  routine: 'ParseFuncOrColumn' }
+0
+[POSTGIS] djPath
+{ error: operator does not exist: bigint = character varying
+    at Connection.parseE (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:553:11)
+    at Connection.parseMessage (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:378:19)
+    at Socket.<anonymous> (/home/ubuntu/tfg/node_modules/pg/lib/connection.js:119:22)
+    at Socket.emit (events.js:182:13)
+    at addChunk (_stream_readable.js:283:12)
+    at readableAddChunk (_stream_readable.js:264:11)
+    at Socket.Readable.push (_stream_readable.js:219:10)
+    at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)
+  name: 'error',
+  length: 617,
+  severity: 'ERROR',
+  code: '42883',
+  detail: undefined,
+  hint:
+   'No operator matches the given name and argument type(s). You might need to add explicit type casts.',
+  position: undefined,
+  internalPosition: '142',
+  internalQuery:
+   'select entrances.geom               FROM public.entrances, public.edificios WHERE public.edificios.gid = buildingId and public.entrances.for = public.edificios.__gid',
+  where:
+   'PL/pgSQL function nearestnode(integer,integer) line 12 at SQL statement\nSQL statement "select *         from nearestNode(buildingId1, disability)"\nPL/pgSQL function dijkstrapath(integer,integer,boolean,integer) line 7 at SQL statement',
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_oper.c',
+  line: '728',
+  routine: 'op_error' }
