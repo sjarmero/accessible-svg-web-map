@@ -1,3 +1,6 @@
 url: postgis.clxlow4ckw0r.eu-west-3.rds.amazonaws.com
 user: master
 password: HAG\-*bD8#)P{9{2
+
+url: ec2-35-180-92-98.eu-west-3.compute.amazonaws.com
+ssh user: ubuntu
