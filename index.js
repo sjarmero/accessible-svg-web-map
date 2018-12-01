@@ -135,9 +135,9 @@ https.createServer({
     cert: fs.readFileSync('./ssl/localhost.cert'),
     requestCert: false,
     rejectUnauthorized: false
-}, app).listen(443);
+}, app).listen(3000);
 
-app.listen(80);
+app.listen(3001);
 
-console.log("[HTTPS] Listening on :443");
-console.log("[HTTP] Listening on :80");
+console.log("[HTTPS] Listening on :3000");
+console.log("[HTTP] Listening on :3001");
