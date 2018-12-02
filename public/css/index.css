@@ -119,12 +119,17 @@ nav.inline {
         stroke-width: 0.05em;
     }
 
-    #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building, #map > svg > #SVG_MAIN_CONTENT a.gmarker:focus circle, #map > svg > #SVG_MAIN_CONTENT a.gmarker:hover circle,  #map > svg > #SVG_MAIN a.active.gmarker circle {
-        stroke: blue !important;
+    #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):focus .building, #map > svg > #SVG_MAIN_CONTENT a:not(.non-clickable):hover .building {
+        stroke: #00428C !important;
+    }
+
+    #map > svg > #SVG_MAIN_CONTENT a.gmarker:focus circle, #map > svg > #SVG_MAIN_CONTENT a.gmarker:hover circle,  #map > svg > #SVG_MAIN a.active.gmarker circle {
+        stroke: #004DA3;
+        fill: #004DA3;
     }
 
     #map > svg > #SVG_MAIN_CONTENT a.active .building {
-        stroke: blue !important;
+        stroke: #004DA3 !important;
     }
 
 #pad {
@@ -188,7 +193,13 @@ nav.inline {
     #featureInfoPanelBody {
         width: 100%;
         position: absolute;
-        bottom: 2em;
+        bottom: 3em;
+    }
+
+    @media(max-width: 992px) {
+        #featureInfoPanelBody {
+            bottom: 5em;
+        }
     }
 
     #featureInfoPanelBody .card {
@@ -196,7 +207,6 @@ nav.inline {
         margin: auto;
         z-index: 3;
         pointer-events: auto;
-        margin-top: -10px;
         display: none;
         opacity: 0;
     }
