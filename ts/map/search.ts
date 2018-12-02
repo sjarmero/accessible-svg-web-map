@@ -68,9 +68,7 @@ export function search(query, viaspeech = false) {
 
 export function focusBuilding(id, centerx, centery, speech?) {
     if (centerx != undefined && centery != undefined) {
-        SVGMap.instance.zoomAndMove(centerx, centery, 7);
-
-        showBuildingInfo(id);
+        SVGMap.instance.zoomAndMove(centerx, centery, SVGMap.instance.zoomlevel);
     } else if (typeof speech != 'undefined') {
         speech.say("No se ha podido seleccionar ese resultado.");
     }

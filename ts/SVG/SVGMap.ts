@@ -1,9 +1,9 @@
 declare var SVG, Cookies;
 
 export class SVGMap {
-    readonly ZOOM_LEVEL_BASE = 0.000246153846;
-    readonly ZOOM_LEVEL_STEP = 0.4514682741;
-    readonly MAX_GROUP_LEVEL = 4;
+    readonly ZOOM_LEVEL_BASE : number = 0.000246153846;
+    readonly ZOOM_LEVEL_STEP : number = 0.4514682741;
+    public readonly MAX_GROUP_LEVEL : number = 4;
 
     private static _instance : SVGMap;
 
@@ -114,9 +114,10 @@ export class SVGMap {
             this.svg.attr('tabindex', 0);
             
             const main = this.svg.group().attr('id', 'SVG_MAIN_CONTENT').front();
+            const maing = main.group().attr('id', 'features');
 
             for (const feature of this.data.buildings) {
-                const g = main.group();
+                const g = maing.group();
 
                 const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link building-wrapper feature-object').attr('id', 'link-feature-' + feature.properties.id.value);
                 a.attr('data-building', feature.properties.id.value);
@@ -354,10 +355,12 @@ export class SVGMap {
                 }
             }
 
+            const g = this.svg.select('#SVG_MAIN_CONTENT').members[0].select('#gmarkers').members[0] || this.svg.select('#SVG_MAIN_CONTENT').members[0].group().attr('id', 'gmarkers').front();
+            
             for (const gmarker of this.data.groups[i]) {
                 if (i == level) {
                     const fit = (gmarker.affects.toString().length == 1) ? 1 : gmarker.affects.toString().length / 2;
-                    const a = this.svg.select('#SVG_MAIN_CONTENT').members[0].link('#gmarker-' + gmarker.id).attr('class', 'non-link gmarker').attr('id', 'gmarker-' + gmarker.id);;
+                    const a = g.link('#gmarker-' + gmarker.id).attr('class', 'non-link gmarker').attr('id', 'gmarker-' + gmarker.id);;
                     a.attr('data-name', gmarker.name);
                     const gm = a.group();
                     const circle = gm.circle().radius(10);
@@ -370,6 +373,7 @@ export class SVGMap {
                     a.title(gmarker.name).attr('id', 'gmarker-' + gmarker.id + '-title');
                     a.attr('aria-labelledby', 'gmarker-' + gmarker.id + '-title');
                     a.attr('data-coords', circle.cx() + ":" + circle.cy());
+                    a.attr('tabindex', '0');
                     text.attr('aria-hidden', 'true');
                     text.attr('role', 'presentation');
 
@@ -380,7 +384,7 @@ export class SVGMap {
                         self.zoomAndMove(x, y, self.zoomlevel + 2);
                     });
 
-                    $(a.node).on('focus', function() {
+                    $(a.node).on('focus', function() {                        
                         $(this).on('keyup', function(e) {
                             if (e.which == 13) {
                                 e.preventDefault();
