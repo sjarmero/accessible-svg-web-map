@@ -1,13 +1,23 @@
 $(document).ready(function() {
+    $('.overflow-toggle').on('focus', function(e) {
+        $(this).on('keyup', function(e) {
+            if (e.which == 13) {
+                $(this).trigger('click');
+            }
+        });
+    });
+    
     $('.overflow-toggle').on('click', function(e) {
         e.preventDefault();
 
         toggleOverflow(this, $(this).attr('data-toggle') === 'true', $(window).width() >= 992);
     });
 
-    $(window).on('resize', function(e) {
-        toggleOverflow($('.overflow-toggle').get(0), $(window).width() < 992);
-    });
+    if ($(window).width() >= 992) {
+        $(window).on('resize', function(e) {
+            toggleOverflow($('.overflow-toggle').get(0), $(window).width() < 992);
+        });
+    }
 
     toggleOverflow($('.overflow-toggle').get(0), $(window).width() < 992);
 });
