@@ -6,7 +6,9 @@ declare var Cookies;
 const STEP_FACTOR = Cookies.get('stepLength') || 0.5;
 
 let guide = [];
-export function navigationMode(data) {
+export function navigationMode(path) {
+    const data = path.data;
+
     $("#SVG_MAIN_CONTENT #route").empty();
 
     let a = {x: data[0].vcenterx, y: data[0].vcentery};
@@ -36,6 +38,7 @@ export function navigationMode(data) {
 
 
     /* Calculamos la guia:
+        - Nombramos la entrada donde situarse
         - Adoptamos los POI en la ruta
         - Determinamos los giros en cada paso
         - Juntamos pasos con mismo giro
@@ -43,6 +46,7 @@ export function navigationMode(data) {
 
     let lastRotacion = -1;
     guide = [];
+
     for (let i = 0; i < data.length; i++) {
 
         if ((i + 1) == data.length) {
@@ -148,6 +152,7 @@ export function navigationMode(data) {
     gm.polyline(polyline).fill('transparent').stroke({width: 3, color: (Cookies.get('routeColor') || '#1A237E')}).back();
 
     $(".route-steps").empty();
+
     let i = 1;
     for (const step of guide) {
         let stepDiv = document.createElement('div');
@@ -157,6 +162,10 @@ export function navigationMode(data) {
 
         if (step.poi == true) {
             order += `Tienes ${step.poiname} a la ${(step.poidirection == 1 ? 'izquierda' : 'derecha')}. `;
+        }
+
+        if (i == 1) {
+            order += `Dirígete hacia ${path.entrance[0].name} en ${path.entrance[0].edname}. Una vez allí, `;
         }
 
         switch (step.direction) {

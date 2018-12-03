@@ -68,6 +68,8 @@ $(document).ready(function() {
                 $(this).val(value);
             }
         });
+
+        updatePreview();
     });
 });
 
@@ -80,6 +82,8 @@ function updatePreview() {
     let locationCircleSize = $("input[name='locationCircleSize']").val();
     let routeColor = $("input[name='routeColor']").val();
     let routeHighlightColor = $("input[name='routeHighlightColor']").val();
+    let backgroundTextColor = $("input[name='backgroundTextColor']").val();
+    let backgroundTextColorOpacity = parseInt(<any>$("input[name='backgroundTextColorOpacity']").val()) / 100;
 
     $('#previewSvg #building').css(<any>{
         'fill': buildingColor,
@@ -93,6 +97,9 @@ function updatePreview() {
     $('#previewSvg #text').css(<any>{
         fill: textColor
     });
+
+    $('#previewSvg #bgFilter feFlood').attr('flood-color', <any>backgroundTextColor);
+    $('#previewSvg #bgFilter feFlood').attr('flood-opacity', <any>backgroundTextColorOpacity);
 
     $('#previewSvg #location').css(<any>{
         fill: locationCircleColor
@@ -110,5 +117,6 @@ function updatePreview() {
 
     $('#previewSvg .routeHighlightCircle').css({
         'fill': <any>routeHighlightColor
-    })
+    });
+
 }

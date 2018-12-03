@@ -278,6 +278,19 @@ const routesSVG = async function() {
     return data.rows;
 }
 
+const nearestEntrance = async function(buildingId, disability) {
+    let data;
+    try {
+        data = await client.query(`select e.*, ed.name as edname from entrances e, nearestEntrance(${buildingId}, ${disability}) as ne, edificios ed where ne = e.id and ed.__gid = e.for;`);
+    } catch (e) {
+        console.log("[POSTGIS] nearestEntrance");
+        console.log(e);
+        return [];
+    }
+
+    return data.rows;
+}
+
 const propertyParser = property => {
     return {
         "display": property['p_name'],
@@ -296,5 +309,6 @@ module.exports = {
     djPathWithPoi: djPathWithPoi,
     nearestNamesForFeature: nearestNamesForFeature,
     routesSVG: routesSVG,
-    nearestNamesForPoint: nearestNamesForPoint
+    nearestNamesForPoint: nearestNamesForPoint,
+    nearestEntrance: nearestEntrance
 }

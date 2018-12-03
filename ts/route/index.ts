@@ -228,7 +228,7 @@ function changeIcon(container, newClass) {
 function startNavigation(source, target) {
     $.getJSON(`/map/data/pi/${source},${target},${$("#impairmentSelect").val()}`, function(path) {
         console.log('path', path);
-        navigationMode(path.data);
+        navigationMode(path);
 
         if ($("#impairmentSelect").val() != 0 && path.disability == 0) {
             $("#nonAccessibleWarning").css("display", "block");
@@ -276,7 +276,7 @@ function voiceListener() {
                     return;
 
                 case 'repeatStep':
-                    let step = $('.route-steps .route-step:focus');
+                    var step = $('.route-steps .route-step:focus');
                     if (step.length == 1) {
                         console.log('Repitiendo paso', step);
                         SVGControls.instance.voiceControl.wait(step.html().split(" ").length * SVGVoiceControls.time_per_word)
@@ -289,11 +289,15 @@ function voiceListener() {
                 case 'readStep':
                     let { stepNo } = parsed;
                     stepNo = (parseInt(stepNo) == NaN) ? SVGControls.instance.toDigit(stepNo) : parseInt(stepNo);
-                    console.log('Leyendo paso', stepNo);
-                    SVGControls.instance.voiceControl.wait(step.html().split(" ").length * SVGVoiceControls.time_per_word);
-                    $(`.route-steps .route-step[data-step=${stepNo}]`).trigger('focus');
-                    return;
+                   
+                    var step = $(`.route-steps .route-step[data-step='${stepNo}']`);
+                    if (step.length == 1) {
+                        console.log('Leyendo paso', stepNo);
+                        SVGControls.instance.voiceControl.wait(step.html().split(" ").length * SVGVoiceControls.time_per_word);
+                        step.trigger('focus');
+                    }
 
+                    return;
                 case 'nextStep':
                     var currentStep = $('.route-steps .route-step:focus');
                     if (currentStep.length == 1) {

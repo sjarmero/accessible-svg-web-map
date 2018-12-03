@@ -2,6 +2,7 @@ import { SVGMap } from './SVGMap.js';
 import { SVGVoiceControls } from './SVGVoiceControls.js';
 
 declare var proj4;
+declare var Cookies;
 
 export class SVGControls {
     private static _instance : SVGControls;
@@ -31,6 +32,13 @@ export class SVGControls {
 
     pageLoad() {
         SVGMap.instance.onDrawn = function() {
+            let backgroundTextColor = Cookies.get('backgroundTextColor') || '#FFFFFF';
+            let backgroundTextColorOpacity = parseInt(<any>Cookies.get('backgroundTextColorOpacity')) / 100 || 0;
+
+
+            $(SVGMap.instance.container + '#bgFilter feFlood').attr('flood-color', <any>backgroundTextColor);
+            $(SVGMap.instance.container + '#bgFilter feFlood').attr('flood-opacity', <any>backgroundTextColorOpacity);
+        
             setTimeout(function() {
                 SVGMap.instance.groupMarkers(SVGMap.instance.zoomlevel);
                 SVGMap.instance.updateSidebar();

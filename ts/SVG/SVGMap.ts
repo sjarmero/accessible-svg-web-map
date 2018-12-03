@@ -29,6 +29,13 @@ export class SVGMap {
         this.auto_marker_groups = Array.apply(null, Array(20)).map(element => []);
         this.auto_grouped_buildings = [];
         this.locationdrawn = false;
+
+        let defs = this._svg.defs().node;
+        defs.innerHTML = `
+            <filter x="0" y="0" width="1" height="1" id="bgFilter">
+                <feFlood />
+                <feComposite in="SourceGraphic"/>
+            </filter>`;
     }
 
     static get instance() {
@@ -167,6 +174,8 @@ export class SVGMap {
                 text.attr('x', feature.centerx);
                 text.attr('y', feature.centery);
                 text.font({ weight: 'bold' });
+                text.attr('filter', 'url(#bgFilter)');
+                
                 a.attr('aria-labelledby', 'label-' + feature.properties.id.value);
 
                 // We save this marker in its group for further hiding
