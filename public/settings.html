@@ -158,6 +158,28 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="backgroundTextColor" id="backgroundTextColorLabel" class="col-sm-3 col-form-label">Color de fondo del texto de los marcadores</label>
+                        <div class="col-sm-9">
+                            <div class="input-group colorpicker-group">
+                                <input type="text" class="form-control" id="backgroundTextColor" name="backgroundTextColor" value="#FFFFFF" aria-labelledby="backgroundTextColorLabel" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="backgroundTextColorOpacity" id="backgroundTextColorOpacityLabel" class="col-sm-3 col-form-label">Opacidad del color de fondo <span class='sr-only'>en porcentaje</span></label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <input type="number" name="backgroundTextColorOpacity" id="backgroundTextColorOpacity" aria-labelledby="backgroundTextColorOpacityLabel" class="form-control" min="0" value="0" step="5" max="100" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text"><i class="fas fa-percentage"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="locationCircleColor" id="locationCircleColorLabel" class="col-sm-3 col-form-label">Color del círculo de ubicación</label>
                         <div class="col-sm-9">
                             <div class="input-group colorpicker-group">
@@ -201,7 +223,6 @@
                             </div>
                         </div>
                     </div>
-        
                 </div>
                 <div class="col-12 col-md-4">
                         <svg id="previewSvg" width="100%" height="100%" 
@@ -211,21 +232,28 @@
                         preserveAspectRatio="xMidYMid meet"
                         role="presentation" aria-hidden="true">
 
+                            <defs>
+                                <filter x="0" y="0" width="1" height="1" id="bgFilter">
+                                    <feFlood flood-color="white" flood-opacity="0" />
+                                    <feComposite in="SourceGraphic"/>
+                                </filter>
+                            </defs>
+
                             <rect width="300" height="200" x="200" y="100" id="building" />
 
                             <!-- Marker -->
                             <image href="/images/building_marker.svg" width="64" height="64"
                             x="50" y="120"></image>
-                            <text x="120" y="155" style="font-size: 2em;" id="text">Marcador de edificio</text>
+                            <text filter="url(#bgFilter)" x="120" y="155" style="font-size: 2em;" id="text">Marcador de edificio</text>
                         
                             <!-- Location -->
                             <circle r="10" fill="#0842A1" cx="120" cy="300" id="location"></circle>
                         
                             <!-- Route -->
+                            <path d="M 120 400 L 200 400 L 200 450" stroke="#0842A1" stroke-width="4" fill="transparent" class="routeLine"></path>
                             <circle r="10" fill="#0842A1" cx="120" cy="400" class="routeCircle"></circle>
                             <circle r="10" fill="#0842A1" cx="200" cy="400" class="routeHighlightCircle"></circle>
                             <circle r="10" fill="#0842A1" cx="200" cy="450" class="routeCircle"></circle>
-                            <path d="M 120 400 L 200 400 L 200 450" stroke="#0842A1" stroke-width="4" fill="transparent" class="routeLine"></path>
                         </svg>
                 </div>
             </div>
