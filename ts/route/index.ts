@@ -228,7 +228,7 @@ function changeIcon(container, newClass) {
 function startNavigation(source, target) {
     $.getJSON(`/map/data/pi/${source},${target},${$("#impairmentSelect").val()}`, function(path) {
         console.log('path', path);
-        navigationMode(path.data);
+        navigationMode(path);
 
         if ($("#impairmentSelect").val() != 0 && path.disability == 0) {
             $("#nonAccessibleWarning").css("display", "block");
