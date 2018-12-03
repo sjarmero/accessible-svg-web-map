@@ -64,9 +64,12 @@ app.get('/map/data/pi/:id1,:id2,:disability', async (request, response) => {
         disability = 0;
         data = await db.djPath(id1, id2, 0);
     }
+
+    let entrance = await db.nearestEntrance(id1, disability);
     
     response.json({
         disability: parseInt(disability),
+        entrance: entrance,
         data: data
     });
 });
