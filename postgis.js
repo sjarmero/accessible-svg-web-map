@@ -6,7 +6,7 @@ const client = new Client({
     user: 'master',
     host: 'postgis.clxlow4ckw0r.eu-west-3.rds.amazonaws.com',
     database: 'gisdb',
-    password: 'HAG\\-*bD8#)P{9{2',
+    password: 'lC3Du5P6LIHy',
     port: 5432,
 });
 
