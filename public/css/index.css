@@ -33,6 +33,7 @@ nav.inline {
 
 #controlPanel {
     background-color: white;
+    height: 100%;
 }
 
 #controlPanel section:first-child {
