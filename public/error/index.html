@@ -56,9 +56,8 @@
                         <h2>Parece que ha habido un error</h2>
 
                         <p class="mt-4">
-                            Exactamente, el <span class="error-code">404</span>:
+                            Exactamente, el <span class="error-code"></span>
                             <span class="error-description">
-                                Página no encontrada
                             </span>
                         </p>
                     </div>
@@ -81,12 +80,6 @@
                     let [key, value] = param.split("=");
                     if (key === "code") {
                         for (const e of document.querySelectorAll(".error-code")) {
-                            e.innerHTML = value;
-                        }
-                    }
-
-                    if (key === "description") {
-                        for (const e of document.querySelectorAll(".error-description")) {
                             e.innerHTML = value;
                         }
                     }
