@@ -140,3 +140,6 @@ Connected to PostGIS Database
   file: 'parse_oper.c',
   line: '728',
   routine: 'op_error' }
+[HTTPS] Listening on :3000
+[HTTP] Listening on :3001
+Connected to PostGIS Database
