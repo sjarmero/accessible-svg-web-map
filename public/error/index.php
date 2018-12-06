@@ -24,10 +24,6 @@
             border-radius: 0.3em 0.3em 0.3em 0.3em;
         }
 
-        .error-description {
-            display: block;
-        }
-
         nav {
             box-shadow: 1px 0px 1em gray;
         }
@@ -43,7 +39,7 @@
     <main class="container">
         <div class="row">
             <div class="col-12 col-md-4">
-                <image src="/images/robot.svg" alt="Ilustración de un robot roto" style="width: 100%;" />
+                <img src="/images/robot.svg" alt="Ilustración de un robot roto" style="width: 100%;" />
                 <small>
                     <a href="https://www.freepik.com/free-vector/hand-drawn-404-error_1587349.htm">Designed by Freepik</a>
                 </small>
@@ -56,8 +52,21 @@
                         <h2>Parece que ha habido un error</h2>
 
                         <p class="mt-4">
-                            Exactamente, el <span class="error-code"></span>
+                            <span class="error-code" title="Código de error" aria-label="Código de error"><?php echo $_REQUEST['code']; ?></span>
                             <span class="error-description">
+                                <?php
+                                    switch ($_REQUEST['code']) {
+                                        case 500:
+                                            echo "Error interno del servidor";
+                                            break;
+
+                                        case 404:
+                                            echo "Recurso no encontrado";
+                                            break;
+
+                                        default:
+                                    }
+                                ?>
                             </span>
                         </p>
                     </div>
