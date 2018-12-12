@@ -61,6 +61,29 @@ $(document).ready(function() {
         }
     });
 
+    // Double click or tap to zoom in
+    $(SVGMap.instance.container).not(".feature-object").not(".gmarker").not(".map-marker").on('dblclick', function(e) {
+        let {x, y} = screenToSVG({x: e.pageX, y: e.pageY });
+        SVGMap.instance.zoomAndMove(x, y, SVGMap.instance.zoomlevel + 1);
+    });
+
+    // Double right click to zoom out
+    let firstClick = false;
+    $(SVGMap.instance.container).not(".feature-object").not(".gmarker").not(".map-marker").on('contextmenu', function(e) {
+        e.preventDefault();
+
+        if (firstClick) {
+            firstClick = false;
+            let {x, y} = screenToSVG({x: e.pageX, y: e.pageY });
+            SVGMap.instance.zoomAndMove(x, y, SVGMap.instance.zoomlevel - 1);    
+        }
+
+        firstClick = true;
+        setTimeout(() => {
+            firstClick = false;
+        }, 300);
+    });
+
     // Drag and drop map to move
     let moving = false, moved = false;
     let ox, oy;
