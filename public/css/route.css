@@ -29,7 +29,6 @@
 
     #routePanel header > div.itinerary {
         font-size: 1.5em;
-        margin-bottom: 1em;
     }
 
     /*#routePanel header > div:before {
@@ -44,12 +43,32 @@
         left: 23px;
     }*/
 
-    #routePanel header div span {
+    #routePanel header .itinerary .itinerary-icon {
         display: block;
         width: 20px;
         margin-right: 1em;
         float: left;
+        font-size: 20px;
     }
+
+    #routePanel header .itinerary :not(.itinerary-trail) .fa-circle {
+        position: relative;
+        font-size: 16px;
+        top: 4px;
+    }
+
+    #routePanel .itinerary-trail {
+        position: relative;
+        left: 4px;
+        top: 2px;
+    }
+
+        #routePanel .itinerary-trail i {
+            padding-bottom: 5px;
+            display: block;
+            font-size: 7px;
+            color: #e0e0e0;
+        }
 
     #routePanel .input-group {
         width: auto;

@@ -12,7 +12,7 @@
         
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
         <link rel="stylesheet" href="/fonts/import.css" />
-        <link rel="stylesheet" href="/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css" />
+        <link rel="stylesheet" href="/modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css" />
         <link rel="stylesheet" href="/css/index.css" />
         <link rel="stylesheet" href="/css/settings.css" />
 
@@ -146,8 +146,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row settings-title">
+                        <div class="col">
+                            <strong>Marcadores del mapa</strong>
+                        </div>
+                    </div>
                     <div class="form-group row">
-                        <label for="textColor" id="textColorLabel" class="col-sm-3 col-form-label">Color del texto de los marcadores</label>
+                        <label for="textColor" id="textColorLabel" class="col-sm-3 col-form-label">Color del texto</label>
                         <div class="col-sm-9">
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="textColor" name="textColor" value="#0C0C0C" aria-labelledby="textColorLabel" />
@@ -158,7 +164,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="backgroundTextColor" id="backgroundTextColorLabel" class="col-sm-3 col-form-label">Color de fondo del texto de los marcadores</label>
+                        <label for="backgroundTextColor" id="backgroundTextColorLabel" class="col-sm-3 col-form-label">Color de fondo del texto</label>
                         <div class="col-sm-9">
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="backgroundTextColor" name="backgroundTextColor" value="#FFFFFF" aria-labelledby="backgroundTextColorLabel" />
@@ -179,15 +185,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label for="locationCircleColor" id="locationCircleColorLabel" class="col-sm-3 col-form-label">Color del círculo de ubicación</label>
-                        <div class="col-sm-9">
-                            <div class="input-group colorpicker-group">
-                                <input type="text" class="form-control" id="locationCircleColor" name="locationCircleColor" value="#0842A1" aria-labelledby="locationCircleColorLabel" />
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
-                                </div>
-                            </div>
+
+                    <div class="row settings-title">
+                        <div class="col">
+                            <strong>Rutas</strong>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -206,6 +207,23 @@
                         <div class="col-sm-9">
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="routeHighlightColor" name="routeHighlightColor" value="#2236FF" aria-labelledby="routeHighlightColorLabel" />
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row settings-title">
+                        <div class="col">
+                            <strong>Ubicación</strong>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="locationCircleColor" id="locationCircleColorLabel" class="col-sm-3 col-form-label">Color del círculo de ubicación</label>
+                        <div class="col-sm-9">
+                            <div class="input-group colorpicker-group">
+                                <input type="text" class="form-control" id="locationCircleColor" name="locationCircleColor" value="#0842A1" aria-labelledby="locationCircleColorLabel" />
                                 <div class="input-group-prepend">
                                     <div class="input-group-text colorpicker-input-addon"><i></i></div>
                                 </div>
@@ -276,11 +294,11 @@
         </form>
     </main>
 
-    <script src="/jquery/dist/jquery.min.js"></script>
+    <script src="/modules/jquery/dist/jquery.min.js"></script>
     <script src="/bootstrap/js/popper.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/js-cookie/src/js.cookie.js"></script>
-    <script src="/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
+    <script src="/modules/js-cookie/src/js.cookie.js"></script>
+    <script src="/modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
 
     <script src="/js/settings/load.js"></script>
     <script src="/js/settings/settings.js"></script>
