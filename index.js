@@ -9,22 +9,11 @@ const fs = require('fs');
 const path = require('path');
 var rfs = require('rotating-file-stream')
 
-// Log
-const morgan = require('morgan');
-
 /*
     HTTP SERVER
 */
 const express = require('express');
 const app = express();
-
-let logDirectory = path.join(__dirname, 'log');
-let rotatingLog = rfs('access.log', {
-  interval: '1d', // rotate daily
-  path: logDirectory
-});
-
-app.use(morgan(':date[iso] [:remote-addr] | :method :url :status :response-time ms - :res[content-length]', { stream: rotatingLog }));
 
 app.get('/map/data/b/:id', async (request, response) => {
     const id = request.params.id;
