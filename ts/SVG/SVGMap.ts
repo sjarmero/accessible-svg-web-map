@@ -399,7 +399,7 @@ export class SVGMap {
                                 e.preventDefault();
                                 self.zoomlevel += 2;
                                 let [x, y] = $(this).attr('data-coords').split(':');
-                                self.zoomAndMove(x, y, self.zoomlevel);
+                                self.zoomAndMove(x, y, self.zoomlevel + 2);
                             }
                         });
                     });
