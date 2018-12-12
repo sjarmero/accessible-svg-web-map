@@ -26,9 +26,6 @@ let rotatingLog = rfs('access.log', {
 
 app.use(morgan(':date[iso] [:remote-addr] | :method :url :status :response-time ms - :res[content-length]', { stream: rotatingLog }));
 
-app.use(express.static('public'));
-app.use(express.static('node_modules'));
-
 app.get('/map/data/b/:id', async (request, response) => {
     const id = request.params.id;
     const data = await db.dataByBuilding(id);

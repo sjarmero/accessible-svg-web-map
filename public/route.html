@@ -45,14 +45,21 @@
                                             <a href="/settings" style="float:right;" title="Ajustes" aria-label="Ir a Ajustes"><i class="fas fa-cog"></i></a>
                                         </div>
                                         <div class="itinerary">
-                                            <span>◈</span>
+                                            <span class="itinerary-icon"><i class="far fa-circle"></i></span>
                                             <form class="input-group" id="sourceForm">
                                                 <input class="form-control" type="text" placeholder="Nombre del punto de origen" aria-label="Nombre del punto de origen" id="routeSource" autocomplete="off" required />
                                                 <div class="input-group-prepend" id="routeSourcePrepend"><button class="btn routeBtn" aria-label="Buscar punto de partida" data-search="sourceForm"><i class="fas fa-search"></i></button></div>
                                             </form> 
                                         </div>
+
                                         <div class="itinerary">
-                                            <span>◈</span>
+                                            <div class="itinerary-trail">
+                                                <i class="fas fa-circle"></i>
+                                                <i class="fas fa-circle"></i>
+                                                <i class="fas fa-circle"></i>
+                                            </div>
+                                            
+                                            <span class="itinerary-icon"><i class="fas fa-map-marker-alt"></i></span>
                                             <form class="input-group" id="targetForm">
                                                 <input class="form-control" type="text" placeholder="Nombre del punto de destino" aria-label="Nombre del punto de destino" id="routeTarget" autocomplete="off" required />
                                                 <div class="input-group-prepend" id="routeTargetPrepend"><button class="btn routeBtn" aria-label="Buscar punto de destino" data-search="targetForm"><i class="fas fa-search"></i></button></div>

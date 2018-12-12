@@ -89,9 +89,13 @@ nav.inline {
     padding-right: 0px;
 }
 
+#map {
+    height: 100vh;
+}
+
 #map > svg {
     width: calc(100% + 15px);
-    height: 100vh;
+    height: 100%;
     background-color: #ECEFF1;
 }
 

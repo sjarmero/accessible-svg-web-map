@@ -22,7 +22,7 @@ body {
         pointer-events: none;
     }
 
-        .overflow-row .overflow-controls *[class*='col'] {
+        .overflow-row .overflow-controls section[class*='col'] {
             padding: 0px;
             background-color: transparent;
         }
@@ -40,6 +40,25 @@ body {
             overflow-y: auto;
             overflow-x: hidden;
             pointer-events: auto;
+        }
+
+        .overflow-row .overflow-controls .overflow-controls-container::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        /* Track */
+        .overflow-row .overflow-controls .overflow-controls-container::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        
+        /* Handle */
+        .overflow-row .overflow-controls .overflow-controls-container::-webkit-scrollbar-thumb {
+            background: #888; 
+        }
+        
+        /* Handle on hover */
+        .overflow-row .overflow-controls .overflow-controls-container::-webkit-scrollbar-thumb:hover {
+            background: #555; 
         }
 
     .overflow-row .overflow-map {
