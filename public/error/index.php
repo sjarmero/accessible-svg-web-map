@@ -64,6 +64,10 @@
                                             echo "Recurso no encontrado";
                                             break;
 
+                                        case 503:
+                                            echo "Servicio no disponible";
+                                            break;
+
                                         default:
                                     }
                                 ?>
