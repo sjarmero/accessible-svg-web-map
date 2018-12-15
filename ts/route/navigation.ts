@@ -1,9 +1,10 @@
 import { angulo, perspectiva, toDeg, modulo} from './math.js';
 import { SVGMap } from '../SVG/SVGMap.js';
+import { Settings } from '../__independent/settings/defaults.js';
 
 declare var Cookies;
 
-const STEP_FACTOR = Cookies.get('stepLength') || 0.5;
+const STEP_FACTOR = Cookies.get('stepLength') || Settings.stepLenght;
 
 let guide = [];
 export function navigationMode(path) {
@@ -215,9 +216,16 @@ export function navigationMode(path) {
             let meters = parseInt($(this).attr('data-meters'));
 
             if ($("#metricUnitSelect").val() == 0) {
-                $(this).html(`${meters / STEP_FACTOR} pasos`);
-            } else {
+                $(this).html(`${Math.ceil(meters / STEP_FACTOR)} pasos`);
+            } else if ($("#metricUnitSelect").val() == 1) {
                 $(this).html(`${meters} metros`);
+            } else if ($("#metricUnitSelect").val() == 2) {
+                const speed = Cookies.get('speed') || Settings.walkingSpeed;
+                const time : number = meters / speed;
+                const minutes = Math.floor(time / 60);
+                const seconds = Math.ceil(time % 60);
+
+                $(this).html(`${((minutes > 0) ? `${minutes} ${minutes > 1 ? 'minutos' : 'minuto'} y ` : '')}${seconds} segundos`);
             }
         });
     });
@@ -237,11 +245,11 @@ export function navigationMode(path) {
         });
 
         $('#map svg circle').css({
-            fill: (Cookies.get('routeColor') || '#1A237E')
+            fill: (Cookies.get('routeColor') || Settings.routeColor)
         });
 
         $(`#map svg #step-circle-${step}`).css({
-            fill: (Cookies.get('routeHighlightColor') || '#2236FF')
+            fill: (Cookies.get('routeHighlightColor') || Settings.routeHighlightColor)
         });
 
         SVGMap.instance.zoomAndMove(data.vcenterx, data.vcentery, 15, false);

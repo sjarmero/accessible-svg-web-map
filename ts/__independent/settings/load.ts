@@ -1,22 +1,26 @@
-function loadSettings() {    
+import { Settings } from './defaults.js';
+
+declare var Cookies;
+
+export function loadSettings() {    
     let style = document.createElement('style');
     $(style).attr('type', 'text/css');
 
     /* Ajustes generales */
-    let textSize = Cookies.get('textSize') || 16;
-    let fontFamily = Cookies.get('fontFamily') || 'Arial';
+    let textSize = Cookies.get('textSize') || Settings.textSize;
+    let fontFamily = Cookies.get('fontFamily') || Settings.fontFamily;
 
     /* Ajustes del mapa */
-    let mapFontFamily = Cookies.get('mapFontFamily') || 'Arial';
+    let mapFontFamily = Cookies.get('mapFontFamily') || Settings.mapFontFamily;
 
     /* Colores del mapa */
-    let buildingColor = Cookies.get('buildingColor') || '#90A4AE';
-    let strokeColor = Cookies.get('strokeColor') || '#455A64';
-    let textColor = Cookies.get('textColor') || '#0C0C0C';
-    let backgroundColor = Cookies.get('backgroundColor') || '#ECEFF1';
+    let buildingColor = Cookies.get('buildingColor') || Settings.buildingColor;
+    let strokeColor = Cookies.get('strokeColor') || Settings.strokeColor;
+    let textColor = Cookies.get('textColor') || Settings.textColor;
+    let backgroundColor = Cookies.get('backgroundColor') || Settings.backgroundColor;
 
     /* Círculo de localización */
-    let locationCircleColor = Cookies.get('locationCircleColor') || '#0842A1';
+    let locationCircleColor = Cookies.get('locationCircleColor') || Settings.locationCircleColor;
 
     let fontImport = '';
     $.getJSON('/fonts/fonts.json', (fonts) => {

@@ -4,6 +4,8 @@ import { SVGVoiceControls } from "../SVG/SVGVoiceControls.js";
 import { SVGMap } from "../SVG/SVGMap.js";
 import { observeOrientation } from "../location/LocationComponent.js";
 import { Location } from '../location/Location.js';
+import { loadSettings } from "../__independent/settings/load.js";
+import { Settings } from "../__independent/settings/defaults.js";
 
 declare var proj4;
 declare var Cookies;
@@ -28,7 +30,7 @@ $(document).ready(function() {
     });
 
     // Búsqueda alrededor
-    $("#radioTxt").val(Cookies.get('locationRadio') || '300');
+    $("#radioTxt").val(Cookies.get('locationRadio') || Settings.locationRadio);
 
     let lastLocation;
     locationService.watch((lat, long) => {
@@ -43,7 +45,7 @@ $(document).ready(function() {
     $('.radius-control-up').on('click', function() {
         let current : number = parseInt(<any>$('#radioTxt').val());
         $('#radioTxt').val(current + 20);
-        getCloseFeaturesData(lastLocation.x, lastLocation.y, current + 20);
+        $('#radioTxt').trigger('change');
     });
 
     $('.radius-control-down').on('click', function() {
@@ -51,8 +53,13 @@ $(document).ready(function() {
         if (current - 20 < 20) return;
 
         $('#radioTxt').val(current - 20);
-        getCloseFeaturesData(lastLocation.x, lastLocation.y, current - 20);
+        $('#radioTxt').trigger('change');
     });
+
+    $('#radioTxt').on('change', function(e) {
+        console.log('change');
+        getCloseFeaturesData(lastLocation.x, lastLocation.y, $('#radioTxt').val());
+    })
 
     $('.focus-orientation button').on('click', function(e) {
         e.preventDefault();
@@ -258,6 +265,7 @@ function getCloseFeaturesData(x, y, r) {
 
             $(a).attr('href', '#');
             $(a).attr('title', `Ver en el mapa ${result.iname}`);
+            $(a).attr('aria-label', `Ver en el mapa ${result.iname}`);
             $(a).attr('data-x', result.icenterx);
             $(a).attr('data-y', result.icentery);
             $(a).attr('data-id', result.iid);
@@ -267,7 +275,19 @@ function getCloseFeaturesData(x, y, r) {
                 focusBuilding($(this).attr('data-id'), $(this).attr('data-x'), $(this).attr('data-y'), false);
             });
 
+            $(a).addClass("col-11");
             $(a).appendTo(li);
+
+            let nav = document.createElement('a');
+            $(nav).attr('href', `/route?to=${result.iid}`);
+            $(nav).attr('title', `Navegar a ${result.iname}`);
+            $(nav).attr('aria-label', `Navegar a ${result.iname}`);
+            $(nav).html('<i class="fas fa-route"></i>');
+
+            $(nav).addClass('col-1 pull-right');
+            $(nav).appendTo(li);
+
+            $(li).addClass("row ml-2 mr-0");
             $(li).appendTo(ul);
         }
     });
