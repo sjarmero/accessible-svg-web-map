@@ -139,6 +139,8 @@ nav.inline {
 
     #map > svg > #SVG_MAIN_CONTENT a.active .building {
         stroke: #004DA3 !important;
+        stroke-width: 2px !important;
+        fill: #72848e !important;
     }
 
 #pad {
