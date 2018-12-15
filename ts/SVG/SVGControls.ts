@@ -32,6 +32,10 @@ export class SVGControls {
 
     pageLoad() {
         SVGMap.instance.onDrawn = function() {
+            $("#progress").css({
+                display: 'none'
+            });
+            
             let backgroundTextColor = Cookies.get('backgroundTextColor') || '#FFFFFF';
             let backgroundTextColorOpacity = parseInt(<any>Cookies.get('backgroundTextColorOpacity')) / 100 || 0;
 
