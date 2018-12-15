@@ -60,7 +60,7 @@
     #routePanel .itinerary-trail {
         position: relative;
         left: 4px;
-        top: 2px;
+        top: 0px;
     }
 
         #routePanel .itinerary-trail i {

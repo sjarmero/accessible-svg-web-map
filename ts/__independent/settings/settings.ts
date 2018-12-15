@@ -1,3 +1,7 @@
+import { loadSettings } from "./load";
+
+declare var Cookies;
+
 $(document).ready(function() {
     (<any>$('.colorpicker-group')).colorpicker({
         format: 'hex'

@@ -16,6 +16,10 @@ body {
     display: block;
 }
 
+.pull-right {
+    text-align: right;
+}
+
 .inline-block {
     display: inline-block;
 }
@@ -66,14 +70,14 @@ nav.inline {
         margin-left: -0.5em;
     }
 
-        #controlPanel .stacked-list li a {
+        #controlPanel .stacked-list li > a {
             display: block;
             width: 100%;
             height: 100%;
             padding: 0.5em;
         }
 
-        #controlPanel .stacked-list li a:focus {
+        #controlPanel .stacked-list li > a:focus {
             background-color: #0842A1;
             color: white;
         }
