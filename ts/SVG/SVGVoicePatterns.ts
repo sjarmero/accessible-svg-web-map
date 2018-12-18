@@ -1,7 +1,7 @@
 const SVGVoiceGrammars = [
     {
         name: 'antiloop',
-        pattern: /^(No te he entendido)|(El mapa está ahora escuchando)/i,
+        pattern: /(No te he entendido)|(El mapa está ahora escuchando)/i,
         extract: []
     },
 
