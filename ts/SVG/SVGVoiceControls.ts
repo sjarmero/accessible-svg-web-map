@@ -130,12 +130,10 @@ export class SVGVoiceControls {
         setTimeout(() => {
             if (this.tts.length() == 0) {
                 if (order.voiceInit) {
-                    console.log('Overriding voice init');
                     this.onTranscript = null;
                     this.stop();
                     order.voiceInit();
                 } else {
-                    console.log('Reverting to ' + this.prevOn);
                     SVGVoiceControls.setOn(this.prevOn);
                     if (order.callback) order.callback();
                     this.start(this.onTranscript);
@@ -164,6 +162,7 @@ export class SVGVoiceControls {
             var confidence = event.results[last][0].confidence;
 
             if (confidence >= 0.75) {
+                transcript = transcript.trim();
                 console.log("Calling transcript callback with", [transcript]);
                 this.onTranscript({confidence: confidence, transcript: transcript });
             } else {
