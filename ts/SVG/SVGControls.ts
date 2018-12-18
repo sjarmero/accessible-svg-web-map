@@ -132,7 +132,8 @@ export class SVGControls {
                             return;
 
                         case 'select':
-                            this.onSearchResultSelected(this.toDigit(parsed.item));
+                            const digit = (parseInt(parsed.item) == NaN) ? this.toDigit(parsed.item) : parseInt(parsed.item);
+                            this.onSearchResultSelected(digit);
                             return;
 
                         case 'route':
