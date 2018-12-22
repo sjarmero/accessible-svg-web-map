@@ -48,5 +48,5 @@ folder-prepare:
 	@echo "\n"
 
 clean:
-	rm -rf /public/js
+	rm -rf public/js
 	rm -rf compiled-js

@@ -291,6 +291,47 @@ const nearestEntrance = async function(buildingId, disability) {
     return data.rows;
 }
 
+const getGeoJSON = async function() {
+    let data;
+    try {
+        data = await client.query(`select e.gid, array_agg(fp.p_code) as pname, array_agg(fp.val) as pval, ST_asGeoJSON(ST_Transform(geom, 4326)) as g,
+        ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery
+        from public.edificios as e, accessibility.feature_property as fp 
+        where e.gid = fp.code
+        group by gid;`);
+
+        let all = {
+            type: "FeatureCollection",
+            features: []
+        };
+
+        for (const row of data.rows) {
+            let properties = {
+                centerx: row.centerx,
+                centery: row.centery
+            };
+
+            for (let i = 0; i < row.pname.length; i++) {
+                properties[row.pname[i]] = row.pval[i];
+            }
+
+            const geojson = {
+                type: "Feature",
+                geometry: JSON.parse(row.g),
+                properties: properties
+            }
+
+            all.features.push(geojson);
+        }
+
+        return all;
+    } catch (e) {
+        console.log("[POSTGIS] getGeoJSON");
+        console.log(e);
+        return [];
+    }
+}
+
 const propertyParser = property => {
     return {
         "display": property['p_name'],
@@ -310,5 +351,6 @@ module.exports = {
     nearestNamesForFeature: nearestNamesForFeature,
     routesSVG: routesSVG,
     nearestNamesForPoint: nearestNamesForPoint,
-    nearestEntrance: nearestEntrance
+    nearestEntrance: nearestEntrance,
+    getGeoJSON: getGeoJSON
 }

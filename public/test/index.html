@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Prueba Leaflet</title>
+        <meta charset="utf-8" />
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/>
+    </head>
+    <body style="margin:0;">
+        <div id="map" style="width: 100vw; height: 100vh;"></div>
+
+        <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+        <script src="/modules/jquery/dist/jquery.min.js"></script>
+
+        <style>
+            #MAIN_SVG #rootGroup a, #MAIN_SVG #rootGroup path {
+                pointer-events: auto !important;
+                cursor: pointer;
+            }
+
+            #MAIN_SVG #rootGroup a:focus path {
+                stroke: #004DA3 !important;
+                stroke-width: 2px !important;
+                fill: #72848e !important;
+            }
+        </style>
+
+        <script>
+            function create(name) {
+                return document.createElementNS('http://www.w3.org/2000/svg', name);
+            }
+
+            L.SVG.include({
+                _initContainer: function() {
+                    this._container = create('svg');
+                    this._container.setAttribute('tabindex', 0);
+                    this._container.setAttribute('id', 'MAIN_SVG');
+
+                    this._rootGroup = create('g');
+                    this._rootGroup.setAttribute('id', 'rootGroup');
+                    this._container.appendChild(this._rootGroup);
+                },
+
+                _initPath: function (layer) {
+                    let a = layer._a = create('a');
+                    let path = create('path');
+
+                    let stamp = L.Util.stamp(layer);
+
+                    a.setAttribute('href', '#');
+                    a.setAttribute('aria-label', `Edificio ${stamp}`);
+                    path.setAttribute('class', 'feature-object');
+
+                    a.appendChild(path);
+                    this._updateStyle(layer);
+                    this._layers[stamp] = layer;
+
+                    a.addEventListener('click', (e) => {
+                        console.log('click!', e);
+                    })
+                },
+
+                _addPath: function(layer) {
+                    if (!this._rootGroup) { this._initContainer(); }
+
+                    if (layer._a.querySelector('path').getAttribute('d') != "M0 0") {
+                        this._rootGroup.appendChild(layer._a);
+                        layer.addInteractiveTarget(layer._a);
+                    }
+                },
+
+                _setPath: function (layer, path) {
+                    layer._a.querySelector('path').setAttribute('d', path);
+                },
+
+                _updateStyle: function(layer) {
+                    let path = layer._a.querySelector('path');
+                    let options = layer.options;
+                    if (!path) return;
+
+                    if (options.stroke) {
+                        path.setAttribute('stroke', options.color);
+                        path.setAttribute('stroke-opacity', options.opacity);
+                        path.setAttribute('stroke-width', options.weight);
+                        path.setAttribute('stroke-linecap', options.lineCap);
+                        path.setAttribute('stroke-linejoin', options.lineJoin);
+
+                        if (options.dashArray) {
+                            path.setAttribute('stroke-dasharray', options.dashArray);
+                        } else {
+                            path.removeAttribute('stroke-dasharray');
+                        }
+
+                        if (options.dashOffset) {
+                            path.setAttribute('stroke-dashoffset', options.dashOffset);
+                        } else {
+                            path.removeAttribute('stroke-dashoffset');
+                        }
+                    } else {
+                        path.setAttribute('stroke', 'none');
+                    }
+
+                    if (options.fill) {
+                        path.setAttribute('fill', options.fillColor || options.color);
+                        path.setAttribute('fill-opacity', options.fillOpacity);
+                        path.setAttribute('fill-rule', options.fillRule || 'evenodd');
+                    } else {
+                        path.setAttribute('fill', 'none');
+                    }
+                },
+
+                _removePath: function (layer) {
+                    L.DomUtil.remove(layer._a.querySelector('path'));
+                    L.DomUtil.remove(layer._a);
+
+                    layer.removeInteractiveTarget(layer._a);
+                    delete this._layers[L.Util.stamp(layer)];
+                }
+            });
+
+            fetch('/map/data/geojson').then((response) => {
+                return response.json();
+            }).then((geojson) => {
+                console.log(geojson);
+
+                let map = L.map('map', {
+                    renderer: L.svg(),
+                    interactive: true
+                }).setView([38.3842921, -0.5115638], 16);
+
+                L.geoJson(geojson, {
+                    className: 'edificio'
+                }).addTo(map);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png ', {
+                    id: 'openstreetmaps'
+                }).addTo(map);
+
+            });
+        </script>
+    </body>
+</html>
