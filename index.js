@@ -15,6 +15,11 @@ var rfs = require('rotating-file-stream')
 const express = require('express');
 const app = express();
 
+app.get('/map/data/geojson', async (request, response) => {
+    const data = await db.getGeoJSON();
+    response.json(data);
+});
+
 app.get('/map/data/b/:id', async (request, response) => {
     const id = request.params.id;
     const data = await db.dataByBuilding(id);
