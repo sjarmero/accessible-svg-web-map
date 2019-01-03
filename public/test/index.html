@@ -118,7 +118,7 @@
                 }
             });
 
-            fetch('/map/data/geojson').then((response) => {
+            fetch('/map/data/geojson/100').then((response) => {
                 return response.json();
             }).then((geojson) => {
                 console.log(geojson);
@@ -136,6 +136,7 @@
                     id: 'openstreetmaps'
                 }).addTo(map);
 
+                L.marker([38.3842921, -0.5115638]).addTo(map);
             });
         </script>
     </body>

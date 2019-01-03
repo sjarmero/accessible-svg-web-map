@@ -68,7 +68,7 @@ export function search(query, viaspeech = false) {
 
 export function focusBuilding(id, centerx, centery, speech?) {
     if (centerx != undefined && centery != undefined) {
-        SVGMap.instance.zoomAndMove(centerx, centery, SVGMap.instance.zoomlevel);
+        SVGMap.instance.zoomAndMove(centerx, centery, 20);
         $(SVGMap.instance.container).find(`.feature-object`).removeClass('active');
         $(SVGMap.instance.container).find(`.feature-object[data-building=${id}]`).addClass('active');
     } else if (typeof speech != 'undefined') {

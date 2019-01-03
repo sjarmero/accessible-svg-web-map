@@ -103,6 +103,37 @@ nav.inline {
     background-color: #ECEFF1;
 }
 
+    #map .map-marker-img img {
+        width: 32px;
+        height: 32px;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+
+    #map .map-marker-text {
+        font-weight: bold;
+        color: #0C0C0C;
+        text-shadow: 0px 0px 0px black;
+        font-size: 0.9em;
+        position: absolute;
+        left: 38px;
+        top: 0px;
+        width: 150px;
+    }
+
+    #map a.active .building {
+        stroke: #004DA3 !important;
+        stroke-width: 2px !important;
+        fill: #72848e !important;
+    }
+
+#MAIN_SVG #rootGroup a, #MAIN_SVG #rootGroup path {
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
+
     #map > svg > #SVG_MAIN_CONTENT {
         transform: translate(0, 0);
     }
@@ -135,12 +166,6 @@ nav.inline {
     #map > svg > #SVG_MAIN_CONTENT a.gmarker:focus circle, #map > svg > #SVG_MAIN_CONTENT a.gmarker:hover circle,  #map > svg > #SVG_MAIN a.active.gmarker circle {
         stroke: #004DA3;
         fill: #004DA3;
-    }
-
-    #map > svg > #SVG_MAIN_CONTENT a.active .building {
-        stroke: #004DA3 !important;
-        stroke-width: 2px !important;
-        fill: #72848e !important;
     }
 
 #pad {

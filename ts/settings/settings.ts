@@ -1,4 +1,4 @@
-import { loadSettings } from "./load";
+import { loadSettings } from "./load.js";
 
 declare var Cookies;
 

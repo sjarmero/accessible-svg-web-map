@@ -44,9 +44,8 @@ export class SVGControls {
             $(SVGMap.instance.container + '#bgFilter feFlood').attr('flood-opacity', <any>backgroundTextColorOpacity);
         
             setTimeout(function() {
-                SVGMap.instance.groupMarkers(SVGMap.instance.zoomlevel);
-                SVGMap.instance.updateSidebar();
-            }, 100);
+                SVGMap.instance.groupMarkers();
+            }, 1000);
         };
 
         SVGMap.instance.draw();
