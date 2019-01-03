@@ -1,8 +1,8 @@
 import { angulo, perspectiva, toDeg, modulo} from './math.js';
 import { SVGMap } from '../SVG/SVGMap.js';
-import { Settings } from '../__independent/settings/defaults.js';
+import { Settings } from "../settings/defaults.js";
 
-declare var Cookies;
+declare var Cookies, proj4;
 
 const STEP_FACTOR = Cookies.get('stepLength') || Settings.stepLenght;
 
@@ -10,7 +10,7 @@ let guide = [];
 export function navigationMode(path) {
     const data = path.data;
 
-    $("#SVG_MAIN_CONTENT #route").empty();
+    $("#rootGroup #route").empty();
 
     let a = {x: data[0].vcenterx, y: data[0].vcentery};
     let p = {x: data[1].vcenterx, y: data[1].vcentery};
@@ -25,17 +25,17 @@ export function navigationMode(path) {
     if (rotacionMapa == 90) { ajuste = 90 - ajuste; }
     if (rotacionMapa == 270) { ajuste = 90 - ajuste; }
 
-    $("#map svg #SVG_MAIN_CONTENT").css({
+    /*$("#map svg #rootGroup").css({
         'transform-origin': `${a.x}px ${a.y}px`,
         'transform': `rotateX(-45deg) rotateZ(${rotacionMapa + ajuste}deg)`
     });
 
-    $("#map svg #SVG_MAIN_CONTENT .map-marker").each(function(e) {
+    $("#map svg #rootGroup .map-marker").each(function(e) {
         $(this).css({
             'transform-origin': `${$(this).find('text').attr('x')}px ${$(this).find('text').attr('y')}px`,
             'transform': `rotateX(0deg) rotateZ(-${rotacionMapa + ajuste}deg)`
         });
-    });
+    });*/
 
 
     /* Calculamos la guia:
@@ -132,25 +132,41 @@ export function navigationMode(path) {
 
     // Dibujar ruta
     let svg = SVGMap.instance.svg;
-    const gm = svg.select('#SVG_MAIN_CONTENT').members[0].group().attr('id', 'route');
-    const polyline = [];
-    let count = 1;
+    const gm = svg.select('#rootGroup').members[0].group().attr('id', 'route');
+    const latlngs = [];
+    const circles = [];
 
     for (const step of guide) {
-        let {vcenterx, vcentery} = step;
+        let ovx = step.vcenterx;
+        let ovy = step.vcentery;
+        let [vcentery, vcenterx] = (<any>proj4('EPSG:25830', 'EPSG:4326', [parseFloat(ovx), -parseFloat(ovy)]));
+        
+        const circle = L.circle([vcenterx, vcentery], {
+            fill: true,
+            fillColor: Cookies.get('routeColor') || '#1A237E',
+            stroke: false,
+            interactive: false,
+            radius: 3,
+            className: "circle",
+            fillOpacity: 1,
+            strokeOpacity: 1
+        });
 
-        const circle = gm.circle().radius(5);
-        circle.cx(vcenterx);
-        circle.cy(vcentery);
-        circle.fill(Cookies.get('routeColor') || '#1A237E');
-        circle.attr('id', 'step-circle-' + count);
+        circles.push(circle);
+        latlngs.push([vcenterx, vcentery]);
+    }
 
-        polyline.push([vcenterx], [vcentery]);
+    let polyline = L.polyline(latlngs, { className: "", interactive: false, fill: false, color: (Cookies.get('routeColor') || '#1A237E'), weight: 3});
+    polyline.addTo(SVGMap.instance.map);
 
+    let count = 1;
+    for (const circle of circles) {
+        circle.addTo(SVGMap.instance.map);
+        $(circle._a).attr('id', 'step-circle-' + count);
         count++;
     }
 
-    gm.polyline(polyline).fill('transparent').stroke({width: 3, color: (Cookies.get('routeColor') || '#1A237E')}).back();
+    //gm.polyline(polyline).fill('transparent').stroke({width: 3, color: (Cookies.get('routeColor') || '#1A237E')}).back();
 
     $(".route-steps").empty();
 
@@ -234,25 +250,21 @@ export function navigationMode(path) {
         let step = parseInt($(this).attr('data-step'));
         let data = guide[step - 1];
 
-        $("#map svg #SVG_MAIN_CONTENT, .map-marker").css({
+        /*$("#map svg #rootGroup, .map-marker").css({
             'transform-origin': `${data.vcenterx}px ${data.vcentery}px`
         });
 
-        $("#map svg #SVG_MAIN_CONTENT .map-marker").each(function(e) {
+        $("#map svg #rootGroup .map-marker").each(function(e) {
             $(this).css({
                 'transform-origin': `${$(this).find('text').attr('x')}px ${$(this).find('text').attr('y')}px`        
             });
-        });
+        });*/
 
-        $('#map svg circle').css({
-            fill: (Cookies.get('routeColor') || Settings.routeColor)
-        });
+        $('#map svg .circle').attr('fill', (Cookies.get('routeColor') || Settings.routeColor));
 
-        $(`#map svg #step-circle-${step}`).css({
-            fill: (Cookies.get('routeHighlightColor') || Settings.routeHighlightColor)
-        });
-
-        SVGMap.instance.zoomAndMove(data.vcenterx, data.vcentery, 15, false);
+        $(`#map svg #step-circle-${step} path`).attr('fill', (Cookies.get('routeHighlightColor') || Settings.routeHighlightColor));
+        
+        SVGMap.instance.zoomAndMove(data.vcenterx, data.vcentery, 21, false);
     });
 
     $('.route-steps:not(.route-orientation) .route-step:first-child').trigger('focus');

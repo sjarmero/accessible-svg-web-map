@@ -4,8 +4,8 @@ import { SVGVoiceControls } from "../SVG/SVGVoiceControls.js";
 import { SVGMap } from "../SVG/SVGMap.js";
 import { observeOrientation } from "../location/LocationComponent.js";
 import { Location } from '../location/Location.js';
-import { loadSettings } from "../__independent/settings/load.js";
-import { Settings } from "../__independent/settings/defaults.js";
+import { loadSettings } from "../settings/load.js";
+import { Settings } from "../settings/defaults.js";
 
 declare var proj4;
 declare var Cookies;
@@ -89,6 +89,10 @@ $(document).ready(function() {
             card.css({
                 'display': 'none'
             });
+
+            if ($(SVGMap.instance.container).find('svg .active').length > 0) {
+                $(SVGMap.instance.container).find('svg .active').first().trigger('focus');
+            }
         });
     });
 
@@ -140,60 +144,15 @@ $(document).ready(function() {
         });
     }
 
-    /*
-        Cuando se añade un nuevo elemento SVG, se notifica
-        al observer, que recorre los elementos añadidos
-        agregando el listener si no estaba ya escuchando.
-    */
-   let observer = new MutationObserver((list) => {
-        for (const elements of list) {
-            for (const element of (<any>elements).addedNodes) {
-                if($(element).find("a.building-wrapper").attr("data-listened") != "true") {
-                    $(element).find("a.building-wrapper").on('click touchstart', function(e) {
-                        if ($(this).hasClass('non-clickable')) return;
+    $(SVGMap.instance.container).on('focus', function() {
+        console.log('focus');
 
-                        $(element).find("a.building-wrapper").removeClass("active");
-                        $(this).addClass("active");
-
-                        showBuildingInfo($(this).attr('data-building'));
-                    });
-
-                    $(element).find('a.building-wrapper').on('focus', function(e) {
-                        if (SVGMap.instance.zoomlevel < SVGMap.instance.MAX_GROUP_LEVEL) {
-                            console.log('Redirecting to group', $(SVGMap.instance.container + '#gmarkers').first());
-                            e.preventDefault();
-                            $(SVGMap.instance.container + '#gmarkers .gmarker').first().trigger('focus');
-                            return;
-                        }
-
-                        let id = $(this).attr('data-building');
-                        console.log('focus', id);
-                        let [cx, cy] = $(this).attr('data-coords').split(':');
-                        focusBuilding(id, cx, cy, false);
-
-                        toggleCard($("#featureInfoPanel .card"), 'hide');
-                    });
-
-                    $(element).find("a.building-wrapper").attr("data-listened", "true");
-                }
-            }
+        if (SVGMap.instance.zoomlevel >= SVGMap.instance.MAX_GROUP_LEVEL) {
+            $(SVGMap.instance.container).find('svg .active').first().trigger('focus');
+        } else {
+            $(SVGMap.instance.container).find('.marker-cluster').first().trigger('focus');
         }
     });
-
-    observer.observe($(SVGMap.instance.container).get(0), { attributes: false, childList: true, subtree: true });
-
-    $(SVGMap.instance.container).on('focus', function(e) {
-        console.log('Redirecting focus to...');
-        if (SVGMap.instance.zoomlevel >= SVGMap.instance.MAX_GROUP_LEVEL) {
-            if ($(SVGMap.instance.container + '.active').length > 0) {
-                $(SVGMap.instance.container + '.active').trigger('focus');
-                console.log($(SVGMap.instance.container + '.active'));
-            }
-        } else {
-            $(SVGMap.instance.container + '#gmarkers .gmarker').first().trigger('focus');
-            console.log($(SVGMap.instance.container + '#gmarkers').first());
-        }
-    })
 
     /*
         Cuando se añade un nuevo elemento SVG a la lista de elementos
