@@ -80,6 +80,7 @@ export function showBuildingInfo(id) {
     toggleCard($("#featureInfoPanel .card"), 'hide', () => {
         $.get('/map/data/b/' + id, properties => {
             $(".feature-name").html(properties['name']['value']);
+            $(".card .get-there").attr("href", `/route?to=${id}`);
             let props = $("#featureInfoPanel .card .props");
             props.empty();
 

@@ -1,4 +1,5 @@
 import { toggleCard, focusBuilding, showBuildingInfo } from "../map/search.js";
+import { Settings } from "../settings/defaults.js";
 
 declare var L, Cookies, proj4;
 
@@ -13,6 +14,7 @@ export class SVGMap {
     private guides_drawn : boolean;
     private geojson_layer : any;
     private drawn_markers : any;
+    private locationCircle : any;
     private marker_groups : number[][];
     private auto_marker_groups : any[][];
     private auto_grouped_buildings : any[];
@@ -26,8 +28,13 @@ export class SVGMap {
         this._map = L.map($(this._container).get(0), {
             renderer: L.svg(),
             interactive: true,
-            maxZoom: 18
+            maxZoom: 18,
+            zoomControl: false
         }).setView([38.3842921, -0.5115638], 16);
+
+        L.control.zoom({
+            position: 'topright'
+        }).addTo(this._map);
 
         this._map.on('zoomend moveend', () => {
             this.groupMarkers();
@@ -169,7 +176,7 @@ export class SVGMap {
                                     <div class='map-marker-img'>
                                         <img src='/images/building_marker.svg' />
                                     </div>
-                                    <div class='map-marker-text d-none'>${textString}</div>
+                                    <div class='map-marker-text'>${textString}</div>
                                 </div>
                             `
                         })
@@ -187,6 +194,7 @@ export class SVGMap {
                         a.attr('data-nearest', feature.properties.nearestnames.reduce((prev, curr) => {
                             return `${prev},${curr}`
                         }));
+
                         a.attr('data-nearest-radius', feature.properties.nearestnamesradius);
                         a.attr('aria-label', feature.properties.name);
 
@@ -244,19 +252,31 @@ export class SVGMap {
         });
     }
 
-    drawLocation(x, y) {
+    drawLocation(x : number, y : number) {
         console.log('Location update', x, y);
-        let currlocationg = $(this.container + " svg #locationg");
 
-        if (currlocationg.length == 0) {
-            
-        } else {
-            
+        if (this.locationCircle) {
+            this.map.removeLayer(this.locationCircle);
         }
+
+        this.locationCircle = L.circle([x, y], {
+            fill: true,
+            fillColor: Cookies.get('locationCircleColor') || Settings.locationCircleColor,
+            stroke: false,
+            interactive: false,
+            radius: Cookies.get('locationCircleSize') || Settings.locationCircleSize,
+            className: "location-circle",
+            fillOpacity: 1,
+            strokeOpacity: 1,
+            location: true
+        });
+
+        this.locationCircle.addTo(this.map);
     }
 
-    drawOrientation(x, y, alpha) {
-        
+    drawOrientation(x : number, y : number, alpha : number) {
+        console.log('Orientation update', alpha);
+
     }
     
     groupMarkers() {
@@ -269,11 +289,14 @@ export class SVGMap {
                 }
             });
 
-            $(this._container + " .map-marker-text").removeClass("d-none");
+            $(this._container + " .map-marker").removeClass("d-none");
 
             this.updateSidebar();
         } else {
-            $(this._container + " .map-marker-text").addClass("d-none");
+            setTimeout(() => {
+                $(this._container + " .map-marker").addClass("d-none");
+            }, 500);
+
             $(this._container ).find('svg a').attr('tabindex', '-1');
 
             setTimeout(() => {

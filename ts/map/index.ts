@@ -144,16 +144,6 @@ $(document).ready(function() {
         });
     }
 
-    $(SVGMap.instance.container).on('focus', function() {
-        console.log('focus');
-
-        if (SVGMap.instance.zoomlevel >= SVGMap.instance.MAX_GROUP_LEVEL) {
-            $(SVGMap.instance.container).find('svg .active').first().trigger('focus');
-        } else {
-            $(SVGMap.instance.container).find('.marker-cluster').first().trigger('focus');
-        }
-    });
-
     /*
         Cuando se añade un nuevo elemento SVG a la lista de elementos
         alternativa, se notifica al observer para que añada los eventos
