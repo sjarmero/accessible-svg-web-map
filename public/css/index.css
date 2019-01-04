@@ -89,11 +89,12 @@ nav.inline {
 }
 
 #mapPanel {
-    margin-left: -15px;
+    padding-left: 0px;
     padding-right: 0px;
 }
 
 #map {
+    width: 100vw;
     height: 100vh;
 }
 
@@ -246,6 +247,16 @@ nav.inline {
         display: none;
         opacity: 0;
     }
+
+        #featureInfoPanelBody .card .get-there {
+            padding-right: 0.5em;
+        }
+
+        #featureInfoPanelBody .card .get-there:focus {
+            background-color: #0842A1;
+            color: white;
+        }
+
         #featureInfoPanelBody .card .props .prop {
             padding: 0.5em 0em 0.5em 0em;
             border-bottom: solid 1px #0C0C0C;

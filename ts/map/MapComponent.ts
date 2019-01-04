@@ -61,14 +61,25 @@ $(document).ready(function() {
         }
     });
 
+    $(SVGMap.instance.container).on('click', function(e) {
+        if (!$(e.target).hasClass("feature-block")) {
+            $(SVGMap.instance.container).find(".active").removeClass("active");
+        }
+    });
+
+    $(SVGMap.instance.container).on('focus', function() {
+        if (SVGMap.instance.zoomlevel >= SVGMap.instance.MAX_GROUP_LEVEL) {
+            $(SVGMap.instance.container).find('svg .active').first().trigger('focus');
+        } else {
+            $(SVGMap.instance.container).find('.marker-cluster').first().trigger('focus');
+        }
+    });
+
     // Localización 
     let locationService = new Location();
     let lastLocation = null;
     locationService.watch(function(lat, long) {
-        let [x, y] = proj4('EPSG:4326', 'EPSG:25830', [long, lat]);
-        lastLocation = {x: x, y: -y};
-
-        SVGMap.instance.drawLocation(x, -y);
+        SVGMap.instance.drawLocation(lat, long);
     });
 
     locationService.watchOrientation(function(alpha, beta, gamma) {
