@@ -179,13 +179,12 @@ $(document).ready(function() {
     observeOrientation($(SVGMap.instance.container).get(0), (lookingAtFeature) => {
         $('#orientationContainer').html('');
 
-
         if (lookingAtFeature != null && lookingAtFeature != undefined) {
             let order = `<span class='sr-only'>Información sobre tu orientación.</span>
-                Estás mirando hacia ${$(`#${lookingAtFeature}`).attr('data-name')}.
+                Estás mirando hacia ${lookingAtFeature}.
             `;
 
-            $('#orientationStatus').html(order);
+            $('#orientationContainer').html(order);
         }
     });
 });

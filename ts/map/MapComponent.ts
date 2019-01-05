@@ -79,12 +79,11 @@ $(document).ready(function() {
     let locationService = new Location();
     let lastLocation = null;
     locationService.watch(function(lat, long) {
+        lastLocation = [lat, long];
         SVGMap.instance.drawLocation(lat, long);
     });
 
     locationService.watchOrientation(function(alpha, beta, gamma) {
-        if (lastLocation != null) {
-            SVGMap.instance.drawOrientation(lastLocation.x, lastLocation.y, alpha);
-        }
+        SVGMap.instance.drawOrientation(alpha);
     });
 });

@@ -15,6 +15,9 @@ export class SVGMap {
     private geojson_layer : any;
     private drawn_markers : any;
     private locationCircle : any;
+    private orientationImage : any;
+    private lastLocation : {ox: number, oy: number};
+    private lastOrientation : number;
     private marker_groups : number[][];
     private auto_marker_groups : any[][];
     private auto_grouped_buildings : any[];
@@ -37,6 +40,8 @@ export class SVGMap {
         }).addTo(this._map);
 
         this._map.on('zoomend moveend', () => {
+            this.drawLocation(this.lastLocation.ox, this.lastLocation.oy);
+            this.drawOrientation(this.lastOrientation);
             this.groupMarkers();
         });
 
@@ -66,7 +71,7 @@ export class SVGMap {
     get svg() : any {
         if (this._svg == undefined) {
             if ($(this.container).find('svg').length > 0) {
-                return SVG('MAIN_SVG');
+                return SVG($(this.container).find('svg').get(0));
             } else {
                 return null;
             }
@@ -252,31 +257,60 @@ export class SVGMap {
         });
     }
 
-    drawLocation(x : number, y : number) {
-        console.log('Location update', x, y);
+    drawLocation(ox : number, oy : number) {
+        if (ox && oy) this.lastLocation = {ox: ox, oy: oy};
 
-        if (this.locationCircle) {
-            this.map.removeLayer(this.locationCircle);
+        let {x, y} = this.map.latLngToLayerPoint([ox, oy]);
+
+        if (this.svg) {
+            if (this.locationCircle) {
+                this.locationCircle.move(x, y);
+            } else {
+                let lg = this.svg.select('#rootGroup').members[0].group();
+                lg.attr('id', 'locationGroup');
+
+                this.locationCircle = lg.circle(Cookies.get('locationCircleSize') || Settings.locationCircleSize);
+                console.log(this.locationCircle);
+                this.locationCircle.fill(Cookies.get('locationCircleColor') || Settings.locationCircleColor);
+                this.locationCircle.move(x, y);
+            }
         }
-
-        this.locationCircle = L.circle([x, y], {
-            fill: true,
-            fillColor: Cookies.get('locationCircleColor') || Settings.locationCircleColor,
-            stroke: false,
-            interactive: false,
-            radius: Cookies.get('locationCircleSize') || Settings.locationCircleSize,
-            className: "location-circle",
-            fillOpacity: 1,
-            strokeOpacity: 1,
-            location: true
-        });
-
-        this.locationCircle.addTo(this.map);
     }
 
-    drawOrientation(x : number, y : number, alpha : number) {
-        console.log('Orientation update', alpha);
+    drawOrientation(alpha : number) {
+        if (!alpha) return;
 
+        if (this.svg && this.lastLocation) {
+            if (alpha) this.lastOrientation = alpha;
+
+            let {ox, oy} = this.lastLocation;
+            let {x, y} = this.map.latLngToLayerPoint([ox, oy]);
+            let og;
+            let size : number = parseFloat((Cookies.get('locationCircleSize') || 10));
+            if (this.orientationImage) {
+                og = this.svg.select('#orientationGroup');
+                this.orientationImage.move(x, y - (size * 1));
+            } else {
+                og = this.svg.select('#rootGroup').members[0].group();
+                og.attr('id', 'orientationGroup');
+
+                this.orientationImage = og.image('/images/arrow.svg');
+
+                this.orientationImage.move(x, y - size);
+                this.orientationImage.attr('width', size);
+                this.orientationImage.attr('height', size);
+            }
+
+            let phase = (alpha < 0) ? alpha + 360 : alpha;
+            $(SVGMap.instance.container).find('svg').find('#orientationGroup image').css({
+                'transform-origin': `${x + (size / 2)}px ${y + (size / 2)}px`,
+                'transform': `rotateZ(${phase}deg)`
+            });
+
+            og.attr('data-orientation', phase);
+            og.attr('data-x', x + (size / 2));
+            og.attr('data-y', y + (size / 2));
+        }
     }
     
     groupMarkers() {
