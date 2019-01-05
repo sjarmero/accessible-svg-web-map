@@ -2,7 +2,7 @@ export class Location {
     private orientationAccum : number;
 
     constructor() {
-        this.orientationAccum = 0;
+        this.orientationAccum = 50;
     }
 
     isGeolocationAvailable() : boolean {
@@ -38,7 +38,7 @@ export class Location {
     watchOrientation(callback) {
         window.addEventListener("deviceorientation", (e) => {
             if (this.orientationAccum == 50) {
-                this.orientationAccum = 0;
+                this.orientationAccum = 50;
                 callback(e.alpha, e.beta, e.gamma);
             } else {
                 this.orientationAccum++;

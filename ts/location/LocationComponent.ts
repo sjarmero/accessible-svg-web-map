@@ -1,7 +1,7 @@
 import { SVGMap } from "../SVG/SVGMap.js";
 import { rotar } from "../route/math.js";
 
-function lookingAt(x, y, orientation) : string {
+function lookingAt(x : number, y : number, orientation : number) : string {
     const distancia = 300;    
     // Rotamos el punto final de la linea
     let [rx, ry] = rotar(x, y - distancia, x, y, orientation);
@@ -22,7 +22,7 @@ function lookingAt(x, y, orientation) : string {
         }
 
         if (foundf != null) {
-            return foundf;
+            return $(foundf.node).attr('data-name');
         }
     }
 
@@ -30,13 +30,13 @@ function lookingAt(x, y, orientation) : string {
 }
 
 function vote(element) {
-    let orientation = $(element).attr('data-orientation');
+    let orientation = parseFloat($(element).attr('data-orientation'));
     let x = parseFloat($(element).attr('data-x'));
     let y = parseFloat($(element).attr('data-y'));
 
     let votes = {};
 
-    for (let i = -1; i < 3; i++) {
+    for (let i = -1; i < 2; i++) {
         let result = lookingAt(x, y, orientation + (i * 10))
         if (result != null) {
             if (votes[result] == undefined) {
@@ -66,7 +66,7 @@ export function observeOrientation(map, callback) {
         for (const mutation of list) {
             if (mutation.type === 'attributes') {
                 let element = mutation.target;
-                if ($(element).attr('id') === 'orientationg') {
+                if ($(element).attr('id') === 'orientationGroup') {
                     if (accum != 4) { accum++; return; }
                     accum = 0;
                     let foundf = vote(element);
