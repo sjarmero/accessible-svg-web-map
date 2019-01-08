@@ -16,6 +16,8 @@
     "jquery-mousewheel": "^3.1.13",
     "js-cookie": "^2.2.0",
     "js-cookies": "^1.0.4",
+    "leaflet": "^1.4.0",
+    "leaflet.markercluster": "^1.4.1",
     "morgan": "^1.9.1",
     "pg": "^7.4.3",
     "popper.js": "^1.14.5",
