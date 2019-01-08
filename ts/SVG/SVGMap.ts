@@ -244,12 +244,12 @@ export class SVGMap {
             this._svg = SVG($(this._map._container).find('svg').get(0));
             this._svg.attr('role', 'graphics-document document');
 
-            let defs = this._svg.defs().node;
+            /*let defs = this._svg.defs().node;
             defs.innerHTML = `
                 <filter x="0" y="0" width="1" height="1" id="bgFilter">
                     <feFlood />
                     <feComposite in="SourceGraphic"/>
-                </filter>`;
+                </filter>`;*/;
 
             $(this._container ).find('svg a').attr('tabindex', '-1');
 
