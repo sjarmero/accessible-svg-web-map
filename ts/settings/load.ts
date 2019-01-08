@@ -17,6 +17,8 @@ export function loadSettings() {
     let buildingColor = Cookies.get('buildingColor') || Settings.buildingColor;
     let strokeColor = Cookies.get('strokeColor') || Settings.strokeColor;
     let textColor = Cookies.get('textColor') || Settings.textColor;
+    let backgroundTextColor = Cookies.get('backgroundTextColor') || Settings.backgroundTextColor;
+    let backgroundTextColorOpacity = Cookies.get('backgroundTextColorOpacity') || Settings.backgroundTextColorOpacity;
     let backgroundColor = Cookies.get('backgroundColor') || Settings.backgroundColor;
 
     /* Círculo de localización */
@@ -60,11 +62,12 @@ export function loadSettings() {
                 stroke: ${strokeColor} !important;
             }
 
-            #map svg .map-marker text {
-                fill: ${textColor} !important;
+            .map-marker .map-marker-text {
+                color: ${textColor} !important;
+                background-color: ${hex2rgba(backgroundTextColor, backgroundTextColorOpacity / 100)} !important;
             }
 
-            #map svg #locationg circle {
+            #map svg #locationGroup circle {
                 fill: ${locationCircleColor} !important;
             }
         `;
@@ -72,4 +75,19 @@ export function loadSettings() {
         $(style).html(css);
         $(document.head).append(style);
     });
+}
+
+// https://stackoverflow.com/a/21648508
+function hex2rgba(hex, opacity) {
+    let c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c = hex.substring(1).split('');
+        if(c.length == 3){
+            c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c = '0x' + c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',' + opacity + ')';
+    } else {
+        throw new Error('Bad Hex');
+    }
 }
