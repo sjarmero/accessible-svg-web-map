@@ -40,8 +40,8 @@ export class SVGMap {
         }).addTo(this._map);
 
         this._map.on('zoomend moveend', () => {
-            this.drawLocation(this.lastLocation.ox, this.lastLocation.oy);
-            this.drawOrientation(this.lastOrientation);
+            if (this.lastLocation) this.drawLocation(this.lastLocation.ox, this.lastLocation.oy);
+            if (this.lastOrientation) this.drawOrientation(this.lastOrientation);
             this.groupMarkers();
         });
 
