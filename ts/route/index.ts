@@ -4,7 +4,7 @@ import { Location } from '../location/Location.js';
 import { SVGVoiceControls } from '../SVG/SVGVoiceControls.js';
 import { SVGControls } from '../SVG/SVGControls.js';
 import { observeOrientation } from '../location/LocationComponent.js';
-import { loadSettings } from '../__independent/settings/load.js';
+import { loadSettings } from "../settings/load.js";
 
 const searchIcon = 'fas fa-search';
 const loadingIcon = 'fas fa-spinner rotating-spinner';

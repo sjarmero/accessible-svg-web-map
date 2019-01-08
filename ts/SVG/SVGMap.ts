@@ -1,16 +1,23 @@
-declare var SVG, Cookies;
+import { toggleCard, focusBuilding, showBuildingInfo } from "../map/search.js";
+import { Settings } from "../settings/defaults.js";
+
+declare var L, Cookies, proj4;
 
 export class SVGMap {
-    readonly ZOOM_LEVEL_BASE : number = 0.000246153846;
-    readonly ZOOM_LEVEL_STEP : number = 0.4514682741;
-    public readonly MAX_GROUP_LEVEL : number = 4;
+    public readonly MAX_GROUP_LEVEL : number = 17;
 
     private static _instance : SVGMap;
 
+    private _map : any;
     private _svg : any;
-    private _zoomlevel : number;
     private _container : string;
     private guides_drawn : boolean;
+    private geojson_layer : any;
+    private drawn_markers : any;
+    private locationCircle : any;
+    private orientationImage : any;
+    private lastLocation : {ox: number, oy: number};
+    private lastOrientation : number;
     private marker_groups : number[][];
     private auto_marker_groups : any[][];
     private auto_grouped_buildings : any[];
@@ -19,23 +26,30 @@ export class SVGMap {
     private locationdrawn : boolean;
 
     constructor() {
-        this._svg = SVG('map');
-        this._svg.attr('version', '1.1');
-        this._svg.attr('role', 'graphics-document document');
-        this._zoomlevel = 3;
-        this._container = "#map svg ";
+        this._container = "#map";
+
+        this._map = L.map($(this._container).get(0), {
+            renderer: L.svg(),
+            interactive: true,
+            maxZoom: 18,
+            zoomControl: false
+        }).setView([38.3842921, -0.5115638], 16);
+
+        L.control.zoom({
+            position: 'topright'
+        }).addTo(this._map);
+
+        this._map.on('zoomend moveend', () => {
+            this.drawLocation(this.lastLocation.ox, this.lastLocation.oy);
+            this.drawOrientation(this.lastOrientation);
+            this.groupMarkers();
+        });
+
         this.guides_drawn = false;
         this.marker_groups = Array.apply(null, Array(20)).map(element => []);
         this.auto_marker_groups = Array.apply(null, Array(20)).map(element => []);
         this.auto_grouped_buildings = [];
         this.locationdrawn = false;
-
-        let defs = this._svg.defs().node;
-        defs.innerHTML = `
-            <filter x="0" y="0" width="1" height="1" id="bgFilter">
-                <feFlood />
-                <feComposite in="SourceGraphic"/>
-            </filter>`;
     }
 
     static get instance() {
@@ -46,8 +60,24 @@ export class SVGMap {
         return this._instance;
     }
 
+    get map() : any {
+        return this._map;
+    }
+
+    set map(v) {
+        this._map = v;
+    }
+
     get svg() : any {
-        return this._svg;
+        if (this._svg == undefined) {
+            if ($(this.container).find('svg').length > 0) {
+                return SVG($(this.container).find('svg').get(0));
+            } else {
+                return null;
+            }
+        } else {
+            return this._svg;
+        }
     }
 
     set svg(v) {
@@ -55,11 +85,11 @@ export class SVGMap {
     }
 
     get zoomlevel() : number {
-        return this._zoomlevel;
+        return this.map.getZoom();
     }
 
     set zoomlevel(v) {
-        this._zoomlevel = v;
+        this.resizeToLevel(v);
     }
 
     get container() : string {
@@ -73,7 +103,7 @@ export class SVGMap {
     fetchData() {
         if (typeof this._data == 'undefined') {
             let radius = Cookies.get('locationRadio') || 100;
-            return $.getJSON(`/map/data/${radius}`, (data) => {
+            return $.getJSON(`/map/data/geojson/${radius}`, (data) => {
                 return data;
             });
         } else {
@@ -99,6 +129,10 @@ export class SVGMap {
         this.guides_drawn = v;
     }
 
+    set onDrawn(v) {
+        this.onmapdrawn = v;
+    }
+
     get fullw() : number{
         return this.svg.viewbox().width;
     }
@@ -107,49 +141,22 @@ export class SVGMap {
         return this.svg.viewbox().height;
     }
 
-    set onDrawn(v) {
-        this.onmapdrawn = v;
-    }
-
     draw() {
         this.fetchData().then((data) => {
             this.data = data;
-
-            this.svg.attr('id', 'this.svg_MAIN');
-            this.svg.attr('preserveAspectRatio', 'xMidYMid slice');
-            this.svg.attr('class', 'map-dragable');
-            this.svg.attr('tabindex', 0);
-            
-            const main = this.svg.group().attr('id', 'SVG_MAIN_CONTENT').front();
-            const maing = main.group().attr('id', 'features');
-
-            for (const feature of this.data.buildings) {
-                const g = maing.group();
-
-                const a = g.link('#feature-' + feature.properties.id.value).attr('class', 'non-link building-wrapper feature-object').attr('id', 'link-feature-' + feature.properties.id.value);
-                a.attr('data-building', feature.properties.id.value);
-                a.attr('role', 'graphics-symbol img');
-                a.attr('data-name', feature.properties.name.value);
-                a.attr('data-coords', `${feature.centerx}:${feature.centery}`);
-                a.attr('data-description', feature.properties.description.value);
-                a.attr('data-nearest', feature.nearestnames.reduce((prev, curr) => {
-                    return `${prev},${curr}`
-                }));
-                a.attr('data-nearest-radius', feature.nearestnamesradius);
-
-                const rect = a.path().attr('d', feature.path);
-                rect.attr('id', 'feature-shape-' + feature.properties.id.value);
-                rect.attr('class', 'building');
-
-                const marker = a.group().attr('id', 'marker-' + feature.properties.id.value).attr('class', 'map-marker');
-
-                const img = marker.image('/images/building_marker.svg', 14, 14);
-                img.attr('class', 'marker');
-                img.attr('x', feature.centerx - 15);
-                img.attr('y', feature.centery - 7);
-
-                const text = marker.text(function(add) {
-                    let wordsRaw = feature.properties.name.value.split(' ');
+            this.drawn_markers = L.markerClusterGroup({
+                showCoverageOnHover: false,
+                spiderfyOnMaxZoom: false,
+                disableClusteringAtZoom: this.MAX_GROUP_LEVEL,
+                maxClusterRadius: 180
+            });
+        
+            this.geojson_layer = L.geoJson(data, {
+                className: 'edificio feature-block building',
+                fillOpacity: '1',
+                strokeOpacity: '1',
+                onEachFeature: (feature, layer) => {
+                    let wordsRaw = feature.properties.name.split(' ');
                     let words = [wordsRaw[0]];
                     for (let i = 1; i < wordsRaw.length; i++) {
                         let word = wordsRaw[i];
@@ -160,294 +167,220 @@ export class SVGMap {
                         }
                     }
 
-                    for (let i = 0; i < words.length; i++) {
-                        if (i == 0) {
-                            add.tspan(words[i]);
-                        } else {
-                            add.tspan(words[i]).move(feature.centerx, feature.centery).dy(i * 5);
-                        }
+                    let textString = '';
+                    for (const word of words) {
+                        textString += `${word} <br />`;
                     }
-                });
 
-                text.attr('text-anchor', 'start');
-                text.attr('id', 'label-' + (feature.properties.id ? feature.properties.id.value : ""));
-                text.attr('x', feature.centerx);
-                text.attr('y', feature.centery);
-                text.font({ weight: 'bold' });
-                text.attr('filter', 'url(#bgFilter)');
-                
-                a.attr('aria-labelledby', 'label-' + feature.properties.id.value);
+                    let [cy, cx] = (<any>proj4('EPSG:25830', 'EPSG:4326', [feature.properties.centerx - 14, - (feature.properties.centery - 7)]));
+                    this.drawn_markers.addLayer(L.marker([cx, cy], {
+                        icon: L.divIcon({
+                            className: 'map-marker',
+                            html: `
+                                <div class='map-marker' tabindex='-1'>
+                                    <div class='map-marker-img'>
+                                        <img src='/images/building_marker.svg' />
+                                    </div>
+                                    <div class='map-marker-text'>${textString}</div>
+                                </div>
+                            `
+                        })
+                    }));
 
-                // We save this marker in its group for further hiding
-                for (const group of feature.groups) {
-                    this.marker_groups[group].push(feature.properties.id.value);
+                    setTimeout(() => {
+                        let a = $(layer._a);
+                        a.addClass('feature-object');
+                        a.addClass('building-wrapper');
+                        a.attr('data-building', feature.properties.id);
+                        a.attr('role', 'graphics-symbol img');
+                        a.attr('data-name', feature.properties.name);
+                        a.attr('data-coords', `${feature.properties.centerx}:${feature.properties.centery}`);
+                        a.attr('data-description', feature.properties.description);
+                        a.attr('data-nearest', feature.properties.nearestnames.reduce((prev, curr) => {
+                            return `${prev},${curr}`
+                        }));
+
+                        a.attr('data-nearest-radius', feature.properties.nearestnamesradius);
+                        a.attr('aria-label', feature.properties.name);
+
+                        if ($(a).attr("data-listened") != "true") {
+                            $(a).on('click touchstart', function(e) {
+                                if (parseInt($(a).attr("tabindex")) == -1) return;
+                                if ($(this).hasClass('non-clickable')) return;
+        
+                                $(a).removeClass("active");
+                                $(this).addClass("active");
+        
+                                showBuildingInfo($(this).attr('data-building'));
+                            });
+        
+                            $(a).on('focus', function(e) {
+                                let id = $(this).attr('data-building');
+                                let [cx, cy] = $(this).attr('data-coords').split(':');
+                                focusBuilding(id, cx, cy, false);
+                                toggleCard($("#featureInfoPanel .card"), 'hide');
+                            });
+        
+                            $(a).attr("data-listened", "true");
+                        }
+                    }, 500);
                 }
-            }
+            });
+            
+            this.geojson_layer.addTo(this._map);
+
+            this.drawn_markers.on('animationend', () => {
+                this.groupMarkers();
+            });
+
+            this.drawn_markers.on('clusterkeypress', (e) => {
+                if (e.originalEvent.charCode == 13) {
+                    e.layer.zoomToBounds({ padding: [20, 20] });
+                }
+            });
+
+            this.map.addLayer(this.drawn_markers);
+
+            this._svg = SVG($(this._map._container).find('svg').get(0));
+            this._svg.attr('role', 'graphics-document document');
+
+            let defs = this._svg.defs().node;
+            defs.innerHTML = `
+                <filter x="0" y="0" width="1" height="1" id="bgFilter">
+                    <feFlood />
+                    <feComposite in="SourceGraphic"/>
+                </filter>`;
+
+            $(this._container ).find('svg a').attr('tabindex', '-1');
 
             this.onmapdrawn();
         });
     }
 
-    drawLocation(x, y) {
-        console.log('Location update', x, y);
-        let currlocationg = $(this.container + "#locationg");
+    drawLocation(ox : number, oy : number) {
+        if (ox && oy) this.lastLocation = {ox: ox, oy: oy};
 
-        if (currlocationg.length == 0) {
-            if (this.svg.select('#SVG_MAIN_CONTENT').members.length == 0) {
-                setTimeout(() => { this.drawLocation(x, y); }, 200);
-                return;
-            }
+        let {x, y} = this.map.latLngToLayerPoint([ox, oy]);
 
-            let locationg = this.svg.select('#SVG_MAIN_CONTENT').members[0].group().front();
-            locationg.attr('id', 'locationg');
-            const circle = locationg.circle().radius((Cookies.get('locationCircleSize') || 10));
-            circle.cx(x).cy(y);
-            circle.fill('deeppink');
+        if (this.svg) {
+            if (this.locationCircle) {
+                this.locationCircle.move(x, y);
+            } else {
+                let lg = this.svg.select('#rootGroup').members[0].group();
+                lg.attr('id', 'locationGroup');
 
-            this.locationdrawn = true;
-        } else {
-            currlocationg.find('circle').attr('cx', x);
-            currlocationg.find('circle').attr('cy', y);
-        }
-    }
-
-    drawOrientation(x, y, alpha) {
-        if (!this.locationdrawn || this.svg.select('#SVG_MAIN_CONTENT').members.length == 0) return;
-
-        let currorientationg = $(this.container + "#orientationg");
-        let pointSize : number = parseFloat((Cookies.get('locationCircleSize') || 10));
-
-        if (currorientationg.length == 0) {
-            let orientationg = this.svg.select('#SVG_MAIN_CONTENT').members[0].group().front();
-            orientationg.attr('id', 'orientationg');
-
-            const arrow = orientationg.image('/images/arrow.svg');
-            console.log(pointSize);
-            arrow.move(x, y - (pointSize * 2));
-            arrow.attr('width', pointSize * 2);
-            arrow.attr('height', pointSize * 2);
-        } else {
-            currorientationg.find('image').attr('x', x - pointSize);
-            currorientationg.find('image').attr('y', y - (pointSize * 2) - 6);
-        }
-
-        let phase = (alpha < 0) ? alpha + 360 : alpha;
-
-        $(SVGMap.instance.container + '#orientationg image').css({
-            'transform-origin': `${x}px ${y}px`,
-            'transform': `rotateZ(${phase}deg)`
-        });
-
-        currorientationg.attr('data-orientation', phase);
-        currorientationg.attr('data-x', x);
-        currorientationg.attr('data-y', y);
-    }
-
-    drawGuides() {
-        if (this.zoomlevel >= this.MAX_GROUP_LEVEL) return;
-
-        $(this.container + ".jails").remove();
-
-        let map_line_guides = this.svg.group().addClass('jails').back();
-
-        const steps = this.zoomlevel;
-        const percentage = (100 / steps) + '%';
-        const {x, y} = this.svg.viewbox();
-
-        const w = this.fullw / steps;
-        const h = this.fullh / steps;
-
-        for (let i = 0; i < steps; i++) {
-            for (let j = 0; j < steps; j++) {
-                map_line_guides.rect(percentage, percentage).move(x + (i * w), y + (j * h)).fill('transparent').stroke({ width: 0 });
+                this.locationCircle = lg.circle(Cookies.get('locationCircleSize') || Settings.locationCircleSize);
+                console.log(this.locationCircle);
+                this.locationCircle.fill(Cookies.get('locationCircleColor') || Settings.locationCircleColor);
+                this.locationCircle.move(x, y);
             }
         }
     }
 
-    calculateAutoGroups() {
-        if (this.zoomlevel >= this.MAX_GROUP_LEVEL) return;
+    drawOrientation(alpha : number) {
+        if (!alpha) return;
 
-        this.drawGuides();
+        if (this.svg && this.lastLocation) {
+            if (alpha) this.lastOrientation = alpha;
 
-        let late_removal = Array.apply(null, Array(20)).map(element => []);
+            let {ox, oy} = this.lastLocation;
+            let {x, y} = this.map.latLngToLayerPoint([ox, oy]);
+            let og;
+            let size : number = parseFloat((Cookies.get('locationCircleSize') || 10));
+            if (this.orientationImage) {
+                og = this.svg.select('#orientationGroup');
+                this.orientationImage.move(x, y - (size * 1));
+            } else {
+                og = this.svg.select('#rootGroup').members[0].group();
+                og.attr('id', 'orientationGroup');
 
-        for (let level = 0; level < this.data.groups.length; level++) {
-            for (let i = 0; i < this.data.groups[level].length; i++) {
-                const group = this.data.groups[level][i];
-                if (group.auto) {
-                    late_removal[level].push(group.id);
-                }
-            }
-        }
+                this.orientationImage = og.image('/images/arrow.svg');
 
-        for (let i = 0; i < late_removal.length; i++) {
-            const level = late_removal[i];
-            for (const id of level) {
-                $(`#gmarker-${id}`).remove();
-
-                let index = -1;
-                for (let j = 0; index != -1 && i < this.data.groups[i].length; j++) {
-                    if (this.data.groups[i][j] && this.data.groups[i][j].id == id) {
-                        index = j;
-                    }
-                }
-
-                this.data.groups[i].splice(index, 1);
-            }
-        }
-
-        for (const jail of this.svg.select('.jails rect').members) {
-            let already_grouped = false;
-            for (let i = 0; i < this.data.groups[this.zoomlevel].length; i++) {
-                const gmarker = this.data.groups[this.zoomlevel][i];
-
-                if (jail.inside(gmarker.lat, gmarker.long)) {
-                    already_grouped = true;
-                    break;
-                }
+                this.orientationImage.move(x, y - size);
+                this.orientationImage.attr('width', size);
+                this.orientationImage.attr('height', size);
             }
 
-            if (already_grouped) { continue; }
-
-            let affects = 0;
-            let max_priority_feature;
-            for (let i = 0; i < this.data.buildings.length; i++) {
-                const feature = this.data.buildings[i];
-
-                let {centerx, centery} = feature;
-
-                if (jail.inside(centerx, centery) && feature.groups.indexOf(this.zoomlevel) == -1) {
-                    affects++;
-                                                           
-                    if (this.marker_groups[this.zoomlevel].indexOf(parseInt(feature.properties.id.value)) == -1) {
-                        this.marker_groups[this.zoomlevel].push(parseInt(feature.properties.id.value));
-                    }
-
-                    if (max_priority_feature == undefined || parseInt(feature.properties.priority.value) < parseInt(max_priority_feature.properties.priority.value)) {
-                        max_priority_feature = feature;
-                    }
-                }
-            }
-
-
-            if (affects == 0) { continue; }
-
-            this.data.groups[this.zoomlevel].push({
-                id: parseInt(max_priority_feature.centerx).toString() + parseInt(max_priority_feature.centery).toString(),
-                affects: affects,
-                lat: max_priority_feature.centerx,
-                long: max_priority_feature.centery,
-                name: "Marcadores cerca de " + max_priority_feature.properties.name.value,
-                radius: jail.width() / 2,
-                auto: true
+            let phase = (alpha < 0) ? alpha + 360 : alpha;
+            $(SVGMap.instance.container).find('svg').find('#orientationGroup image').css({
+                'transform-origin': `${x + (size / 2)}px ${y + (size / 2)}px`,
+                'transform': `rotateZ(${phase}deg)`
             });
+
+            og.attr('data-orientation', phase);
+            og.attr('data-x', x + (size / 2));
+            og.attr('data-y', y + (size / 2));
         }
     }
     
-    groupMarkers(level) {
-        let i = 0;
+    groupMarkers() {
+        if (this._map.getZoom() >= this.MAX_GROUP_LEVEL) {
+            $(this._container ).find('svg a').attr('tabindex', '0');   
 
-        this.calculateAutoGroups();
-        
-        let late_removal = [];
-        for (const group of this.marker_groups) {
-            for (const marker of group) {
-                if (i == level) {
-                    // Evitamos mostrar los elementos después de haberlos ocultado
-                    // si aparecen en grupos de otros niveles
-                    late_removal.push(marker);
-                } else {
-                    $("#link-feature-" + marker).removeAttr("tabindex");
-                    $("#link-feature-" + marker).removeClass("non-clickable");
-
-                    this.svg.select('#marker-' + marker).show();
+            $(this.container).find('svg #rootGroup a').each((i, e) => {
+                if ($(e).find('path').attr('d') == 'M0 0') {
+                    $(e).attr('tabindex', '-1');
                 }
-            }
+            });
 
-            const g = this.svg.select('#SVG_MAIN_CONTENT').members[0].select('#gmarkers').members[0] || this.svg.select('#SVG_MAIN_CONTENT').members[0].group().attr('id', 'gmarkers').front();
-            
-            for (const gmarker of this.data.groups[i]) {
-                if (i == level) {
-                    const fit = (gmarker.affects.toString().length == 1) ? 1 : gmarker.affects.toString().length / 2;
-                    const a = g.link('#gmarker-' + gmarker.id).attr('class', 'non-link gmarker').attr('id', 'gmarker-' + gmarker.id);;
-                    a.attr('data-name', gmarker.name);
-                    const gm = a.group();
-                    const circle = gm.circle().radius(10);
-                    circle.cx(gmarker.lat).cy(gmarker.long);
-                    const text = gm.plain(gmarker.affects).attr('text-anchor', 'middle');
-                    text.font({ size: 16 / fit });
-                    text.move(gmarker.lat, gmarker.long - (8 / fit));
+            $(this._container + " .map-marker").removeClass("d-none");
 
-                    // Accessibility
-                    a.title(gmarker.name).attr('id', 'gmarker-' + gmarker.id + '-title');
-                    a.attr('aria-labelledby', 'gmarker-' + gmarker.id + '-title');
-                    a.attr('data-coords', circle.cx() + ":" + circle.cy());
-                    a.attr('tabindex', '0');
-                    text.attr('aria-hidden', 'true');
-                    text.attr('role', 'presentation');
+            this.updateSidebar();
+        } else {
+            setTimeout(() => {
+                $(this._container + " .map-marker").addClass("d-none");
+            }, 500);
 
-                    let self = this;
-                    $(a.node).on('click touchstart', function(e) {
-                        e.preventDefault();
-                        let [x, y] = $(this).attr('data-coords').split(':');
-                        self.zoomAndMove(x, y, self.zoomlevel + 2);
-                    });
+            $(this._container ).find('svg a').attr('tabindex', '-1');
 
-                    $(a.node).on('focus', function() {                        
-                        $(this).on('keyup', function(e) {
-                            if (e.which == 13) {
-                                e.preventDefault();
-                                self.zoomlevel += 2;
-                                let [x, y] = $(this).attr('data-coords').split(':');
-                                self.zoomAndMove(x, y, self.zoomlevel + 2);
+            setTimeout(() => {
+                this.drawn_markers._featureGroup.eachLayer((c) => {
+                    if (c instanceof L.MarkerCluster) {
+                        $(c._icon).addClass('gmarker');
+                        const {lat, lng} = c._latlng;
+                        let [cx, cy] = (<any>proj4('EPSG:4326', 'EPSG:25830', [lng, lat]));
+                        $(c._icon).attr('data-coords', `${cx}:${-cy}`);
+                        $.getJSON(`/map/data/nn4p/${cx},${cy},100`, (near) => {
+                            if (near.length > 0) {
+                                const nearest = near[0];
+                                $(c._icon).attr('aria-label', `Marcadores cerca de ${nearest.iname}`);
+                                $(c._icon).attr('data-name', `Marcadores cerca de ${nearest.iname}`);
                             }
                         });
-                    });
-                } else {
-                    for (const member of this.svg.select('#gmarker-' + gmarker.id).members) {
-                        member.remove();
+
+                        $(c._icon).on('click', () => {
+                            $(this.container).find('svg').trigger('focus');
+                        });
+
+                        $(c._icon).on('focus', function() {
+                            $(this).on('keypress', function(e : any) {
+                                if (e.originalEvent.charCode == 13) {
+                                    $(this).trigger('click');
+                                }
+                            })
+                        });
                     }
-                }
-            }
+                });
 
-            i++;
-        }
-
-        for (const marker of late_removal) {
-            this.svg.select('#marker-' + marker).hide();
-
-            $("#link-feature-" + marker).attr("tabindex", "-1");
-            $("#link-feature-" + marker).addClass("non-clickable");
+                setTimeout(() => {
+                    this.updateSidebar();
+                }, 100);
+            }, 500);
         }
     }
 
     isInview(e) {
-        let minx = SVGMap.instance.svg.viewbox().x;
-        let miny = SVGMap.instance.svg.viewbox().y;
-        let maxx = minx + SVGMap.instance.svg.viewbox().width;
-        let maxy = miny + SVGMap.instance.svg.viewbox().height;
-
-        let coords = $(e).attr('data-coords');
-        let centerx = parseFloat(coords.split(':')[0]);
-        let centery = parseFloat(coords.split(':')[1]);
-
-        let inviewx = (centerx >= minx && centerx <= maxx);
-        let inviewy = (centery >= miny && centery <= maxy);
-
-        /*console.log($(this).attr('data-name'), 'x', minx, maxx, centerx);
-        console.log($(this).attr('data-name'), 'y', miny, maxy, centery);
-        console.log($(this).attr('data-name'), 'inviewx', inviewx, 'inviewy', inviewy);*/
-
-        let inview = (inviewx && inviewy);
-        //console.log($(this).attr('data-name'), inview);
-        return inview;
+        return this.map.getBounds().contains((e.getLatLng ? e.getLatLng() : e.getCenter()));
     }
 
     updateSidebar() {
+        try {
         $("#currentViewPanel ul").empty();
         if (this.zoomlevel < this.MAX_GROUP_LEVEL) {
-            $(this.container + ".gmarker").each((i, e) => {
-                let inview = this.isInview(e);
+            this.drawn_markers._featureGroup.eachLayer((c) => {
+                let e = c._icon;
+
+                let inview = this.isInview(c);
                 $(e).attr('data-inview', String(inview));
                 
                 if (inview) {
@@ -467,9 +400,12 @@ export class SVGMap {
                 }
             });
         } else {
-            $(this.container + "a.feature-object").each((i, e) => {
-                let inview = this.isInview(e);
-                $(this).attr('data-inview', String(inview));
+            for (const k of Object.keys(this.geojson_layer._layers)) {
+                const c = this.geojson_layer._layers[k];
+                let e = c._a;
+
+                let inview = this.isInview(c);
+                $(e).attr('data-inview', String(inview));
                 
                 if (inview) {
                     let coords = $(e).attr('data-coords');
@@ -486,101 +422,43 @@ export class SVGMap {
                     $(li).append(a);
                     $("#currentViewPanel ul").append(li);
                 }
-            });
+            };
         }
-    }
-
-    getZoomValues(level, raisedbyuser) {
-        var vbx = $("#map").width();
-        vbx /= this.ZOOM_LEVEL_BASE + ((level - 1) * this.ZOOM_LEVEL_STEP);
-
-        return { vbx: vbx, wdiff: (raisedbyuser) ? (this.svg.viewbox().width - vbx) / 2 : 0};
+        } catch (e) {} 
     }
 
     resizeToLevel(level, raisedbyuser = true) {
-        if (level < 2 || level > 21) return;
-        
-        $(this.container + ".jails").remove();
-        this.zoomlevel = level;
+        if (level < 1 || level > 21) return;
 
-        let {vbx, wdiff} = this.getZoomValues(level, raisedbyuser);
-        var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
-        handler.viewbox(this.svg.viewbox().x + wdiff, this.svg.viewbox().y + wdiff, vbx, vbx);
-
-        window.location.href = "#zoom=" + level;
-
-        setTimeout(() => {
-            this.groupMarkers(level);
-            this.updateSidebar();
-        }, 400);
+        this.map.setZoom(level);
     }
 
     zoom(level, x, y, raisedbyuser = true) {
         if (level < 2 || level > 21) return;
-        
-        $(this.container + ".jails").remove();
-        this.zoomlevel = level;
-
-        let {vbx} = this.getZoomValues(level, raisedbyuser);
-        let oldx = this.svg.viewbox().x;
-        let oldy = this.svg.viewbox().y;
-
-        let cx = (this.svg.viewbox().x + (this.svg.viewbox().width)/2);
-        let cy = (this.svg.viewbox().y + (this.svg.viewbox().height/2));
-
-        let dcx = x - cx;
-        let dcy = y - cy;
-
-        console.log(x, y, cx, cy, dcx, dcy);
-
-        var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
-        handler.viewbox(this.svg.viewbox().x + dcx, this.svg.viewbox().y + dcy, vbx, vbx);
-
-        window.location.href = "#zoom=" + level;
-
-        setTimeout(() => {
-            this.groupMarkers(level);
-            this.updateSidebar();
-        }, 400);
+    
+        let [cy, cx] = (<any>proj4('EPSG:25830', 'EPSG:4326', [x, -y]));
+        this.map.setView([cx, cy], level);
     }
 
     /*
         Increases viewbox in value of x and y.
     */
     move(x, y, raisedbyuser = true) {
-        var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
-        handler.viewbox(this.svg.viewbox().x + x, this.svg.viewbox().y + y, this.svg.viewbox().width, this.svg.viewbox().height);
-        
-        setTimeout(() => {
-            this.groupMarkers(this.zoomlevel);
-        }, 400);
+        this.map.panBy(new L.Point(x, y));
     }
 
     /*
         Centers viewbox on the (x, y) given coordinates
     */
     moveTo(x, y, raisedbyuser = true) {
-        var handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
-        handler.viewbox(x - (this.fullw / 2), y - (this.fullh / 2), this.svg.viewbox().width, this.svg.viewbox().height);
-        setTimeout(() => {
-            this.groupMarkers(this.zoomlevel);
-            this.updateSidebar();
-        }, 400);
+        let [cy, cx] = (<any>proj4('EPSG:25830', 'EPSG:4326', [x, -y]));
+        this.map.setView([cx, cy], this.map.getZoom());
     }
 
     zoomAndMove(x, y, level, raisedbyuser = true) {
-        $(this.container + ".jails").remove();
-        this.zoomlevel = level;
+        if (level < 2 || level > 21) return;
 
-        let {vbx, wdiff} = this.getZoomValues(level, true);
-        let handler = (raisedbyuser) ? this.svg.animate({ duration: 250 }) : this.svg;
-        handler.viewbox(x - (this.fullw / 2) + wdiff, y - (this.fullh / 2) + wdiff, vbx, vbx);
-
-        window.location.href = "#zoom=" + level;
-
-        setTimeout(() => {
-            this.groupMarkers(level);
-            this.updateSidebar();
-        }, 400);
+        let [cy, cx] = (<any>proj4('EPSG:25830', 'EPSG:4326', [parseFloat(x), -parseFloat(y)]));
+        this.map.setView([cx, cy], level);
     }
 }

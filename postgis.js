@@ -291,14 +291,16 @@ const nearestEntrance = async function(buildingId, disability) {
     return data.rows;
 }
 
-const getGeoJSON = async function() {
+const getGeoJSON = async function(radius) {
     let data;
     try {
         data = await client.query(`select e.gid, array_agg(fp.p_code) as pname, array_agg(fp.val) as pval, ST_asGeoJSON(ST_Transform(geom, 4326)) as g,
-        ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery
-        from public.edificios as e, accessibility.feature_property as fp 
-        where e.gid = fp.code
-        group by gid;`);
+        ST_X(ST_Centroid(geom)) as centerx, (-1) * ST_Y(ST_Centroid(geom)) as centery,
+        nn.radius as nearestnamesradius,
+        array_agg(nn.iname) as nearestnames
+        from public.edificios as e, accessibility.feature_property as fp, nearestNamesForAll(${radius}) as nn
+        where e.gid = fp.code and nn.gid = e.gid
+        group by e.gid, nn.radius;`);
 
         let all = {
             type: "FeatureCollection",
@@ -307,8 +309,11 @@ const getGeoJSON = async function() {
 
         for (const row of data.rows) {
             let properties = {
+                id: row.gid,
                 centerx: row.centerx,
-                centery: row.centery
+                centery: row.centery,
+                nearestnamesradius: row.nearestnamesradius,
+                nearestnames: row.nearestnames[0]
             };
 
             for (let i = 0; i < row.pname.length; i++) {
