@@ -14,9 +14,8 @@ L.SVG.include({
         this._rootGroup.setAttribute('id', 'rootGroup');
         this._container.appendChild(this._rootGroup);
 
-        this._featuresGroup = create('g');
-        this._featuresGroup.setAttribute('id', 'fetaures');
-        this._rootGroup.appendChild(this._featuresGroup);
+        this._userGroupsList = [];
+        this._userGroups = [];
     },
 
     _initPath: function (layer) {
@@ -29,16 +28,34 @@ L.SVG.include({
         path.setAttribute('class', layer.options.className);
 
         a.appendChild(path);
+
         this._updateStyle(layer);
         this._layers[stamp] = layer;
     },
 
-    _addPath: function(layer) {
+    _addPath: function(layer) {        
         if (!this._rootGroup) { this._initContainer(); }
 
+        let group = (layer.options.group) ? layer.options.group : "features";
         if (layer._a.querySelector('path').getAttribute('d') != "M0 0") {
-            this._featuresGroup.appendChild(layer._a);
-            layer.addInteractiveTarget(layer._a);
+            if (group != null && group != "") {
+                let cg = this._rootGroup.querySelector(`g[id='${group}']`);
+                
+                if (cg) {
+                    cg.appendChild(layer._a);
+                    layer.addInteractiveTarget(layer._a);
+                } else {
+                    let g = create('g');
+                    g.setAttribute('id', group);
+                    g.appendChild(layer._a);
+                    layer.addInteractiveTarget(layer._a);
+
+                    this._rootGroup.appendChild(g);
+                }
+            } else {
+                this._rootGroup.appendChild(layer._a);
+                layer.addInteractiveTarget(layer._a);    
+            }
         }
     },
 

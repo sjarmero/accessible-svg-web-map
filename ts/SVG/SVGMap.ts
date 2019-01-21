@@ -3,10 +3,57 @@ import { Settings } from "../settings/defaults.js";
 
 declare var L, Cookies, proj4;
 
+type TTabOrder = Map<number, number>;
+type TTabOrderEntry = { name: string, order: TTabOrder };
+
+interface ITabOrder {
+    getName() : string;
+    getOrder() : Promise<TTabOrder>
+}
+
+/*
+    La tabulación va de Oeste a Este
+*/
+class WETabOrder implements ITabOrder {
+    private name : string;
+    private order : TTabOrder;
+
+    constructor(name) {
+        this.name = name;
+        this.order = new Map<number, number>();
+    }
+
+    getName() : string {
+        return this.name;
+    }
+
+    getOrder() : Promise<TTabOrder> {
+        if (this.order.size > 0) {
+            return new Promise((success, error) => {
+                success(this.order);
+            });
+        }
+
+        return new Promise((success, error) => {
+            fetch('/map/data/tab/we/').then((raw) => {
+                return raw.json();
+            }).then((data) => {
+                for (const k of Object.keys(data)) {
+                    this.order.set(parseInt(k), data[k]);
+                }
+
+                success(this.order); 
+            });
+        });
+    }
+}
+
 export class SVGMap {
     public readonly MAX_GROUP_LEVEL : number = 17;
 
     private static _instance : SVGMap;
+
+    private orders : ITabOrder[];
 
     private _map : any;
     private _svg : any;
@@ -18,12 +65,8 @@ export class SVGMap {
     private orientationImage : any;
     private lastLocation : {ox: number, oy: number};
     private lastOrientation : number;
-    private marker_groups : number[][];
-    private auto_marker_groups : any[][];
-    private auto_grouped_buildings : any[];
     private _data : any;
     private onmapdrawn : any;
-    private locationdrawn : boolean;
 
     constructor() {
         this._container = "#map";
@@ -46,10 +89,10 @@ export class SVGMap {
         });
 
         this.guides_drawn = false;
-        this.marker_groups = Array.apply(null, Array(20)).map(element => []);
-        this.auto_marker_groups = Array.apply(null, Array(20)).map(element => []);
-        this.auto_grouped_buildings = [];
-        this.locationdrawn = false;
+
+        this.orders = [
+            new WETabOrder("WETab")
+        ];
     }
 
     static get instance() {
@@ -141,9 +184,14 @@ export class SVGMap {
         return this.svg.viewbox().height;
     }
 
+    addOrder(o : ITabOrder) {
+        this.orders.push(o);
+    }
+
     draw() {
         this.fetchData().then((data) => {
             this.data = data;
+
             this.drawn_markers = L.markerClusterGroup({
                 showCoverageOnHover: false,
                 spiderfyOnMaxZoom: false,
@@ -199,7 +247,7 @@ export class SVGMap {
                         a.attr('data-nearest', feature.properties.nearestnames.reduce((prev, curr) => {
                             return `${prev},${curr}`
                         }));
-
+                        a.attr('id', `feature-link-${feature.properties.id}`);
                         a.attr('data-nearest-radius', feature.properties.nearestnamesradius);
                         a.attr('aria-label', feature.properties.name);
 
@@ -215,6 +263,7 @@ export class SVGMap {
                             });
         
                             $(a).on('focus', function(e) {
+                                console.log('tabindex', $(this).attr('tabindex'));
                                 let id = $(this).attr('data-building');
                                 let [cx, cy] = $(this).attr('data-coords').split(':');
                                 focusBuilding(id, cx, cy, false);
@@ -315,11 +364,19 @@ export class SVGMap {
     
     groupMarkers() {
         if (this._map.getZoom() >= this.MAX_GROUP_LEVEL) {
-            $(this._container ).find('svg a').attr('tabindex', '0');   
+            $(this._container).find('svg a').attr('tabindex', '0');   
 
-            $(this.container).find('svg #rootGroup a').each((i, e) => {
-                if ($(e).find('path').attr('d') == 'M0 0') {
-                    $(e).attr('tabindex', '-1');
+            if (this.orders.length > 0) {
+                this.orders[0].getOrder().then((order) => {
+                    for (const [k, v] of order) {
+                        $(this.container).find('svg').find(`#feature-link-${k}`).attr('tabindex', v);
+                    };
+                });
+            }
+
+            $(this._container).find('svg a').each(function() {
+                if ($(this).find('path').attr('d') == 'M0 0') {
+                    $(this).attr('tabindex', '-1');
                 }
             });
 

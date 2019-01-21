@@ -83,9 +83,21 @@ app.get('/map/data/nn4p/:lat,:long,:radius', async (request, response) => {
 
 
 app.get('/map/data/rsvg', async (request, response) => {
-    const name = request.params.name;
     const data = await db.routesSVG();
     response.json(data);
+});
+
+app.get('/map/data/tab/we', async (request, response) => {
+    const data = await db.getWETabOrder();
+    
+    let o = {};
+    let i = 1;
+    for (const on of data) {
+        o[on.id] = i;
+        i++;
+    }
+
+    response.json(o);
 });
 
 app.get('/map/data/:radius', async (request, response) => {
