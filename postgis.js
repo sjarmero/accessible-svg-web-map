@@ -337,6 +337,19 @@ const getGeoJSON = async function(radius) {
     }
 }
 
+const getWETabOrder = async () => {
+    let data;
+    try {
+        data = await client.query(`select e.gid as id, ST_Xmin(ST_Extent(e.geom)) as x from public.edificios as e group by e.gid order by x asc;`);
+    } catch (e) {
+        console.log("[POSTGIS] routesSVG");
+        console.log(e);
+        return [];
+    }
+
+    return data.rows;
+}
+
 const propertyParser = property => {
     return {
         "display": property['p_name'],
@@ -357,5 +370,6 @@ module.exports = {
     routesSVG: routesSVG,
     nearestNamesForPoint: nearestNamesForPoint,
     nearestEntrance: nearestEntrance,
-    getGeoJSON: getGeoJSON
+    getGeoJSON: getGeoJSON,
+    getWETabOrder: getWETabOrder
 }

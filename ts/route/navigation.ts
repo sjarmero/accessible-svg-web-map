@@ -10,7 +10,7 @@ let guide = [];
 export function navigationMode(path) {
     const data = path.data;
 
-    $("#rootGroup #route").empty();
+    $(SVGMap.instance.container).find('#route').empty();
 
     let a = {x: data[0].vcenterx, y: data[0].vcentery};
     let p = {x: data[1].vcenterx, y: data[1].vcentery};
@@ -45,7 +45,7 @@ export function navigationMode(path) {
         - Juntamos pasos con mismo giro
     */
 
-    let lastRotacion = -1;
+    let lastRotacion = path.entrance[0].looksat;
     guide = [];
 
     for (let i = 0; i < data.length; i++) {
@@ -117,7 +117,7 @@ export function navigationMode(path) {
             }
         } 
         
-        if (rotacionMapa == lastRotacion) {
+        if (rotacionMapa == lastRotacion && guide.length > 0) {
             let ls = guide.length - 1;
             guide[ls].distance = guide[ls].distance + modulo({x: p.x - a.x, y: p.y - a.y});
         } else if (added == 0) {
@@ -132,7 +132,6 @@ export function navigationMode(path) {
 
     // Dibujar ruta
     let svg = SVGMap.instance.svg;
-    const gm = svg.select('#rootGroup').members[0].group().attr('id', 'route');
     const latlngs = [];
     const circles = [];
 
@@ -149,14 +148,15 @@ export function navigationMode(path) {
             radius: 3,
             className: "circle",
             fillOpacity: 1,
-            strokeOpacity: 1
+            strokeOpacity: 1,
+            group: 'route'
         });
 
         circles.push(circle);
         latlngs.push([vcenterx, vcentery]);
     }
 
-    let polyline = L.polyline(latlngs, { className: "", interactive: false, fill: false, color: (Cookies.get('routeColor') || '#1A237E'), weight: 3});
+    let polyline = L.polyline(latlngs, { group: 'route', className: "", interactive: false, fill: false, color: (Cookies.get('routeColor') || '#1A237E'), weight: 3});
     polyline.addTo(SVGMap.instance.map);
 
     let count = 1;
