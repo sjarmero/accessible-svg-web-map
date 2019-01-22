@@ -1,5 +1,5 @@
 export class Settings {
-    public static readonly textSize = 16;
+    public static readonly textSize : number = 16;
     public static readonly fontFamily = 'Arial';
 
     /* Ajustes del mapa */
@@ -13,8 +13,8 @@ export class Settings {
 
     /* Círculo de localización */
     public static readonly locationCircleColor = '#0842A1';
-    public static readonly locationCircleSize = 10;
-    public static readonly locationRadio = 100;
+    public static readonly locationCircleSize : number = 10;
+    public static readonly locationRadio : number = 100;
 
     /* Rutas */
     public static readonly routeColor = '#1A237E';
@@ -22,9 +22,9 @@ export class Settings {
 
     /* Marcadores */
     public static readonly backgroundTextColor = '#0842A1';
-    public static readonly backgroundTextColorOpacity = 0;
+    public static readonly backgroundTextColorOpacity : number = 0;
 
     /* Pasos */
-    public static readonly stepLenght = 0.6;
-    public static readonly walkingSpeed = 1; // metros / segundo
+    public static readonly stepLenght : number = 0.6;
+    public static readonly walkingSpeed : number = 1; // metros / segundo
 }

@@ -43,7 +43,6 @@ L.SVG.include({
                 
                 if (cg) {
                     cg.appendChild(layer._a);
-                    layer.addInteractiveTarget(layer._a);
                 } else {
                     let g = create('g');
                     g.setAttribute('id', group);

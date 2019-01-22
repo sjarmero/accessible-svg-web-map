@@ -1,10 +1,16 @@
-import { angulo, perspectiva, toDeg, modulo} from './math.js';
+import { angulo, perspectiva, toDeg, modulo, angulo2} from './math.js';
 import { SVGMap } from '../SVG/SVGMap.js';
 import { Settings } from "../settings/defaults.js";
 
 declare var Cookies, proj4;
 
-const STEP_FACTOR = Cookies.get('stepLength') || Settings.stepLenght;
+const STEP_FACTOR : number = parseFloat(Cookies.get('stepLength')) || Settings.stepLenght;
+
+/*
+    La proyección del mapa hace que "la realidad" esté inclinada
+    una serie de grados.
+*/
+const PROJECTION_INCLINATION : number = 17;
 
 let guide = [];
 export function navigationMode(path) {
@@ -14,29 +20,6 @@ export function navigationMode(path) {
 
     let a = {x: data[0].vcenterx, y: data[0].vcentery};
     let p = {x: data[1].vcenterx, y: data[1].vcentery};
-
-    // Centrar mapa en primer punto
-    // SVGMap.instance.zoomAndMove(a.x, a.y, 15);
-
-    // Rotar el mapa para mirar al primer destino
-    let rotacionMapa = perspectiva(p, a);
-    let originalRotacion = rotacionMapa;
-    let ajuste = toDeg(angulo(p, a));
-    if (rotacionMapa == 90) { ajuste = 90 - ajuste; }
-    if (rotacionMapa == 270) { ajuste = 90 - ajuste; }
-
-    /*$("#map svg #rootGroup").css({
-        'transform-origin': `${a.x}px ${a.y}px`,
-        'transform': `rotateX(-45deg) rotateZ(${rotacionMapa + ajuste}deg)`
-    });
-
-    $("#map svg #rootGroup .map-marker").each(function(e) {
-        $(this).css({
-            'transform-origin': `${$(this).find('text').attr('x')}px ${$(this).find('text').attr('y')}px`,
-            'transform': `rotateX(0deg) rotateZ(-${rotacionMapa + ajuste}deg)`
-        });
-    });*/
-
 
     /* Calculamos la guia:
         - Nombramos la entrada donde situarse
@@ -61,20 +44,41 @@ export function navigationMode(path) {
         a = {x: data[i].vcenterx, y: data[i].vcentery};
         p = {x: data[i+1].vcenterx, y: data[i+1].vcentery};
 
-        rotacionMapa = perspectiva(p, a);
-        ajuste = toDeg(angulo(p, a));
-        if (rotacionMapa == 90) { ajuste = 90 - ajuste; }
-        if (rotacionMapa == 270) { ajuste = 90 - ajuste; }
-
+        let rotacionMapa = perspectiva(p, a);
         let giro = rotacionMapa - lastRotacion;
 
-        let direction = 0;
-        if (giro == 0) {
-            direction = 0; // Recto
+        let anguloRP = toDeg(angulo(p, a)); // Angulo respecto a perpendicular
+        if (rotacionMapa == 90) anguloRP = 90 - anguloRP;
+        if (rotacionMapa == 270)  anguloRP = 90 - anguloRP;
+
+        let ajuste = anguloRP;
+        if (rotacionMapa != 270) {
+            ajuste += (a.x < p.x) ? PROJECTION_INCLINATION : -PROJECTION_INCLINATION;
+        } else {
+            ajuste += (a.x < p.x) ? -PROJECTION_INCLINATION : PROJECTION_INCLINATION;
+
+        }
+
+        let direction = -1;
+        if (giro == 0 || giro == 180) {
+            console.log('Recto con ajuste', ajuste);
+
+            if (ajuste >= 20) {
+                direction = 4;
+            } else if (ajuste <= -20) {
+                direction = 3;
+            } else {
+                direction = 0;
+            }
+            
         } else if (giro == 90) {
-            direction = 1; // Izquierda
-        } else if (giro == -90) {
-            direction = 2; // Derecha;
+            console.log('Izquierda con ajuste', ajuste);
+
+            direction = 1;
+        } else if (giro == -90 || giro == 270) {
+            direction = 2;
+
+            console.log('Derecha con ajuste', ajuste);
         }
 
         let added = 0;
@@ -83,10 +87,10 @@ export function navigationMode(path) {
                 let poi = {x: data[i].icenterx[j], y: data[i].icentery[j]}
                 let poip = perspectiva(poi, a);
                 let giro = poip - lastRotacion;
-                ajuste = toDeg(angulo(poi, a));
+                let ajuste = toDeg(angulo(poi, a));
                 if (poip == 90) { ajuste = 90 - ajuste; }
                 if (poip == 270) { ajuste = 90 - ajuste; }
-                
+                                
                 if (ajuste > 20) { continue; }
 
                 if (giro == 90) {
@@ -198,6 +202,22 @@ export function navigationMode(path) {
                 order += `Gira a la derecha y camina <span class="steps-expression" data-meters='${Math.ceil(step.distance)}'></span>`;
                 break;
 
+            case 3:
+                order += `Gira ligeramente a la izquierda y camina <span class="steps-expression" data-meters='${Math.ceil(step.distance)}'></span>`;
+                break;
+
+            case 4:
+                order += `Gira ligeramente a la derecha y camina <span class="steps-expression" data-meters='${Math.ceil(step.distance)}'></span>`;
+                break;
+
+            case 5:
+                order += `Gira bastante a la izquierda y camina <span class="steps-expression" data-meters='${Math.ceil(step.distance)}'></span>`;
+                break;
+
+            case 6:
+                order += `Gira bastante a la derecha y camina <span class="steps-expression" data-meters='${Math.ceil(step.distance)}'></span>`;
+                break;
+
             case -1:
                 order += `Has llegado a tu destino`;
                 break;
@@ -210,39 +230,36 @@ export function navigationMode(path) {
         $(stepDiv).attr('role', 'listitem');
         $(stepDiv).attr('tabindex', '0');
         $(stepDiv).attr('data-step', i);
-        $(stepDiv).attr('data-map-rotation', originalRotacion);
 
         $(".route-steps").append(stepDiv);
 
         i++;
     }
 
-    $(".steps-expression").each(function() {
-        let meters = parseInt($(this).attr('data-meters'));
+    const unitChanger = (e) => {
+        let meters : number = parseInt($(e).attr('data-meters'));
 
         if ($("#metricUnitSelect").val() == 0) {
-            $(this).html(`${meters / STEP_FACTOR} pasos`);
-        } else {
-            $(this).html(`${meters} metros`);
+            $(e).html(`${Math.ceil(meters / STEP_FACTOR)} pasos`);
+        } else if ($("#metricUnitSelect").val() == 1) {
+            $(e).html(`${meters} metros`);
+        } else if ($("#metricUnitSelect").val() == 2) {
+            const speed = Cookies.get('speed') || Settings.walkingSpeed;
+            const time : number = meters / speed;
+            const minutes = Math.floor(time / 60);
+            const seconds = Math.ceil(time % 60);
+
+            $(e).html(`${((minutes > 0) ? `${minutes} ${minutes > 1 ? 'minutos' : 'minuto'} y ` : '')}${seconds} segundos`);
         }
+    }
+
+    $(".steps-expression").each(function() {
+        unitChanger(this);
     });
 
     $("#metricUnitSelect").on('change', function(e) {
         $(".steps-expression").each(function() {
-            let meters = parseInt($(this).attr('data-meters'));
-
-            if ($("#metricUnitSelect").val() == 0) {
-                $(this).html(`${Math.ceil(meters / STEP_FACTOR)} pasos`);
-            } else if ($("#metricUnitSelect").val() == 1) {
-                $(this).html(`${meters} metros`);
-            } else if ($("#metricUnitSelect").val() == 2) {
-                const speed = Cookies.get('speed') || Settings.walkingSpeed;
-                const time : number = meters / speed;
-                const minutes = Math.floor(time / 60);
-                const seconds = Math.ceil(time % 60);
-
-                $(this).html(`${((minutes > 0) ? `${minutes} ${minutes > 1 ? 'minutos' : 'minuto'} y ` : '')}${seconds} segundos`);
-            }
+            unitChanger(this);
         });
     });
 
