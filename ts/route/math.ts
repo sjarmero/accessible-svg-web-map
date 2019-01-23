@@ -1,3 +1,6 @@
+const PROJECTION_DEVIATION : number = 17;
+const SYSTEM_ADJUSTMENT : number = 90;
+
 interface Punto {
     x : number;
     y : number;
@@ -15,14 +18,9 @@ export function angulo(p1 : Punto, p2 : Punto) : number {
     return alpha;
 }
 
-// Devuelve el ángulo en el cuadrante completo con p1 como referencia y p2 como objetivo
-export function angulo2(p1 : Punto, p2 : Punto) : number {
-    return Math.atan2(p1.y - p2.y, p1.x - p2.x);
-}
-
 // Grados a rotar el mapa para que desde A se mire a P
 // Habrá que añadirle el ángulo calculado entre P y A
-export function perspectiva(p : Punto, a : Punto) : number {
+export function posicion(p : Punto, a : Punto) : number {
     let ydiff = p.y - a.y;
     let xdiff = p.x - a.x;
 
@@ -42,6 +40,22 @@ export function perspectiva(p : Punto, a : Punto) : number {
     }
 
     return phase;
+}
+
+// Devuelve el ángulo en el cuadrante completo
+export function angulo2(anchor : Punto, target : Punto) : number {
+    return Math.atan2(target.y - anchor.y, target.x - anchor.x);
+}
+
+// Devuelve el ángulo que el usuario debe girar desde su orientación actual para mirar a s
+export function perspectiva2(s : Punto, a : Punto) : number {
+    s.y *= -1;
+    a.y *= -1;
+
+    let alpha : number = toDeg(angulo2(a, s));
+    alpha = (alpha < 0) ? 360 + alpha : alpha;
+    const P : number = (alpha - SYSTEM_ADJUSTMENT) - PROJECTION_DEVIATION;
+    return P;
 }
 
 export function toDeg(rad : number) : number {
