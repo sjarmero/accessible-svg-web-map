@@ -1,17 +1,13 @@
+const PROJECTION_DEVIATION : number = 17;
+const SYSTEM_ADJUSTMENT : number = 90;
+
 interface Punto {
     x : number;
     y : number;
 }
+
 // Devuelve el ángulo entre dos puntos en radianes
 export function angulo(p1 : Punto, p2 : Punto) : number {
-    /*
-    let x = v1.x - v2.x;
-    let y = v1.y - v2.y;
-    let t = Math.atan2(y, x);
-    let a = (t * (180 / Math.PI)) % 360;
-
-    return (a < 0) ? a + 360 : a;*/
-
     let h = {x: p1.x, y: p2.y};
 
     let a = {x: (h.x - p1.x), y: (h.y - p1.y)};
@@ -19,48 +15,47 @@ export function angulo(p1 : Punto, p2 : Punto) : number {
     let c = {x: (p2.x - p1.x), y: (p2.y - p1.y)};
     let alpha = Math.atan2(modulo(b), modulo(a));
 
-    /*SVGMap.instance.svg.line(p1.x, p1.y, h.x, h.y).stroke({ width: 1, color: 'pink'});
-    SVGMap.instance.svg.line(p2.x, p2.y, h.x, h.y).stroke({ width: 1, color: 'yellow'});
-    SVGMap.instance.svg.line(p1.x, p1.y, p2.x, p2.y).stroke({ width: 1, color: 'red'});*/
-
     return alpha;
 }
 
 // Grados a rotar el mapa para que desde A se mire a P
 // Habrá que añadirle el ángulo calculado entre P y A
-export function perspectiva(p : Punto, a : Punto) : number {
+export function posicion(p : Punto, a : Punto) : number {
     let ydiff = p.y - a.y;
     let xdiff = p.x - a.x;
 
-    console.log('perspectiva', xdiff, ydiff);
-
-    /*if (Math.abs(xdiff) <= 50) {
-        if (ydiff > 0) {
-            return 180;
-        } else {
-            return 0;
-        }
-    } else {
-        if (xdiff > 0) {
-            return 270;
-        } else {
-            return 90;
-        }
-    }*/
-
+    let phase = 0;
     if (Math.abs(ydiff) > Math.abs(xdiff)) {
         if (ydiff > 0) {
-            return 180;
+            phase = 180;
         } else {
-            return 0;
+            phase = 0;
         }
     } else {
         if (xdiff > 0) {
-            return 270;
+            phase = 270;
         } else {
-            return 90;
+            phase = 90;
         }
     }
+
+    return phase;
+}
+
+// Devuelve el ángulo en el cuadrante completo
+export function angulo2(anchor : Punto, target : Punto) : number {
+    return Math.atan2(target.y - anchor.y, target.x - anchor.x);
+}
+
+// Devuelve el ángulo que el usuario debe girar desde su orientación actual para mirar a s
+export function perspectiva2(s : Punto, a : Punto) : number {
+    s.y *= -1;
+    a.y *= -1;
+
+    let alpha : number = toDeg(angulo2(a, s));
+    alpha = (alpha < 0) ? 360 + alpha : alpha;
+    const P : number = (alpha - SYSTEM_ADJUSTMENT) - PROJECTION_DEVIATION;
+    return P;
 }
 
 export function toDeg(rad : number) : number {
@@ -77,8 +72,9 @@ export function modulo(v : Punto) {
 
 // cx y cy son puntos de pivote, respecto a los que rotar
 export function rotar(x, y, cx, cy, degrees) : [number, number] {
-    let rad = toRad(degrees);
     degrees = parseFloat(degrees);
+
+    let rad = toRad(degrees);
 
     let s = Math.sin(rad);
     let c = Math.cos(rad);
