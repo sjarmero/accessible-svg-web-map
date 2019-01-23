@@ -1,4 +1,4 @@
-import { angulo, perspectiva, toDeg, modulo, angulo2} from './math.js';
+import { angulo, posicion, toDeg, modulo, angulo2, perspectiva2} from './math.js';
 import { SVGMap } from '../SVG/SVGMap.js';
 import { Settings } from "../settings/defaults.js";
 
@@ -29,6 +29,7 @@ export function navigationMode(path) {
     */
 
     let lastRotacion = path.entrance[0].looksat;
+    let orientacionUsuario = 0;
     guide = [];
 
     for (let i = 0; i < data.length; i++) {
@@ -44,48 +45,42 @@ export function navigationMode(path) {
         a = {x: data[i].vcenterx, y: data[i].vcentery};
         p = {x: data[i+1].vcenterx, y: data[i+1].vcentery};
 
-        let rotacionMapa = perspectiva(p, a);
+        let rotacionMapa = posicion(p, a);
         let giro = rotacionMapa - lastRotacion;
+        orientacionUsuario += giro;
 
-        let anguloRP = toDeg(angulo(p, a)); // Angulo respecto a perpendicular
-        if (rotacionMapa == 90) anguloRP = 90 - anguloRP;
-        if (rotacionMapa == 270)  anguloRP = 90 - anguloRP;
-
-        let ajuste = anguloRP;
-        if (rotacionMapa != 270) {
-            ajuste += (a.x < p.x) ? PROJECTION_INCLINATION : -PROJECTION_INCLINATION;
-        } else {
-            ajuste += (a.x < p.x) ? -PROJECTION_INCLINATION : PROJECTION_INCLINATION;
-
-        }
-
+        let P = perspectiva2(p, a);
+        let PA = P - orientacionUsuario; // Angulo respecto a perpendicular
         let direction = -1;
-        if (giro == 0 || giro == 180) {
-            console.log('Recto con ajuste', ajuste);
 
-            if (ajuste >= 20) {
-                direction = 4;
-            } else if (ajuste <= -20) {
-                direction = 3;
-            } else {
-                direction = 0;
-            }
-            
-        } else if (giro == 90) {
-            console.log('Izquierda con ajuste', ajuste);
+        console.log('P', P, 'giro', giro, 'orientacion', orientacionUsuario, 'PA', PA);
 
-            direction = 1;
-        } else if (giro == -90 || giro == 270) {
-            direction = 2;
+        switch (giro) {
+            case 0:
+                if (PA >= 25 && PA <= 65) {
+                    direction = 3;
+                } else if (PA <= -25 && PA >= -65) {
+                    direction = 4;
+                } else {
+                    direction = 0;
+                }
 
-            console.log('Derecha con ajuste', ajuste);
+                break;
+
+            case 90:
+                direction = 1;
+                break;
+
+            case -90:
+                direction = 2;
+                break;
         }
 
         let added = 0;
         if (data[i].iid != null && data[i].iid.length > 0) {
             for (let j = 0; j < data[i].iid.length; j++) {
                 let poi = {x: data[i].icenterx[j], y: data[i].icentery[j]}
-                let poip = perspectiva(poi, a);
+                let poip = posicion(poi, a);
                 let giro = poip - lastRotacion;
                 let ajuste = toDeg(angulo(poi, a));
                 if (poip == 90) { ajuste = 90 - ajuste; }
