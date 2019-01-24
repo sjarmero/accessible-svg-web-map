@@ -12,6 +12,26 @@ const STEP_FACTOR : number = parseFloat(Cookies.get('stepLength')) || Settings.s
 */
 const PROJECTION_INCLINATION : number = 17;
 
+enum OrientacionUsuario {
+    RECTO = 0,
+    IZQUIERDA = 90,
+    DERECHA = -90,
+    ATRAS = 180
+}
+
+function parseOrientacion(grados : number, ultima : OrientacionUsuario) {
+    grados -= (ultima != OrientacionUsuario.ATRAS) ? ultima : 0;
+    if (grados <= 65 && grados >= -65) {
+        return OrientacionUsuario.RECTO;
+    } else if (grados <= 115 && grados >= 65) {
+        return (ultima != OrientacionUsuario.ATRAS) ? OrientacionUsuario.IZQUIERDA : OrientacionUsuario.DERECHA;
+    } else if (grados >= -115 && grados <= -65) {
+        return (ultima != OrientacionUsuario.ATRAS) ? OrientacionUsuario.DERECHA : OrientacionUsuario.IZQUIERDA;
+    } else {        
+        return OrientacionUsuario.ATRAS;
+    }
+}
+
 let guide = [];
 export function navigationMode(path) {
     const data = path.data;
@@ -29,7 +49,8 @@ export function navigationMode(path) {
     */
 
     let lastRotacion = path.entrance[0].looksat;
-    let orientacionUsuario = 0;
+    let orientacionU = parseOrientacion(lastRotacion, 0);
+    let orientacionAcum = orientacionU;
     guide = [];
 
     for (let i = 0; i < data.length; i++) {
@@ -47,16 +68,20 @@ export function navigationMode(path) {
 
         let rotacionMapa = posicion(p, a);
         let giro = rotacionMapa - lastRotacion;
-        orientacionUsuario += giro;
 
         let P = perspectiva2(p, a);
-        let PA = P - orientacionUsuario; // Angulo respecto a perpendicular
+
+        orientacionU = parseOrientacion(P, orientacionAcum);
+        orientacionAcum += (orientacionU != OrientacionUsuario.ATRAS) ? orientacionU : 0;;
+
+        let PA = P - orientacionAcum; // Angulo respecto a perpendicular
         let direction = -1;
 
-        console.log('P', P, 'giro', giro, 'orientacion', orientacionUsuario, 'PA', PA);
+        console.log('P', P, 'giro', giro, 'orientacionU', orientacionU, 'orientacion', orientacionAcum, 'PA', PA);
 
-        switch (giro) {
-            case 0:
+        switch (orientacionU) {
+            case OrientacionUsuario.ATRAS:
+            case OrientacionUsuario.RECTO:
                 if (PA >= 25 && PA <= 65) {
                     direction = 3;
                 } else if (PA <= -25 && PA >= -65) {
@@ -67,11 +92,11 @@ export function navigationMode(path) {
 
                 break;
 
-            case 90:
+            case OrientacionUsuario.IZQUIERDA:
                 direction = 1;
                 break;
 
-            case -90:
+            case OrientacionUsuario.DERECHA:
                 direction = 2;
                 break;
         }
