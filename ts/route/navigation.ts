@@ -34,12 +34,9 @@ function parseOrientacion(grados : number, ultima : OrientacionUsuario) {
 
 let guide = [];
 export function navigationMode(path) {
-    const data = path.data;
+    const {data} = path;
 
     $(SVGMap.instance.container).find('#route').empty();
-
-    let a = {x: data[0].vcenterx, y: data[0].vcentery};
-    let p = {x: data[1].vcenterx, y: data[1].vcentery};
 
     /* Calculamos la guia:
         - Nombramos la entrada donde situarse
@@ -49,8 +46,11 @@ export function navigationMode(path) {
     */
 
     let lastRotacion = path.entrance[0].looksat;
+
     let orientacionU = parseOrientacion(lastRotacion, 0);
-    let orientacionAcum = orientacionU;
+    var orientacionAcum = orientacionU;
+    let lastOrientacion = orientacionU;
+
     guide = [];
 
     for (let i = 0; i < data.length; i++) {
@@ -63,8 +63,8 @@ export function navigationMode(path) {
             break;
         }
 
-        a = {x: data[i].vcenterx, y: data[i].vcentery};
-        p = {x: data[i+1].vcenterx, y: data[i+1].vcentery};
+        var a = {x: data[i].vcenterx, y: data[i].vcentery};
+        var p = {x: data[i+1].vcenterx, y: data[i+1].vcentery};
 
         let rotacionMapa = posicion(p, a);
         let giro = rotacionMapa - lastRotacion;
@@ -72,12 +72,10 @@ export function navigationMode(path) {
         let P = perspectiva2(p, a);
 
         orientacionU = parseOrientacion(P, orientacionAcum);
-        orientacionAcum += (orientacionU != OrientacionUsuario.ATRAS) ? orientacionU : 0;;
+        orientacionAcum += (orientacionU != OrientacionUsuario.ATRAS) ? orientacionU : 0;
 
-        let PA = P - orientacionAcum; // Angulo respecto a perpendicular
+        let PA = P - orientacionAcum;
         let direction = -1;
-
-        console.log('P', P, 'giro', giro, 'orientacionU', orientacionU, 'orientacion', orientacionAcum, 'PA', PA);
 
         switch (orientacionU) {
             case OrientacionUsuario.ATRAS:
@@ -105,43 +103,26 @@ export function navigationMode(path) {
         if (data[i].iid != null && data[i].iid.length > 0) {
             for (let j = 0; j < data[i].iid.length; j++) {
                 let poi = {x: data[i].icenterx[j], y: data[i].icentery[j]}
-                let poip = posicion(poi, a);
-                let giro = poip - lastRotacion;
-                let ajuste = toDeg(angulo(poi, a));
-                if (poip == 90) { ajuste = 90 - ajuste; }
-                if (poip == 270) { ajuste = 90 - ajuste; }
-                                
-                if (ajuste > 20) { continue; }
-
-                if (giro == 90) {
-                    // Izquierda
+                let P = perspectiva2(poi, a);
+                let o = parseOrientacion(P, lastOrientacion);
+                
+                if (o == OrientacionUsuario.IZQUIERDA || o == OrientacionUsuario.DERECHA) {
                     guide.push(data[i]);
                     guide[guide.length - 1].direction = direction;
                     guide[guide.length - 1].distance = modulo({x: p.x - a.x, y: p.y - a.y});
                     guide[guide.length - 1].poi = true;
-                    guide[guide.length - 1].poidirection = 1;
                     guide[guide.length - 1].poiname = data[i].iname[j];
 
-                    added++;
-
-                    break;
-                } else if (giro == -90) {
-                    // Derecha;
-                    guide.push(data[i]);
-                    guide[guide.length - 1].direction = direction;
-                    guide[guide.length - 1].distance = modulo({x: p.x - a.x, y: p.y - a.y});
-                    guide[guide.length - 1].poi = true;
-                    guide[guide.length - 1].poidirection = 2;
-                    guide[guide.length - 1].poiname = data[i].iname[j];
-
+                    guide[guide.length - 1].poidirection = (o == OrientacionUsuario.IZQUIERDA) ? 1 : 0;
+                    
                     added++;
 
                     break;
                 }
             }
-        } 
+        }
         
-        if (rotacionMapa == lastRotacion && guide.length > 0) {
+        if (orientacionU == lastOrientacion && guide.length > 0) {
             let ls = guide.length - 1;
             guide[ls].distance = guide[ls].distance + modulo({x: p.x - a.x, y: p.y - a.y});
         } else if (added == 0) {
@@ -151,7 +132,7 @@ export function navigationMode(path) {
             guide[guide.length - 1].poi = false;
         }
 
-        lastRotacion = rotacionMapa;
+        lastOrientacion = orientacionAcum;
     }
 
     // Dibujar ruta

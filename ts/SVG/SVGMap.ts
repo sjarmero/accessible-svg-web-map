@@ -309,57 +309,69 @@ export class SVGMap {
     drawLocation(ox : number, oy : number) {
         if (ox && oy) this.lastLocation = {ox: ox, oy: oy};
 
-        let {x, y} = this.map.latLngToLayerPoint([ox, oy]);
-
-        if (this.svg) {
-            if (this.locationCircle) {
-                this.locationCircle.move(x, y);
-            } else {
-                let lg = this.svg.select('#rootGroup').members[0].group();
-                lg.attr('id', 'locationGroup');
-
-                this.locationCircle = lg.circle(Cookies.get('locationCircleSize') || Settings.locationCircleSize);
-                console.log(this.locationCircle);
-                this.locationCircle.fill(Cookies.get('locationCircleColor') || Settings.locationCircleColor);
-                this.locationCircle.move(x, y);
-            }
+        if (this.locationCircle) {
+            SVGMap.instance.map.removeLayer(this.locationCircle);
+            this.locationCircle = null;
         }
+
+        let meters : number = this.pixelsToMeters(Cookies.get('locationCircleSize') || Settings.locationCircleSize);
+
+        this.locationCircle = L.circle([ox, oy], {
+            fill: true,
+            fillColor: Cookies.get('locationCircleColor') || Settings.locationCircleColor,
+            stroke: false,
+            interactive: false,
+            radius: meters,
+            className: "circle",
+            fillOpacity: 1,
+            strokeOpacity: 1,
+            group: 'location',
+            front: true
+        });
+
+        this.locationCircle.addTo(SVGMap.instance.map);
     }
 
     drawOrientation(alpha : number) {
-        if (!alpha) return;
+        if (!alpha || !this.lastLocation) return;
 
-        if (this.svg && this.lastLocation) {
-            if (alpha) this.lastOrientation = alpha;
+        this.lastOrientation = alpha;
 
-            let {ox, oy} = this.lastLocation;
-            let {x, y} = this.map.latLngToLayerPoint([ox, oy]);
-            let og;
-            let size : number = parseFloat((Cookies.get('locationCircleSize') || 10));
-            if (this.orientationImage) {
-                og = this.svg.select('#orientationGroup');
-                this.orientationImage.move(x, y - (size * 1));
-            } else {
-                og = this.svg.select('#rootGroup').members[0].group();
-                og.attr('id', 'orientationGroup');
+        let {ox, oy} = this.lastLocation;
+        let size : number = parseFloat((Cookies.get('locationCircleSize') || 10));
 
-                this.orientationImage = og.image('/images/arrow.svg');
+        let originPoint = SVGMap.instance.map.latLngToContainerPoint([ox, oy]);
+        let originAdjust = originPoint.add({x : -(size), y: -(size * 4)});
+        let targetPoint = originPoint.add({x: (size), y: (size / 4)});
 
-                this.orientationImage.move(x, y - size);
-                this.orientationImage.attr('width', size);
-                this.orientationImage.attr('height', size);
-            }
+        let originLatLng = SVGMap.instance.map.containerPointToLatLng(originAdjust);
+        let targetLatLng = SVGMap.instance.map.containerPointToLatLng(targetPoint);
 
-            let phase = (alpha < 0) ? alpha + 360 : alpha;
-            $(SVGMap.instance.container).find('svg').find('#orientationGroup image').css({
-                'transform-origin': `${x + (size / 2)}px ${y + (size / 2)}px`,
-                'transform': `rotateZ(${phase}deg)`
-            });
-
-            og.attr('data-orientation', phase);
-            og.attr('data-x', x + (size / 2));
-            og.attr('data-y', y + (size / 2));
+        if (this.orientationImage) {
+            SVGMap.instance.map.removeLayer(this.orientationImage);
+            this.orientationImage = null;
         }
+
+        let phase = (alpha < 0) ? alpha + 360 : alpha;
+
+        this.orientationImage = L.rotableImageOverlay('/images/arrow.svg', [
+            originLatLng,
+            targetLatLng
+        ], {
+            rotate: phase
+        });
+        
+        this.orientationImage.addTo(SVGMap.instance.map);
+
+        $(this.orientationImage._image).attr('id', 'orientationArrow');
+        $(this.orientationImage._image).attr('data-orientation', phase);
+        $(this.orientationImage._image).attr('data-x', originPoint.x);
+        $(this.orientationImage._image).attr('data-y', originPoint.y);
+
+        $(this.orientationImage._image).css({
+            'z-index': 999,
+            'transform-origin': `${size}px ${size * 4}px`
+        });
     }
     
     groupMarkers() {
@@ -517,5 +529,15 @@ export class SVGMap {
 
         let [cy, cx] = (<any>proj4('EPSG:25830', 'EPSG:4326', [parseFloat(x), -parseFloat(y)]));
         this.map.setView([cx, cy], level);
+    }
+
+    pixelsToMeters(pixels : any) : number {
+        pixels = parseInt(pixels);
+        let centerLatLng = this.map.getCenter();
+        let centerPoint = this.map.latLngToContainerPoint(centerLatLng);
+        let targetPoint = [centerPoint.x + pixels, centerPoint.y];
+        let targetLatLng = this.map.containerPointToLatLng(targetPoint);
+
+        return centerLatLng.distanceTo(targetLatLng);
     }
 }
