@@ -43,13 +43,16 @@ L.SVG.include({
                 
                 if (cg) {
                     cg.appendChild(layer._a);
+                    layer.addInteractiveTarget(layer._a);    
                 } else {
                     let g = create('g');
                     g.setAttribute('id', group);
+
                     g.appendChild(layer._a);
                     layer.addInteractiveTarget(layer._a);
 
-                    this._rootGroup.appendChild(g);
+                    let ref = (layer.options.front) ? null : this._rootGroup.firstElementChild;
+                    this._rootGroup.insertBefore(g, ref);
                 }
             } else {
                 this._rootGroup.appendChild(layer._a);
@@ -106,66 +109,23 @@ L.SVG.include({
         delete this._layers[L.Util.stamp(layer)];
     }
 });
-/*
-L.Icon.include({
-    options: {
-        iconSize: [14, 14],
-        text: '',
-        iconUrl: '/images/marker.svg',
-        className: 'map-marker'
+
+// https://github.com/Leaflet/Leaflet/issues/4029
+
+L.rotableImageOverlay = function(url, bounds, options) {
+    return new L.RotableImageOverlay(url, bounds, options);
+};
+
+// A quick extension to allow image layer rotation.
+L.RotableImageOverlay = L.ImageOverlay.extend({
+    _animateZoom: function(e){
+        L.ImageOverlay.prototype._animateZoom.call(this, e);
+        let img = this._image;
+        img.style[L.DomUtil.TRANSFORM] += ' rotate(' + (this.options.rotate || 0) + 'deg)';
     },
-
-    createIcon: function() {
-        console.log(this);
-        let g = document.createElement('div');
-        let options = this.options;
-        const [cx, cy] = this.options.latlng;
-        const [ix, iy] = [cx - 15, cy - 7];
-
-        let img = create('img');
-        img.setAttribute('x', cx);
-        img.setAttribute('y', cy);
-
-        let text = create('text');
-        text.setAttribute('x', cx);
-        text.setAttribute('y', cy);
-        text.setAttribute('text-anchor', 'start');
-        text.setAttribute('filter', 'url(#bgFilter)');
-
-        let wordsRaw = options.text.split(' ');
-        let words = [wordsRaw[0]];
-        for (let i = 1; i < wordsRaw.length; i++) {
-            let word = wordsRaw[i];
-            if ((words[words.length-1].length + word.length) <= 10 || word.match(/^(,|.|;|:|")$/i) != null) {
-                words[words.length-1] += ` ${word}`;
-            } else {
-                words.push(word);
-            }
-        }
-
-        for (let i = 0; i < words.length; i++) {
-            if (i == 0) {
-                let tspan = create('tspan');
-                tspan.innerHTML = words[i];
-                tspan.setAttribute('x', cx);
-                tspan.setAttribute('y', cy);
-                text.appendChild(tspan);
-            } else {
-                let tspan = create('tspan');
-                tspan.innerHTML = words[i];
-                tspan.setAttribute('x', cx);
-                tspan.setAttribute('y', cy + (i * 5));
-                text.appendChild(tspan);
-            }
-        }
-
-        g.appendChild(text);
-        g.appendChild(img);
-
-        return g;
-    },
-
-    createShadow: function() {
-        return null;
+    _reset: function(){
+        L.ImageOverlay.prototype._reset.call(this);
+        let img = this._image;
+        img.style[L.DomUtil.TRANSFORM] += ' rotate(' + (this.options.rotate || 0) + 'deg)';
     }
-});*/
+});

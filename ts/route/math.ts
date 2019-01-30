@@ -47,10 +47,10 @@ export function angulo2(anchor : Punto, target : Punto) : number {
     return Math.atan2(target.y - anchor.y, target.x - anchor.x);
 }
 
-// Devuelve el ángulo que el usuario debe girar desde su orientación actual para mirar a s
+// Devuelve el ángulo que el usuario debe girar orientado al norte del sistema
 export function perspectiva2(s : Punto, a : Punto) : number {
-    s.y *= -1;
-    a.y *= -1;
+    s.y = Math.abs(s.y);
+    a.y = Math.abs(a.y);
 
     let alpha : number = toDeg(angulo2(a, s));
     alpha = (alpha < 0) ? 360 + alpha : alpha;
