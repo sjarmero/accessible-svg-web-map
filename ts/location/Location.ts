@@ -37,7 +37,6 @@ export class Location {
 
     watchOrientation(callback) {
         window.addEventListener("deviceorientation", (e) => {
-            this.orientationAccum = 50;
             if (this.orientationAccum == 50) {
                 this.orientationAccum = 0;
                 callback(e.alpha, e.beta, e.gamma);
