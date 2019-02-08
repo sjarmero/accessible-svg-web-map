@@ -62,8 +62,9 @@ export class SVGMap {
     private geojson_layer : any;
     private drawn_markers : any;
     private locationCircle : any;
+    private accuracyCircle : any;
     private orientationImage : any;
-    private lastLocation : {ox: number, oy: number};
+    private lastLocation : {ox: number, oy: number, accuracy: number};
     private lastOrientation : number;
     private _data : any;
     private onmapdrawn : any;
@@ -83,7 +84,7 @@ export class SVGMap {
         }).addTo(this._map);
 
         this._map.on('zoomend moveend', () => {
-            if (this.lastLocation) this.drawLocation(this.lastLocation.ox, this.lastLocation.oy);
+            if (this.lastLocation) this.drawLocation(this.lastLocation.ox, this.lastLocation.oy, this.lastLocation.accuracy);
             if (this.lastOrientation) this.drawOrientation(this.lastOrientation);
             this.groupMarkers();
         });
@@ -200,6 +201,7 @@ export class SVGMap {
             });
         
             this.geojson_layer = L.geoJson(data, {
+                building: true,
                 className: 'edificio feature-block building',
                 fillOpacity: '1',
                 strokeOpacity: '1',
@@ -306,20 +308,25 @@ export class SVGMap {
         });
     }
 
-    drawLocation(ox : number, oy : number) {
-        if (ox && oy) this.lastLocation = {ox: ox, oy: oy};
+    drawLocation(ox : number, oy : number, accuracy : number) {
+        if (ox && oy && accuracy) this.lastLocation = {ox: ox, oy: oy, accuracy: accuracy};
 
         if (this.locationCircle) {
             SVGMap.instance.map.removeLayer(this.locationCircle);
+            SVGMap.instance.map.removeLayer(this.accuracyCircle);
             this.locationCircle = null;
+            this.accuracyCircle = null;
         }
 
-        let meters : number = this.pixelsToMeters(Cookies.get('locationCircleSize') || Settings.locationCircleSize);
+        let size = Cookies.get('locationCircleSize') || Settings.locationCircleSize;
+        let meters : number = this.pixelsToMeters(size);
 
         this.locationCircle = L.circle([ox, oy], {
             fill: true,
             fillColor: Cookies.get('locationCircleColor') || Settings.locationCircleColor,
-            stroke: false,
+            stroke: true,
+            color: '#FFF',
+            weight: 2,
             interactive: false,
             radius: meters,
             className: "circle",
@@ -329,6 +336,18 @@ export class SVGMap {
             front: true
         });
 
+        this.accuracyCircle = L.circle([ox, oy], {
+            fill: true,
+            fillColor: Cookies.get('locationCircleColor') || Settings.locationCircleColor,
+            stroke: false,
+            interactive: false,
+            radius: accuracy,
+            className: "accuracy-circle",
+            fillOpacity: 0.3,
+            group: 'location'
+        });
+
+        this.accuracyCircle.addTo(SVGMap.instance.map);
         this.locationCircle.addTo(SVGMap.instance.map);
     }
 
@@ -535,7 +554,7 @@ export class SVGMap {
         pixels = parseInt(pixels);
         let centerLatLng = this.map.getCenter();
         let centerPoint = this.map.latLngToContainerPoint(centerLatLng);
-        let targetPoint = [centerPoint.x + pixels, centerPoint.y];
+        let targetPoint = [centerPoint.x, centerPoint.y + pixels];
         let targetLatLng = this.map.containerPointToLatLng(targetPoint);
 
         return centerLatLng.distanceTo(targetLatLng);

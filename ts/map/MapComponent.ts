@@ -78,9 +78,9 @@ $(document).ready(function() {
     // Localización 
     let locationService = new Location();
     let lastLocation = null;
-    locationService.watch(function(lat, long) {
+    locationService.watch(function(lat, long, accuracy) {
         lastLocation = [lat, long];
-        SVGMap.instance.drawLocation(lat, long);
+        SVGMap.instance.drawLocation(lat, long, accuracy);
     });
 
     locationService.watchOrientation(function(alpha, beta, gamma) {

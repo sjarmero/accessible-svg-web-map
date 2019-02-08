@@ -130,7 +130,7 @@ nav.inline {
         fill: #72848e !important;
     }
 
-#MAIN_SVG #rootGroup a, #MAIN_SVG #rootGroup path {
+#MAIN_SVG #rootGroup a, #MAIN_SVG #rootGroup #features path {
     pointer-events: auto !important;
     cursor: pointer;
 }
