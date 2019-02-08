@@ -19,12 +19,12 @@ L.SVG.include({
     },
 
     _initPath: function (layer) {
-        let a = layer._a = create('a');
+        let a = layer._a = (layer.options.interactive) ? create('a') : create('g');
         let path = create('path');
 
         let stamp = L.Util.stamp(layer);
 
-        a.setAttribute('href', '#');
+        if (layer.options.interactive) a.setAttribute('href', '#');
         path.setAttribute('class', layer.options.className);
 
         a.appendChild(path);
@@ -43,20 +43,23 @@ L.SVG.include({
                 
                 if (cg) {
                     cg.appendChild(layer._a);
-                    layer.addInteractiveTarget(layer._a);    
                 } else {
                     let g = create('g');
                     g.setAttribute('id', group);
 
                     g.appendChild(layer._a);
-                    layer.addInteractiveTarget(layer._a);
 
                     let ref = (layer.options.front) ? null : this._rootGroup.firstElementChild;
                     this._rootGroup.insertBefore(g, ref);
                 }
             } else {
                 this._rootGroup.appendChild(layer._a);
+            }
+
+            if (layer.options.interactive) {
                 layer.addInteractiveTarget(layer._a);    
+            } else {
+                layer._a.setAttribute('style', 'pointer-events: none;');
             }
         }
     },

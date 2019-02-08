@@ -105,7 +105,7 @@ function updatePreview() {
     $('#previewSvg #bgFilter feFlood').attr('flood-color', <any>backgroundTextColor);
     $('#previewSvg #bgFilter feFlood').attr('flood-opacity', <any>backgroundTextColorOpacity);
 
-    $('#previewSvg #location').css(<any>{
+    $('#previewSvg #location, #previewSvg #accuracy').css(<any>{
         fill: locationCircleColor
     });
 
