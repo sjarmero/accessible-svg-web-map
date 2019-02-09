@@ -79,3 +79,7 @@ body {
         z-index: 4;
         pointer-events: auto;
     }
+
+#controlPanel, #routePanel {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
