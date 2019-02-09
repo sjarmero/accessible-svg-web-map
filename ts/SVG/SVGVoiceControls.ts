@@ -4,7 +4,7 @@
 */
 import { voiceParse } from './SVGVoicePatterns.js';
 
-declare var webkitSpeechGrammarList, webkitSpeechRecognition;
+declare var webkitSpeechGrammarList, webkitSpeechRecognition, cvox;
 
 class Queue<T> {
     private base : T[];
@@ -42,10 +42,11 @@ export class SVGVoiceControls {
     private static on : boolean = false;
 
     private list : any;
-    private voice : any;
+    private ear : any;
     private container : any;
     public onTranscript : any;
 
+    private voice : any;
     private tts : Queue<SpeechOrder>;
     private work : any;
     private prevOn : boolean;
@@ -58,12 +59,12 @@ export class SVGVoiceControls {
             this.list = new webkitSpeechGrammarList();
             this.list.addFromString('');
 
-            this.voice = new webkitSpeechRecognition();
-            this.voice.lang = 'es-ES';
-            this.voice.interimResults = false;
-            this.voice.maxAlternatives = 1;
-            this.voice.grammars = this.list;
-            this.voice.continuous = true;
+            this.ear = new webkitSpeechRecognition();
+            this.ear.lang = 'es-ES';
+            this.ear.interimResults = false;
+            this.ear.maxAlternatives = 1;
+            this.ear.grammars = this.list;
+            this.ear.continuous = true;
         }
 
         // Speech
@@ -83,6 +84,23 @@ export class SVGVoiceControls {
 
     static setOn(v) {
         this.on = v;
+    }
+
+    static isChromevoxActive() : boolean {
+        return document.querySelectorAll(".cvox_indicator_container").length > 0;
+    }
+
+    createUtterance(sentence : String) {
+        let voice : any = new SpeechSynthesisUtterance();
+        voice.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.name == 'Google español'; })[0];
+        voice.voiceURI = 'native';
+        voice.volume = 1; // 0 to 1
+        voice.rate = 1; // 0.1 to 10
+        voice.pitch = 0; //0 to 2
+        voice.lang = 'es-ES';
+        voice.text = sentence;
+
+        return voice;
     }
 
     resetWorker(time) {
@@ -118,13 +136,18 @@ export class SVGVoiceControls {
         console.log('Pronounce', order);
         SVGVoiceControls.setOn(false);
         this.stop();
+        cvox.Api.internalDisable();
         this.container.innerHTML = "";
 
         let time = (SVGVoiceControls.time_per_word) * (order.sentence.split(" ").length);
         this.resetWorker(time + (2 * SVGVoiceControls.time_per_word));
 
         setTimeout(() => {
-            this.container.innerHTML = order.sentence;
+            if (SVGVoiceControls.isChromevoxActive()) {
+                this.container.innerHTML = order.sentence
+            } else {
+                speechSynthesis.speak(this.createUtterance(order.sentence));
+            }
         }, 150);
 
         setTimeout(() => {
@@ -155,7 +178,7 @@ export class SVGVoiceControls {
 
         this.onTranscript = callback;
 
-        this.voice.onresult = (event) => {
+        this.ear.onresult = (event) => {
             console.log('Voice result!');
             var last = event.results.length - 1;
             var transcript = event.results[last][0].transcript;
@@ -171,30 +194,30 @@ export class SVGVoiceControls {
             }
         }
 
-        this.voice.onend = () => {
+        this.ear.onend = () => {
             console.log('Voice end and on=' + SVGVoiceControls.isOn());
             if (SVGVoiceControls.isOn()) {
                 setTimeout(() => {
-                    this.voice.start();
+                    this.ear.start();
                 }, 1000);
             }
         }
 
         try {
-            this.voice.start();
+            this.ear.start();
         } catch (e) {}
 
-        console.log("Voice started...");
+        console.log("ear started...");
     }
 
     stop() {
-        this.voice.stop();
+        this.ear.stop();
     }
 
     wait(time : number) {
         console.log('Wait', time);
         SVGVoiceControls.setOn(false);
-        this.voice.stop();
+        this.ear.stop();
 
         setTimeout(() => {
             console.log('Wait over');
