@@ -15,20 +15,50 @@ const PROJECTION_INCLINATION : number = 17;
 enum OrientacionUsuario {
     RECTO = 0,
     IZQUIERDA = 90,
-    DERECHA = -90,
+    DERECHA = 270,
     ATRAS = 180
 }
 
 function parseOrientacion(grados : number, ultima : OrientacionUsuario) {
     grados -= (ultima != OrientacionUsuario.ATRAS) ? ultima : 0;
-    if (grados <= 65 && grados >= -65) {
+    grados = (grados < 0) ? 360 + grados : grados;
+    if (grados <= 25 || grados >= 320) {
         return OrientacionUsuario.RECTO;
     } else if (grados <= 115 && grados >= 65) {
         return (ultima != OrientacionUsuario.ATRAS) ? OrientacionUsuario.IZQUIERDA : OrientacionUsuario.DERECHA;
-    } else if (grados >= -115 && grados <= -65) {
+    } else if (grados >= 205 && grados <= 295) {
         return (ultima != OrientacionUsuario.ATRAS) ? OrientacionUsuario.DERECHA : OrientacionUsuario.IZQUIERDA;
     } else {        
         return OrientacionUsuario.ATRAS;
+    }
+}
+
+function acumularOrientacion(nueva : OrientacionUsuario, previa : OrientacionUsuario) {
+
+    switch (previa) {
+        case OrientacionUsuario.RECTO:
+            return nueva;
+            
+        case OrientacionUsuario.IZQUIERDA:
+            if (nueva == OrientacionUsuario.DERECHA) return OrientacionUsuario.RECTO;
+            if (nueva == OrientacionUsuario.IZQUIERDA) return OrientacionUsuario.ATRAS;
+            if (nueva == OrientacionUsuario.RECTO) return OrientacionUsuario.IZQUIERDA;
+            if (nueva == OrientacionUsuario.ATRAS) return OrientacionUsuario.ATRAS;
+            break;
+
+        case OrientacionUsuario.DERECHA:
+            if (nueva == OrientacionUsuario.IZQUIERDA) return OrientacionUsuario.RECTO;
+            if (nueva == OrientacionUsuario.DERECHA) return OrientacionUsuario.ATRAS;
+            if (nueva == OrientacionUsuario.RECTO) return OrientacionUsuario.DERECHA;
+            if (nueva == OrientacionUsuario.ATRAS) return OrientacionUsuario.ATRAS;
+            break;
+
+        case OrientacionUsuario.ATRAS:
+            if (nueva == OrientacionUsuario.IZQUIERDA) return OrientacionUsuario.DERECHA;
+            if (nueva == OrientacionUsuario.DERECHA) return OrientacionUsuario.IZQUIERDA;
+            if (nueva == OrientacionUsuario.RECTO) return OrientacionUsuario.ATRAS;
+            if (nueva == OrientacionUsuario.ATRAS) return OrientacionUsuario.ATRAS;
+            break;
     }
 }
 
@@ -45,7 +75,16 @@ export function navigationMode(path) {
         - Juntamos pasos con mismo giro
     */
 
-    let lastRotacion = path.entrance[0].looksat;
+    // Por como están guardadas en la base de datos
+    let lastRotacion = parseInt(path.entrance[0].looksat);
+
+    /*
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        EN LA BASE DE DATOS LOS ÁNGULOS ESTÁN MAL. HASTA CAMBIARLO
+        CONVERTIMOS 90º EN 270º E INVERSA 
+    */
+
+    lastRotacion = (lastRotacion == 90) ? 270 : (lastRotacion == 270) ? 90 : lastRotacion;
 
     let orientacionU = parseOrientacion(lastRotacion, 0);
     var orientacionAcum = orientacionU;
@@ -66,13 +105,11 @@ export function navigationMode(path) {
         var a = {x: data[i].vcenterx, y: data[i].vcentery};
         var p = {x: data[i+1].vcenterx, y: data[i+1].vcentery};
 
-        let rotacionMapa = posicion(p, a);
-        let giro = rotacionMapa - lastRotacion;
-
         let P = perspectiva2(p, a);
-
         orientacionU = parseOrientacion(P, orientacionAcum);
-        orientacionAcum += (orientacionU != OrientacionUsuario.ATRAS) ? orientacionU : 0;
+
+        lastOrientacion = orientacionAcum;
+        orientacionAcum = acumularOrientacion(orientacionU, orientacionAcum);
 
         let PA = P - orientacionAcum;
         let direction = -1;
@@ -100,12 +137,13 @@ export function navigationMode(path) {
         }
 
         let added = 0;
-        if (data[i].iid != null && data[i].iid.length > 0) {
+        if (i > 0 && data[i].iid != null && data[i].iid.length > 0) {
             for (let j = 0; j < data[i].iid.length; j++) {
                 let poi = {x: data[i].icenterx[j], y: data[i].icentery[j]}
-                let P = perspectiva2(poi, a);
-                let o = parseOrientacion(P, lastOrientacion);
                 
+                let pos = perspectiva2(poi, a);
+                let o = parseOrientacion(pos, lastOrientacion);
+
                 if (o == OrientacionUsuario.IZQUIERDA || o == OrientacionUsuario.DERECHA) {
                     guide.push(data[i]);
                     guide[guide.length - 1].direction = direction;
@@ -113,7 +151,7 @@ export function navigationMode(path) {
                     guide[guide.length - 1].poi = true;
                     guide[guide.length - 1].poiname = data[i].iname[j];
 
-                    guide[guide.length - 1].poidirection = (o == OrientacionUsuario.IZQUIERDA) ? 1 : 0;
+                    guide[guide.length - 1].poidirection = (o == OrientacionUsuario.IZQUIERDA);
                     
                     added++;
 
@@ -131,12 +169,9 @@ export function navigationMode(path) {
             guide[guide.length - 1].distance = modulo({x: p.x - a.x, y: p.y - a.y});
             guide[guide.length - 1].poi = false;
         }
-
-        lastOrientacion = orientacionAcum;
     }
 
     // Dibujar ruta
-    let svg = SVGMap.instance.svg;
     const latlngs = [];
     const circles = [];
 
