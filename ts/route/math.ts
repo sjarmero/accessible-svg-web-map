@@ -55,7 +55,7 @@ export function perspectiva2(s : Punto, a : Punto) : number {
     let alpha : number = toDeg(angulo2(a, s));
     alpha = (alpha < 0) ? 360 + alpha : alpha;
     const P : number = (alpha - SYSTEM_ADJUSTMENT) - PROJECTION_DEVIATION;
-    return P;
+    return (P < 0) ? 360 + P : P;
 }
 
 export function toDeg(rad : number) : number {
