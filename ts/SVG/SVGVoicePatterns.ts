@@ -54,7 +54,7 @@ const SVGVoiceGrammars = [
 
     {
         name: 'repeatStep',
-        pattern: /^(repetir|volver) (paso|a decir)/i,
+        pattern: /^(repetir|volver|decir) (paso|a decir)$/i,
         extract: []
     },
 

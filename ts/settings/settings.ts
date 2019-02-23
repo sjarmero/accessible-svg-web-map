@@ -17,13 +17,23 @@ $(document).ready(function() {
     $('#settingsForm').on('submit', function(e) {
         e.preventDefault();
 
-        $(this).find('input:not([type="submit"]):not([type="reset"]), select').each(function() {
+        $(this).find('input:not([type="submit"]):not([type="reset"]):not([type="radio"]), select').each(function() {
             let name = $(this).attr('name');
             let value = $(this).val();
 
             console.log(name, value);
             Cookies.set(name, String(value), { expires: 365 });
         });
+
+        $(this).find('input[type="radio"]').each(function() {
+            if ($(this).prop('checked')) {
+                let name = $(this).attr('name');
+                let value = $(this).val();
+    
+                console.log(name, value);
+                Cookies.set(name, String(value), { expires: 365 });
+            }
+        })
 
         $("#successRow").css({ display: 'block' });
         $("#successRow").html($("#successRow").html());
@@ -64,12 +74,19 @@ $(document).ready(function() {
         $(style).html(fontImport);
         $(document.head).append(style);
 
-        $('#settingsForm').find('input:not([type="submit"]):not([type="reset"]), select').each(function() {
+        $('#settingsForm').find('input:not([type="submit"]):not([type="reset"]):not([type="radio"]), select').each(function() {
             let name = $(this).attr('name');
             let value = Cookies.get($(this).attr('name'));
             console.log(name, value);
             if (value) {
                 $(this).val(value);
+            }
+        });
+
+        $('#settingsForm').find('input[type=radio]').each(function() {
+            let value = Cookies.get($(this).attr('name'));
+            if (value) {
+                $(this).prop('checked', value == $(this).val());
             }
         });
 

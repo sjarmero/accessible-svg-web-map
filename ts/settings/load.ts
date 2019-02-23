@@ -21,6 +21,10 @@ export function loadSettings() {
     let backgroundTextColorOpacity = Cookies.get('backgroundTextColorOpacity') || Settings.backgroundTextColorOpacity;
     let backgroundColor = Cookies.get('backgroundColor') || Settings.backgroundColor;
 
+    if (Cookies.get('mapType') == 'full') {
+        backgroundColor = 'transparent';
+    }
+
     /* Círculo de localización */
     let locationCircleColor = Cookies.get('locationCircleColor') || Settings.locationCircleColor;
 

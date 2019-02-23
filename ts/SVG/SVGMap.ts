@@ -79,6 +79,12 @@ export class SVGMap {
             zoomControl: false
         }).setView([38.3842921, -0.5115638], 16);
 
+        if(Cookies.get('mapType') == 'full') {
+            new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data by <a href="//openstreetmap.org">OpenStreetMap</a>'
+            }).addTo(this._map);
+        }
+
         L.control.zoom({
             position: 'topright'
         }).addTo(this._map);
