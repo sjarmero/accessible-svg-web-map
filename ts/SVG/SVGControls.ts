@@ -155,7 +155,7 @@ export class SVGControls {
                             $(this).removeClass("active");
                             $("#dictateStatus").html("Haz click para comenzar a escuchar");
             
-                            SVGControls.instance.voiceControl.say('El mapa ha dejado de escuchar.', null, () => {});
+                            SVGControls.instance.voiceControl.say('El mapa ha dejado de escuchar.',  null, () => {});
 
                             return;
 
