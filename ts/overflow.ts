@@ -19,6 +19,8 @@ $(document).ready(function() {
         });
     }
 
+    document.querySelector('html').scrollTo(0, 0);
+
     toggleOverflow($('.overflow-toggle').get(0), $(window).width() < 992);
 });
 

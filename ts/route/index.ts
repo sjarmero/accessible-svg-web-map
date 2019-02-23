@@ -293,7 +293,15 @@ function voiceListener() {
                     var step = $('.route-steps .route-step:focus');
                     if (step.length == 1) {
                         console.log('Repitiendo paso', step);
-                        SVGControls.instance.voiceControl.wait(step.html().split(" ").length * SVGVoiceControls.time_per_word)
+
+                        if (!SVGVoiceControls.isChromevoxActive()) {
+                            SVGControls.instance.voiceControl.say(step.text(), null, () => {
+                                voiceListener();
+                            });
+                        } else {
+                            SVGControls.instance.voiceControl.wait(step.text().split(" ").length * SVGVoiceControls.time_per_word)
+                        }
+
                         step.blur();
                         step.trigger('focus');
                     }
@@ -307,7 +315,15 @@ function voiceListener() {
                     var step = $(`.route-steps .route-step[data-step='${stepNo}']`);
                     if (step.length == 1) {
                         console.log('Leyendo paso', stepNo);
-                        SVGControls.instance.voiceControl.wait(step.html().split(" ").length * SVGVoiceControls.time_per_word);
+
+                        if (!SVGVoiceControls.isChromevoxActive()) {
+                            SVGControls.instance.voiceControl.say(step.text(), null, () => {
+                                voiceListener();
+                            });
+                        } else {
+                            SVGControls.instance.voiceControl.wait(step.text().split(" ").length * SVGVoiceControls.time_per_word);    
+                        }
+
                         step.trigger('focus');
                     }
 
@@ -317,7 +333,14 @@ function voiceListener() {
                     if (currentStep.length == 1) {
                         let sno : number = parseInt(currentStep.attr('data-step'));
                         if ($(`.route-step[data-step=${sno + 1}]`).length == 1) {
-                            SVGControls.instance.voiceControl.wait($(`.route-step[data-step=${sno + 1}]`).html().split(" ").length * SVGVoiceControls.time_per_word);
+                            if (!SVGVoiceControls.isChromevoxActive()) {
+                                SVGControls.instance.voiceControl.say($(`.route-step[data-step=${sno + 1}]`).text(), null, () => {
+                                    voiceListener();
+                                });
+                            } else {
+                                SVGControls.instance.voiceControl.wait($(`.route-step[data-step=${sno + 1}]`).text().split(" ").length * SVGVoiceControls.time_per_word);
+                            }
+
                             $(`.route-step[data-step=${sno + 1}]`).trigger('focus');
                         }
                     }
@@ -329,7 +352,14 @@ function voiceListener() {
                     if (currentStep.length == 1) {
                         let sno : number = parseInt(currentStep.attr('data-step'));
                         if ($(`.route-step[data-step=${sno - 1}]`).length == 1) {
-                            SVGControls.instance.voiceControl.wait($(`.route-step[data-step=${sno - 1}]`).html().split(" ").length * SVGVoiceControls.time_per_word);
+                            if (!SVGVoiceControls.isChromevoxActive()) {
+                                SVGControls.instance.voiceControl.say($(`.route-step[data-step=${sno - 1}]`).text(), null, () => {
+                                    voiceListener();
+                                });
+                            } else {
+                                SVGControls.instance.voiceControl.wait($(`.route-step[data-step=${sno - 1}]`).html().split(" ").length * SVGVoiceControls.time_per_word);
+                            }
+
                             $(`.route-step[data-step=${sno - 1}]`).trigger('focus');
                         }
                     }
@@ -369,25 +399,35 @@ function routeByVoice(origin, target) {
     SVGControls.instance.voiceControl.stop();
 
     selectByVoice(origin, 'origen', (selOrigin) => {
-        selectByVoice(target, 'destino', (selTarget) => {
-            if (selOrigin != null && selTarget != null) {
-                SVGControls.instance.voiceControl.say(`Calculando ruta`, null, () => {
-                    console.log('Ruta de ', selOrigin, 'a', selTarget);
-                    $("#impairmentSelect").val(1);
-                    SVGControls.instance.voiceControl.wait(5000);
-                    startNavigation(selOrigin.id, selTarget.id);
+        if (selOrigin == null) {
+            SVGControls.instance.voiceControl.say(`No se puede obtener la ruta.`, null, () => {
+                voiceListener();
+            });
+        } else {
+            selectByVoice(target, 'destino', (selTarget) => {
+                if (selOrigin != null && selTarget != null) {
+                    SVGControls.instance.voiceControl.say(`Calculando ruta`, null, () => {
+                        console.log('Ruta de ', selOrigin, 'a', selTarget);
+                        $("#impairmentSelect").val(1);
+                        SVGControls.instance.voiceControl.wait(5000);
+                        startNavigation(selOrigin.id, selTarget.id);
 
-                   setTimeout(() => {
-                       voiceListener();
-                   }, 8000);
-                });
-            } else {
-                console.log('[ERROR]', selOrigin, selTarget);
-                SVGControls.instance.voiceControl.say(`No se ha podido obtener la ruta.`, null, () => {
-                    voiceListener();
-                });
-            }
-        });
+                        if ($("#nonAccessibleWarning").css("display") == "block") {
+                            SVGControls.instance.voiceControl.say("La ruta calculada tiene problemas de accesibilidad, pero es la única que se ha podido encontrar.");
+                        }
+
+                        setTimeout(() => {
+                            voiceListener();
+                        }, 8000);
+                    });
+                } else {
+                    console.log('[ERROR]', selOrigin, selTarget);
+                    SVGControls.instance.voiceControl.say(`No se puede obtener la ruta.`, null, () => {
+                        voiceListener();
+                    });
+                }
+            });
+        }
     });
 }
 

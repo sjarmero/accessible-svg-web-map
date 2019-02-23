@@ -136,7 +136,7 @@ export class SVGVoiceControls {
         console.log('Pronounce', order);
         SVGVoiceControls.setOn(false);
         this.stop();
-        cvox.Api.internalDisable();
+        if (SVGVoiceControls.isChromevoxActive()) cvox.Api.internalDisable();
         this.container.innerHTML = "";
 
         let time = (SVGVoiceControls.time_per_word) * (order.sentence.split(" ").length);
@@ -198,7 +198,9 @@ export class SVGVoiceControls {
             console.log('Voice end and on=' + SVGVoiceControls.isOn());
             if (SVGVoiceControls.isOn()) {
                 setTimeout(() => {
-                    this.ear.start();
+                    if (SVGVoiceControls.isOn()) {
+                        this.ear.start();
+                    }
                 }, 1000);
             }
         }

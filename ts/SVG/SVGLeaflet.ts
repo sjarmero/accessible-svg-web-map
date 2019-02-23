@@ -10,6 +10,20 @@ L.SVG.include({
         this._container.setAttribute('tabindex', 0);
         this._container.setAttribute('id', 'MAIN_SVG');
 
+        let title = create('title');
+        let desc = create('desc');
+        
+        title.textContent = 'Mapa accesible de la Universidad de Alicante';
+        desc.textContent = 'Mapa accesible de la Universidad de Alicante perteneciente al TFG de Sergio Juan Armero, dirigido por Sergio Luján Mora. Datos geográficos cortesía de SigUA.';
+        
+        title.setAttribute('id', 'svgrendertitle');
+        desc.setAttribute('id', 'svgrenderdesc');
+
+        this._container.appendChild(title);
+        this._container.appendChild(desc);
+        this._container.setAttribute('aria-labelledby', 'svgrendertitle');
+        this._container.setAttribute('aria-describedby', 'svgrenderdesc');
+
         this._rootGroup = create('g');
         this._rootGroup.setAttribute('id', 'rootGroup');
         this._container.appendChild(this._rootGroup);
@@ -24,7 +38,6 @@ L.SVG.include({
 
         let stamp = L.Util.stamp(layer);
 
-        if (layer.options.interactive) a.setAttribute('href', '#');
         path.setAttribute('class', layer.options.className);
 
         a.appendChild(path);

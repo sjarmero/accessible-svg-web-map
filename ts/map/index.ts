@@ -131,7 +131,7 @@ $(document).ready(function() {
                 $(this).removeClass("active");
                 $("#dictateStatus").html("Haz click para comenzar a escuchar");
 
-                SVGControls.instance.voiceControl.say('El mapa ha dejado de escuchar.');
+                SVGControls.instance.voiceControl.say('El mapa ha dejado de escuchar.', null, () => {});
             } else {
                 $(this).attr('data-dictating', 'true');
                 $(this).addClass("active");
