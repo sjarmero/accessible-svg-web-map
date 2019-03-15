@@ -50,13 +50,13 @@
             </div>
             <div class="form-group row">
                 <div class="col-6">
-                    <img src="/images/full.png" style="width: 100%;" alt="Imagen que muestra una captura del mapa en modo completo" />
-                    <input type=radio name="mapType" value="full" /> Completo
+                    <img src="/images/full.png" style="width: 100%;" alt="Imagen que muestra una captura del mapa en modo completo" title="Imagen del mapa en modo completo" />
+                    <input type=radio name="mapType" value="full" aria-label="Elegir tipo de mapa completo" /> Completo
                 </div>
 
                 <div class="col-6">
-                    <img src="/images/basic.png" style="width: 100%;" alt="Imagen que muestra una captura del mapa en modo reducido" />
-                    <input type=radio name="mapType" value="basic" checked /> Reducido
+                    <img src="/images/basic.png" style="width: 100%;" alt="Imagen que muestra una captura del mapa en modo reducido" title="Imagen del mapa en modo reducido" />
+                    <input type=radio name="mapType" value="basic" checked aria-label="Elegir tipo de mapa reducido" /> Reducido
                 </div>
             </div>
 
@@ -260,7 +260,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="locationCircleSize" id="locationCircleSizeLabel" class="col-sm-3 col-form-label">Tamaño del punto de ubicación <span class='sr-only'>en metros</span></label>
+                        <label for="locationCircleSize" id="locationCircleSizeLabel" class="col-sm-3 col-form-label">Tamaño del punto de ubicación <span class='sr-only'>en píxeles</span></label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <input type="number" name="locationCircleSize" id="locationCircleSize" aria-labelledby="locationCircleSizeLabel" class="form-control" min="5" value="10" step="1" />
