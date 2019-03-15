@@ -37,6 +37,7 @@ $(document).ready(function() {
 
         $("#successRow").css({ display: 'block' });
         $("#successRow").html($("#successRow").html());
+        $("html, body").animate({ scrollTop: $(document).height()}, 'slow');
     });
 
     $('#settingsForm').on('reset', function(e) {

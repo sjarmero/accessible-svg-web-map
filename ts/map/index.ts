@@ -177,9 +177,8 @@ $(document).ready(function() {
     listObserver.observe($("#currentViewPanel ul").get(0), { attributes: false, childList: true, subtree: true });
 
     observeOrientation($(SVGMap.instance.container).get(0), (lookingAtFeature) => {
-        $('#orientationContainer').html('');
 
-        if (lookingAtFeature != null && lookingAtFeature != undefined) {
+        if (lookingAtFeature != null && lookingAtFeature != undefined && lookingAtFeature != "") {
             let order = `<span class='sr-only'>Información sobre tu orientación.</span>
                 Estás mirando hacia ${lookingAtFeature}.
             `;
