@@ -1,52 +1,8 @@
 import { toggleCard, focusBuilding, showBuildingInfo } from "../map/search.js";
 import { Settings } from "../settings/defaults.js";
+import { ITabOrder, WETabOrder } from "./WETabOrder.js";
 
 declare var L, Cookies, proj4;
-
-type TTabOrder = Map<number, number>;
-type TTabOrderEntry = { name: string, order: TTabOrder };
-
-interface ITabOrder {
-    getName() : string;
-    getOrder() : Promise<TTabOrder>
-}
-
-/*
-    La tabulación va de Oeste a Este
-*/
-class WETabOrder implements ITabOrder {
-    private name : string;
-    private order : TTabOrder;
-
-    constructor(name) {
-        this.name = name;
-        this.order = new Map<number, number>();
-    }
-
-    getName() : string {
-        return this.name;
-    }
-
-    getOrder() : Promise<TTabOrder> {
-        if (this.order.size > 0) {
-            return new Promise((success, error) => {
-                success(this.order);
-            });
-        }
-
-        return new Promise((success, error) => {
-            fetch('/map/data/tab/we/').then((raw) => {
-                return raw.json();
-            }).then((data) => {
-                for (const k of Object.keys(data)) {
-                    this.order.set(parseInt(k), data[k]);
-                }
-
-                success(this.order); 
-            });
-        });
-    }
-}
 
 export class SVGMap {
     public readonly MAX_GROUP_LEVEL : number = 17;
@@ -81,7 +37,7 @@ export class SVGMap {
 
         if(Cookies.get('mapType') == 'full') {
             new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'Map data by <a href="//openstreetmap.org">OpenStreetMap</a>'
+                attribution: 'Map graphics by <a href="//openstreetmap.org">OpenStreetMap</a>'
             }).addTo(this._map);
         }
 
@@ -257,10 +213,22 @@ export class SVGMap {
                         }));
                         a.attr('id', `feature-link-${feature.properties.id}`);
                         a.attr('data-nearest-radius', feature.properties.nearestnamesradius);
-                        a.attr('aria-label', feature.properties.name);
+
+                        let desc = document.createElementNS('http://www.w3.org/2000/svg', 'desc');
+                        $(desc).html(feature.properties.description);
+                        $(desc).attr('id', `feature-link-${feature.properties.id}-desc`)
+                        a.prepend(desc);
+                        
+                        let title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                        $(title).html(feature.properties.name);
+                        $(title).attr('id', `feature-link-${feature.properties.id}-title`)
+                        a.prepend(title);
+                        
+                        $(a).attr('aria-describedby', `feature-link-${feature.properties.id}-desc`);
+                        $(a).attr('aria-labelledby', `feature-link-${feature.properties.id}-title`);
 
                         if ($(a).attr("data-listened") != "true") {
-                            $(a).on('click touchstart', function(e) {
+                            $(a).on('click', function(e) {
                                 if (parseInt($(a).attr("tabindex")) == -1) return;
                                 if ($(this).hasClass('non-clickable')) return;
         
@@ -284,6 +252,10 @@ export class SVGMap {
                 }
             });
             
+            this.geojson_layer.getAttribution = function() {
+                return 'Map data by <a href="https://www.sigua.ua.es/">SigUA</a>';
+            }
+
             this.geojson_layer.addTo(this._map);
 
             this.drawn_markers.on('animationend', () => {
