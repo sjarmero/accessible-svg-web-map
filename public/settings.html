@@ -148,7 +148,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="buildingColor" name="buildingColor" value="#90A4AE" aria-labelledby="buildingColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon" aria-hidden="true" role="presentation"><i></i></div>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="strokeColor" name="strokeColor" value="#455A64"  aria-labelledby="strokeColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon" aria-hidden="true" role="presentation"><i></i></div>
                                 </div>
                             </div>
                         </div>
@@ -170,7 +170,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="backgroundColor" name="backgroundColor" value="#ECEFF1" aria-labelledby="backgroundColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon" aria-hidden="true" role="presentation"><i></i></div>
                                 </div>
                             </div>
                         </div>
@@ -187,7 +187,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="textColor" name="textColor" value="#0C0C0C" aria-labelledby="textColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon" aria-hidden="true" role="presentation"><i></i></div>
                                 </div>
                             </div>
                         </div>
@@ -198,7 +198,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="backgroundTextColor" name="backgroundTextColor" value="#FFFFFF" aria-labelledby="backgroundTextColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon"> aria-hidden="true" role="presentation"<i></i></div>
                                 </div>
                             </div>
                         </div>
@@ -226,7 +226,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="routeColor" name="routeColor" value="#1A237E" aria-labelledby="routeColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon" aria-hidden="true" role="presentation"><i></i></div>
                                 </div>
                             </div>
                         </div>
@@ -237,7 +237,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="routeHighlightColor" name="routeHighlightColor" value="#2236FF" aria-labelledby="routeHighlightColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon" aria-hidden="true" role="presentation"><i></i></div>
                                 </div>
                             </div>
                         </div>
@@ -254,7 +254,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="locationCircleColor" name="locationCircleColor" value="#0842A1" aria-labelledby="locationCircleColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"><i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon" aria-hidden="true" role="presentation"><i></i></div>
                                 </div>
                             </div>
                         </div>
@@ -306,18 +306,21 @@
                 </div>
             </div>
 
-            <div class="form-group row submit-row">
-                <div class="col">
-                    <input type=reset class="btn btn-secondary" value="Restablecer valores" />
-                    <input type=submit class="btn btn-primary" value="Guardar" />
-                </div>
-            </div>
-
-            <div class="row my-2 align-right" id="successRow" style="display: none;" aria-live="assertive">
-                <div class="col">
-                    <div class="badge badge-success p-2">
+            <div class="form-group row submit-row align-items-center">
+                <div class="col-12 col-md-8 pb-2">
+                    <div class="badge badge-success p-2 d-none w-100" id="successBadge">
                         <span class="fas fa-check"></span> 
                         Ajustes guardados correctamente
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="row w-100 m-0 p-0">
+                        <div class="col-12 col-md-6 p-0 pb-2 pr-md-2 m-0">
+                            <input type=reset class="btn btn-secondary w-100" value="Restablecer" />
+                        </div>
+                        <div class="col-12 col-md-6 m-0 p-0">
+                            <input type=submit class="btn btn-primary w-100" value="Guardar" />
+                        </div>
                     </div>
                 </div>
             </div>
