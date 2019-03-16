@@ -35,9 +35,8 @@ $(document).ready(function() {
             }
         })
 
-        $("#successRow").css({ display: 'block' });
-        $("#successRow").html($("#successRow").html());
-        $("html, body").animate({ scrollTop: $(document).height()}, 'slow');
+        $("#successBadge").removeClass("d-none");
+        $("#successBadge").html($("#successBadge").html());
     });
 
     $('#settingsForm').on('reset', function(e) {
