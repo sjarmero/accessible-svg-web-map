@@ -5,9 +5,14 @@ import { SVGVoiceControls } from '../SVG/SVGVoiceControls.js';
 import { SVGControls } from '../SVG/SVGControls.js';
 import { observeOrientation } from '../location/LocationComponent.js';
 import { loadSettings } from "../settings/load.js";
+import { Settings } from '../settings/defaults.js';
+
+declare var Cookies;
+
+let enableAnimations = Cookies.get('enableAnimations') || Settings.enableAnimations;
 
 const searchIcon = 'fas fa-search';
-const loadingIcon = 'fas fa-spinner rotating-spinner';
+const loadingIcon = 'fas fa-spinner' + ((enableAnimations == "false") ? '' : ' rotating-spinner');
 const okIcon = 'fas fa-check green';
 const errIcon = 'fas fa-times red';
 
@@ -189,9 +194,7 @@ $(document).ready(function() {
     */
 
     if (SVGVoiceControls.compatible()) {
-        $('#voicePanel').css({
-            display: 'block'
-        });
+        $('#voicePanel').removeClass("d-none");
         
         $("#dictateBtn").on('click', function(e) {
             e.preventDefault();
