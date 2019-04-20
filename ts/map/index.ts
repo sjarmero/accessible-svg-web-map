@@ -11,7 +11,6 @@ declare var proj4;
 declare var Cookies;
 
 $(document).ready(function() {
-    console.log('Index');
     loadSettings();
 
     $("form[action='']").on('submit', (e) => {
@@ -104,7 +103,7 @@ $(document).ready(function() {
 
     // Voz
     if (SVGVoiceControls.compatible()) {
-        $("#voicePanel").css("display", "block");
+        $('#voicePanel').removeClass("d-none");
 
         SVGControls.instance.onSearchVoiceQuery = (query) => {
             console.log(query);

@@ -27,4 +27,7 @@ export class Settings {
     /* Pasos */
     public static readonly stepLenght : number = 0.6;
     public static readonly walkingSpeed : number = 1; // metros / segundo
+
+    /* Animaciones */
+    public static readonly enableAnimations : boolean = true;
 }

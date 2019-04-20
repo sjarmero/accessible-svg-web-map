@@ -17,7 +17,7 @@ $(document).ready(function() {
     $('#settingsForm').on('submit', function(e) {
         e.preventDefault();
 
-        $(this).find('input:not([type="submit"]):not([type="reset"]):not([type="radio"]), select').each(function() {
+        $(this).find('input:not([type="submit"]):not([type="reset"]):not([type="radio"]):not([type="checkbox"]), select').each(function() {
             let name = $(this).attr('name');
             let value = $(this).val();
 
@@ -34,6 +34,14 @@ $(document).ready(function() {
                 Cookies.set(name, String(value), { expires: 365 });
             }
         })
+
+        $(this).find('input[type="checkbox"]').each(function() {
+            let name = $(this).attr('name');
+            let value = $(this).prop('checked');
+
+            console.log(name, value);
+            Cookies.set(name, String(value), { expires: 365 });
+        });
 
         $("#successBadge").removeClass("d-none");
         $("#successBadge").html($("#successBadge").html());
@@ -74,7 +82,7 @@ $(document).ready(function() {
         $(style).html(fontImport);
         $(document.head).append(style);
 
-        $('#settingsForm').find('input:not([type="submit"]):not([type="reset"]):not([type="radio"]), select').each(function() {
+        $('#settingsForm').find('input:not([type="submit"]):not([type="reset"]):not([type="radio"]):not([type=checkbox]), select').each(function() {
             let name = $(this).attr('name');
             let value = Cookies.get($(this).attr('name'));
             console.log(name, value);
@@ -89,6 +97,16 @@ $(document).ready(function() {
                 $(this).prop('checked', value == $(this).val());
             }
         });
+
+        $('#settingsForm').find('input[type=checkbox]').each(function() {
+            let value = Cookies.get($(this).attr('name'));
+            console.log($(this).attr('name'), value);
+            if (value != undefined) {
+                $(this).prop('checked', (value != "false"));
+            } else {
+                $(this).prop('checked', true);
+            }
+        })
 
         updatePreview();
     });
