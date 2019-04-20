@@ -66,6 +66,12 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label for="enableAnimations" id="enableAnimationsLabel" class="col-sm-3 col-form-label"><span class="sr-only">Habilitar </span>Animaciones</label>
+                <div class="col-sm-9 d-flex align-items-center">
+                    <input type=checkbox class="mr-2" name="enableAnimations" id="enableAnimations" aria-labelledby="enableAnimationsLabel" /> Habilitar
+                </div>
+            </div>
+            <div class="form-group row">
                 <label for="fontFamily" id="fontFamilyLabel" class="col-sm-3 col-form-label">Fuente del texto</label>
                 <div class="col-sm-9">
                     <select class="custom-select" name="fontFamily" id="fontFamily" aria-labelledby="fontFamilyLabel">
@@ -198,7 +204,7 @@
                             <div class="input-group colorpicker-group">
                                 <input type="text" class="form-control" id="backgroundTextColor" name="backgroundTextColor" value="#FFFFFF" aria-labelledby="backgroundTextColorLabel" />
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text colorpicker-input-addon"> aria-hidden="true" role="presentation"<i></i></div>
+                                    <div class="input-group-text colorpicker-input-addon" aria-hidden="true" role="presentation"><i></i></div>
                                 </div>
                             </div>
                         </div>

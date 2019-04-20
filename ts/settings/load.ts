@@ -3,6 +3,14 @@ import { Settings } from './defaults.js';
 declare var Cookies;
 
 export function loadSettings() {    
+    /* Animaciones */
+    let enableAnimations = Cookies.get('enableAnimations') || Settings.enableAnimations;
+    if (enableAnimations == "false") {
+        console.log('Disabling animations');
+        $(".animated").removeClass("animated");
+        $(".progress-bar-animated").removeClass("progress-bar-animated");
+    }
+
     let style = document.createElement('style');
     $(style).attr('type', 'text/css');
 
