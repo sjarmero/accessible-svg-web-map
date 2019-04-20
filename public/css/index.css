@@ -275,6 +275,6 @@ nav.inline {
 .rotating-spinner {
 	animation-name: rotation;
     animation-duration: 2s;
-    animation-iteration-count: 2;
+    animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
 }
