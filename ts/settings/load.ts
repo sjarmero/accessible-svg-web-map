@@ -1,4 +1,4 @@
-import { Settings } from './defaults.js';
+import { Settings } from './defaults';
 
 declare var Cookies;
 

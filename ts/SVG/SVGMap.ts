@@ -1,6 +1,6 @@
-import { toggleCard, focusBuilding, showBuildingInfo } from "../map/search.js";
-import { Settings } from "../settings/defaults.js";
-import { ITabOrder, WETabOrder } from "./WETabOrder.js";
+import { toggleCard, focusBuilding, showBuildingInfo } from "../map/search";
+import { Settings } from "../settings/defaults";
+import { ITabOrder, WETabOrder } from "./WETabOrder";
 
 declare var L, Cookies, proj4;
 

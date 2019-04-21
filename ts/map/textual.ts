@@ -1,4 +1,4 @@
-import {SVGMap} from '../SVG/SVGMap.js';
+import {SVGMap} from '../SVG/SVGMap';
 
 declare var Cookies;
 

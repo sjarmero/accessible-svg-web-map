@@ -1,6 +1,6 @@
-import { angulo, posicion, toDeg, modulo, angulo2, perspectiva2} from './math.js';
-import { SVGMap } from '../SVG/SVGMap.js';
-import { Settings } from "../settings/defaults.js";
+import { angulo, posicion, toDeg, modulo, angulo2, perspectiva2} from './math';
+import { SVGMap } from '../SVG/SVGMap';
+import { Settings } from "../settings/defaults";
 
 declare var Cookies, proj4;
 

@@ -92,11 +92,9 @@
                                     </div>
                                 </section>
 
-                                <section id="voicePanel" class="d-none">
-                                    <div class="d-flex flex-row py-2">
-                                        <button class="btn btn-outline-danger btn-action" style="margin-right: 8px;" title="Dictar órdenes" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
-                                        <span id="dictateStatus" class="align-self-center">Comenzar a escuchar</span>
-                                    </div>
+                                <section id="voicePanel" class="d-flex flex-row py-2">
+                                    <button class="btn btn-outline-danger btn-action" style="margin-right: 8px;" title="Dictar órdenes" aria-label="Dictar órdenes" id="dictateBtn"><span class="fas fa-microphone"></span></button>
+                                    <span id="dictateStatus" class="align-self-center">Comenzar a escuchar</span>
                                 </section>
 
                                 <section id="locationPanel" class="d-flex flex-row focus-location py-2">
@@ -228,9 +226,11 @@
     <script src="/modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
     <script src="/js/SVG/SVGLeaflet.js"></script>
-    
+    <script src="/js/SVG/invents.js"></script>
+    <script src="/js/map/MapComponent.js" type="module"></script>
+    <script src="/js/map/index.js" type="module"></script>
     <script src="/js/overflow.js"></script>
-    <script src="js/bundle/map-bundle.js"></script>
+    <!--<script src="js/bundle/map-bundle.js"></script>-->
 
     <div id="speech" style="position: absolute; top: -1000px; left: -1000px;" aria-live="assertive"></div>
 </body>

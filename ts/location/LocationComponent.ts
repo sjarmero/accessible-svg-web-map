@@ -1,5 +1,5 @@
-import { SVGMap } from "../SVG/SVGMap.js";
-import { rotar } from "../route/math.js";
+import { SVGMap } from "../SVG/SVGMap";
+import { rotar } from "../route/math";
 
 function lookingAt(x : number, y : number, orientation : number) : string {
     const distancia = 300;   

@@ -1,11 +1,11 @@
-import { SVGControls } from "../SVG/SVGControls.js";
-import { search, showBuildingInfo, focusBuilding, toggleCard } from "./search.js";
-import { SVGVoiceControls } from "../SVG/SVGVoiceControls.js";
-import { SVGMap } from "../SVG/SVGMap.js";
-import { observeOrientation } from "../location/LocationComponent.js";
-import { Location } from '../location/Location.js';
-import { loadSettings } from "../settings/load.js";
-import { Settings } from "../settings/defaults.js";
+import { SVGControls } from "../SVG/SVGControls";
+import { search, showBuildingInfo, focusBuilding, toggleCard } from "./search";
+import { SVGVoiceControls } from "../SVG/SVGVoiceControls";
+import { SVGMap } from "../SVG/SVGMap";
+import { observeOrientation } from "../location/LocationComponent";
+import { Location } from '../location/Location';
+import { loadSettings } from "../settings/load";
+import { Settings } from "../settings/defaults";
 
 declare var proj4;
 declare var Cookies;

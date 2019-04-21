@@ -1,5 +1,5 @@
-import { SVGMap } from './SVGMap.js';
-import { SVGVoiceControls } from './SVGVoiceControls.js';
+import { SVGMap } from './SVGMap';
+import { SVGVoiceControls } from './SVGVoiceControls';
 
 declare var proj4;
 declare var Cookies;

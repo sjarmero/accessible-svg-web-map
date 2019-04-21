@@ -1,6 +1,6 @@
-import { SVGMap } from '../SVG/SVGMap.js';
-import { SVGControls } from '../SVG/SVGControls.js';
-import { Location } from '../location/Location.js';
+import { SVGMap } from '../SVG/SVGMap';
+import { SVGControls } from '../SVG/SVGControls';
+import { Location } from '../location/Location';
 
 declare var proj4;
 

@@ -1,11 +1,11 @@
-import { SVGMap } from '../SVG/SVGMap.js';
-import { navigationMode } from './navigation.js';
-import { Location } from '../location/Location.js';
-import { SVGVoiceControls } from '../SVG/SVGVoiceControls.js';
-import { SVGControls } from '../SVG/SVGControls.js';
-import { observeOrientation } from '../location/LocationComponent.js';
-import { loadSettings } from "../settings/load.js";
-import { Settings } from '../settings/defaults.js';
+import { SVGMap } from '../SVG/SVGMap';
+import { navigationMode } from './navigation';
+import { Location } from '../location/Location';
+import { SVGVoiceControls } from '../SVG/SVGVoiceControls';
+import { SVGControls } from '../SVG/SVGControls';
+import { observeOrientation } from '../location/LocationComponent';
+import { loadSettings } from "../settings/load";
+import { Settings } from '../settings/defaults';
 
 declare var Cookies;
 
