@@ -518,14 +518,14 @@ export class SVGMap {
     */
     moveTo(x, y, raisedbyuser = true) {
         let [cy, cx] = (<any>proj4('EPSG:25830', 'EPSG:4326', [x, -y]));
-        this.map.setView([cx, cy], this.map.getZoom());
+        this.map.setView([cx, cy], this.map.getZoom(), (Cookies.get('enableAnimations') ? Cookies.get('enableAnimations') == 'false' : Settings.enableAnimations));
     }
 
     zoomAndMove(x, y, level, raisedbyuser = true) {
         if (level < 2 || level > 21) return;
 
         let [cy, cx] = (<any>proj4('EPSG:25830', 'EPSG:4326', [parseFloat(x), -parseFloat(y)]));
-        this.map.setView([cx, cy], level);
+        this.map.setView([cx, cy], level, (Cookies.get('enableAnimations') ? Cookies.get('enableAnimations') == 'false' : Settings.enableAnimations));
     }
 
     pixelsToMeters(pixels : any) : number {
