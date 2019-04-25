@@ -203,6 +203,12 @@ export class SVGMap {
                         let a = $(layer._a);
                         a.addClass('feature-object');
                         a.addClass('building-wrapper');
+
+                        let enableAnimations = Cookies.get('enableAnimations') || Settings.enableAnimations;
+                        if (enableAnimations != "false") { 
+                            a.addClass('animated');
+                        }
+
                         a.attr('data-building', feature.properties.id);
                         a.attr('role', 'graphics-symbol img');
                         a.attr('data-name', feature.properties.name);
