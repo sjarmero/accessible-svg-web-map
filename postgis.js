@@ -2,13 +2,16 @@
     POSTGRESQL CONNECTION
 */
 const { Client } = require('pg');
+const constr = "postgres://master:lC3Du5P6LIHy@postgis.clxlow4ckw0r.eu-west-3.rds.amazonaws.com/gisdb?sslmode=verify-full";
+/*
 const client = new Client({
     user: 'master',
     host: 'postgis.clxlow4ckw0r.eu-west-3.rds.amazonaws.com',
     database: 'gisdb',
     password: 'lC3Du5P6LIHy',
     port: 5432,
-});
+});*/
+const client = new Client(constr);
 
 try {
     (async () => {

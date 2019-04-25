@@ -1,5 +1,6 @@
 import { SVGMap } from './SVGMap';
 import { SVGVoiceControls } from './SVGVoiceControls';
+import { Settings } from '../settings/defaults';
 
 declare var proj4;
 declare var Cookies;
