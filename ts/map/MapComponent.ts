@@ -69,7 +69,10 @@ $(document).ready(function() {
 
     $(SVGMap.instance.container).on('focus', function() {
         if (SVGMap.instance.zoomlevel >= SVGMap.instance.MAX_GROUP_LEVEL) {
-            $(SVGMap.instance.container).find('svg .active').first().trigger('focus');
+            if ($(SVGMap.instance.container).find('svg .active').length > 0) {
+                console.log('Redirecting focus...');
+                $(SVGMap.instance.container).find('svg .active').first().trigger('focus');
+            }
         } else {
             $(SVGMap.instance.container).find('.marker-cluster').first().trigger('focus');
         }

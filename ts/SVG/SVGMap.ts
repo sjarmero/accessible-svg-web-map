@@ -49,6 +49,22 @@ export class SVGMap {
             if (this.lastLocation) this.drawLocation(this.lastLocation.ox, this.lastLocation.oy, this.lastLocation.accuracy);
             if (this.lastOrientation) this.drawOrientation(this.lastOrientation);
             this.groupMarkers();
+
+            if (this.zoomlevel >= this.MAX_GROUP_LEVEL) {
+                $(".map-marker").attr("tabindex", "-1");
+            }
+
+            if (this.orders.length > 0) {
+                this.orders[0].getOrder().then((order) => {
+                    let or = 1;
+                    for (const b of order) {
+                        if ($(this.container).find('svg').find(`#feature-link-${b}`).length > 0) {
+                            $(this.container).find('svg').find(`#feature-link-${b}`).attr('tabindex', or);
+                            or++;
+                        }
+                    };
+                });
+            }
         });
 
         this.guides_drawn = false;
@@ -189,9 +205,9 @@ export class SVGMap {
                         icon: L.divIcon({
                             className: 'map-marker',
                             html: `
-                                <div class='map-marker' tabindex='-1'>
+                                <div class='map-marker' tabindex='-1' role="presentation" aria-hidden="true">
                                     <div class='map-marker-img'>
-                                        <img src='/images/building_marker.svg' />
+                                        <img src='/images/building_marker.svg' role="presentation" aria-hidden="true" />
                                     </div>
                                     <div class='map-marker-text'>${textString}</div>
                                 </div>
@@ -380,14 +396,6 @@ export class SVGMap {
     groupMarkers() {
         if (this._map.getZoom() >= this.MAX_GROUP_LEVEL) {
             $(this._container).find('svg a').attr('tabindex', '0');   
-
-            if (this.orders.length > 0) {
-                this.orders[0].getOrder().then((order) => {
-                    for (const [k, v] of order) {
-                        $(this.container).find('svg').find(`#feature-link-${k}`).attr('tabindex', v);
-                    };
-                });
-            }
 
             $(this._container).find('svg a').each(function() {
                 if ($(this).find('path').attr('d') == 'M0 0') {
