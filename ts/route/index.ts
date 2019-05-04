@@ -195,6 +195,7 @@ $(document).ready(function() {
 
     if (SVGVoiceControls.compatible()) {
         $('#voicePanel').removeClass("d-none");
+        $('#voicePanel').addClass("d-block");
         
         $("#dictateBtn").on('click', function(e) {
             e.preventDefault();

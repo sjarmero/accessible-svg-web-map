@@ -104,6 +104,7 @@ $(document).ready(function() {
     // Voz
     if (SVGVoiceControls.compatible()) {
         $('#voicePanel').removeClass("d-none");
+        $('#voicePanel').addClass("d-block");
 
         SVGControls.instance.onSearchVoiceQuery = (query) => {
             console.log(query);
