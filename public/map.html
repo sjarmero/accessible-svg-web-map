@@ -18,6 +18,8 @@
         <link rel="stylesheet" href="/css/overflow.css" />
 
         <link rel="stylesheet" href="/css/colors.css" />
+
+        <link rel="stylesheet" href="/css/skiplinks.css" />
 </head>
 <body>
     <!--<nav class="inline accessibility-links">
@@ -38,7 +40,15 @@
                                     <span class="navbar-toggler-icon"></span>
                                 </button>
                         
+                                <!-- Título de la página -->
                                 <a class="navbar-brand mr-auto pl-3" href="/map">Mapa</a>
+
+                                <!-- Y entonces los skip links -->
+                                <ul class="skip-links">
+                                    <li><a href="#map">Saltar a contenido</a></li>
+                                    <li><a href="#padPanel">Saltar a controles</a></li>
+
+                                </ul>
                                 
                                 <div class="collapse navbar-collapse my-2" id="navbarSupportedContent">
                                     <ul class="navbar-nav mb-2">
@@ -178,41 +188,7 @@
             </div>
 
             <section id="mapPanel" class="overflow-map col-12">
-                <div id="map" class="page-mode" data-mode="0"></div>
-
-                <div id="textual" class="page-mode" data-mode="1">
-                    <strong class="h1" id="textualTitle">Modo textual del mapa</strong>
-
-                    <!--<div class="row my-3">
-                        <div class="col">
-                            Mostrando lugares cercanos en un radio de <span class="locationRadioTxt"></span> metros. <br />
-                            <div id="radioControl" class="btn-group" role="group" aria-label="Controlar radio de búsqueda de lugares cercanos">
-                                <button type="button" class="btn btn-secondary" data-radio='+'>Aumentar</button>
-                                <button type="button" class="btn btn-secondary" data-radio='-'>Reducir</button>
-                            </div>
-                        </div>
-                    </div>-->
-                    
-                    <section id="filterTextualPanel" style="margin-bottom: 1em;">
-                        <form class="form-inline d-flex" id="filterTextualForm">
-                            <input class="form-control mr-sm-2 flex-fill" type="search" placeholder="Filtrar tabla" aria-label="Filtrar datos de la tabla" id="textualQueryTxt" autocomplete="off" />
-                            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" aria-label="Botón de buscar">Buscar</button>
-                        </form>
-                    </section>
-
-                    <table aria-labelledby="textualTitle" class="table table-striped" id="textualTable">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Descripción</th>
-                                <th scope="col">Ubicación</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-                </div>
+                <div id="map"></div>
             </section>
         </div>
     </main>

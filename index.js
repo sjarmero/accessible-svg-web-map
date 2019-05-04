@@ -90,11 +90,9 @@ app.get('/map/data/rsvg', async (request, response) => {
 app.get('/map/data/tab/we', async (request, response) => {
     const data = await db.getWETabOrder();
     
-    let o = {};
-    let i = 1;
+    let o = [];
     for (const on of data) {
-        o[on.id] = i;
-        i++;
+        o.push(on.id);
     }
 
     response.json(o);

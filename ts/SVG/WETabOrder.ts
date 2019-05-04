@@ -1,4 +1,4 @@
-export type TTabOrder = Map<number, number>;
+export type TTabOrder = number[];
 type TTabOrderEntry = { name: string, order: TTabOrder };
 
 export interface ITabOrder {
@@ -7,7 +7,7 @@ export interface ITabOrder {
 }
 
 /*
-    La tabulación va de Oeste a Este
+    La tabulación va de oeste a este
 */
 export class WETabOrder implements ITabOrder {
     private name : string;
@@ -15,7 +15,7 @@ export class WETabOrder implements ITabOrder {
 
     constructor(name) {
         this.name = name;
-        this.order = new Map<number, number>();
+        this.order = [];
     }
 
     getName() : string {
@@ -23,7 +23,7 @@ export class WETabOrder implements ITabOrder {
     }
 
     getOrder() : Promise<TTabOrder> {
-        if (this.order.size > 0) {
+        if (this.order.length > 0) {
             return new Promise((success, error) => {
                 success(this.order);
             });
@@ -33,8 +33,8 @@ export class WETabOrder implements ITabOrder {
             fetch('/map/data/tab/we/').then((raw) => {
                 return raw.json();
             }).then((data) => {
-                for (const k of Object.keys(data)) {
-                    this.order.set(parseInt(k), data[k]);
+                for (let i = 0; i < data.length; i++) {
+                    this.order.push(data[i]);
                 }
 
                 success(this.order); 
