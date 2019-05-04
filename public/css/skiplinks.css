@@ -1,0 +1,15 @@
+.skip-links li {
+    list-style: none;
+}
+
+.skip-links a {
+    position: absolute;
+    left: -999em;
+    top: 0em;
+}
+
+.skip-links a:focus, .skip-links a:active {
+    background-color: white;
+    padding: 0.1em;
+    left: 0em;
+}
