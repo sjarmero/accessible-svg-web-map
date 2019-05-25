@@ -6,10 +6,13 @@
     position: absolute;
     left: -999em;
     top: 0em;
+    color: white;
+    background-color: black !important;
+    outline: 1;
 }
 
 .skip-links a:focus, .skip-links a:active {
-    background-color: white;
+    color: white;
     padding: 0.1em;
     left: 0em;
 }

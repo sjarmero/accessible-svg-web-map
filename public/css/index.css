@@ -259,3 +259,9 @@ nav.inline {
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .rotating-spinner {
+      animation: none;
+    }
+  }

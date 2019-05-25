@@ -47,7 +47,6 @@
                                 <ul class="skip-links">
                                     <li><a href="#map">Saltar a contenido</a></li>
                                     <li><a href="#padPanel">Saltar a controles</a></li>
-
                                 </ul>
                                 
                                 <div class="collapse navbar-collapse my-2" id="navbarSupportedContent">
@@ -111,7 +110,7 @@
 
                                 <section id="locationPanel" class="d-flex flex-row focus-location py-2">
                                     <button class="btn btn-outline-info btn-action" style="margin-right: 8px;" aria-label="Centrar mapa en ubicación" title="Centrar mapa en ubicación"><span class="fas fa-search-location"></span></button>
-                                    <span id="dictateStatus" class="align-self-center">Centrar mapa en ubicación</span>
+                                    <span id="locationStatus" class="align-self-center">Centrar mapa en ubicación</span>
                                 </section>
 
                                 <section id="orientationPanel" class="d-flex flex-row focus-orientation py-2">
@@ -122,7 +121,7 @@
                                 <section class="my-3 d-none" id="closeToYouPanel">
                                     <strong class="h3">Cerca de ti</strong>
 
-                                    <div class="input-group mb-3" class="radius-control">
+                                    <div class="input-group mb-3 radius-control">
                                         <input type="number" min="20" step="20" class="form-control" aria-label="Distancia en metros a la que se busca a tu alrededor" id="radioTxt">
                                     
                                         <div class="input-group-prepend">
@@ -178,9 +177,10 @@
                                                 <i class="fas fa-times"></i>
                                             </a>
                                         </div>
+                                    </div>
                                 </div>
 
-                                <div class="props"></ul>
+                                <div class="props"></div>
                             </div>
                         </div>
                     </section>
@@ -202,7 +202,7 @@
     <script src="/modules/js-cookie/src/js.cookie.js"></script>
     <script src="/modules/leaflet/dist/leaflet.js"></script>
     <script src="/modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-
+    props
     <script src="/js/SVG/SVGLeaflet.js"></script>
     <script src="/js/SVG/invents.js"></script>
     <script src="/js/map/MapComponent.js" type="module"></script>
