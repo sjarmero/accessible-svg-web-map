@@ -295,14 +295,29 @@ export class SVGMap {
             this._svg = SVG($(this._map._container).find('svg').get(0));
             this._svg.attr('role', 'graphics-document document');
 
-            /*let defs = this._svg.defs().node;
-            defs.innerHTML = `
-                <filter x="0" y="0" width="1" height="1" id="bgFilter">
-                    <feFlood />
-                    <feComposite in="SourceGraphic"/>
-                </filter>`;*/;
+            $(this._container).find('svg a').attr('tabindex', '-1');
 
-            $(this._container ).find('svg a').attr('tabindex', '-1');
+            $.getJSON('/fonts/fonts.json', (fonts) => {
+                let fontImport = '<style>';
+                for (const fontFamily of Object.keys(fonts)) {
+                    if (fonts[fontFamily]) {
+                        for (const source of fonts[fontFamily].src) {
+                            fontImport += "@font-face {";
+                            fontImport += `font-family: '${fonts[fontFamily].name}';`;
+
+                            if (source.style) fontImport += `font-style: ${source.style};`;
+                            if (source.weight) fontImport += `font-weight: ${source.weight};`;
+
+                            fontImport += `src: url('${source.url}') format('${source.format}');`;
+                            fontImport += "}";
+                        }
+                    }
+                }
+
+                fontImport += "</style>";
+            
+                $(this._container).find('svg defs').append(fontImport)
+            });
 
             this.onmapdrawn();
         });

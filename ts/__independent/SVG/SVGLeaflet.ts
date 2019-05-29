@@ -21,7 +21,7 @@ L.SVG.include({
 
         this._container.appendChild(title);
         this._container.appendChild(desc);
-        this._container.setAttribute('aria-labelledby', 'svgrendertitle');
+        this._container.setAttribute('aria-label', 'svgrendertitle');
         this._container.setAttribute('aria-describedby', 'svgrenderdesc');
 
         this._rootGroup = create('g');

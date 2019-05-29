@@ -60,7 +60,7 @@ $(document).ready(function() {
         for (const fontFamily of Object.keys(fonts)) {
             for (const source of fonts[fontFamily].src) {
                 fontImport += "@font-face {";
-                fontImport += "font-family: 'OpenDyslexic';";
+                fontImport += `font-family: '${source.name}';`;
 
                 if (source.style) fontImport += `font-style: ${source.style};`;
                 if (source.weight) fontImport += `font-weight: ${source.weight};`;
@@ -75,7 +75,7 @@ $(document).ready(function() {
             $(option).html(fontFamily);
             $(option).attr('style', `font-family: "${fontFamily}";`);
 
-            $("#fontFamily").append(option);
+            $("#fontFamily, #mapFontFamily").append(option);
         }
 
         let style = document.createElement('style');

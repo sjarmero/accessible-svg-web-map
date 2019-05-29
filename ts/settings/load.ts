@@ -38,11 +38,10 @@ export function loadSettings() {
 
     let fontImport = '';
     $.getJSON('/fonts/fonts.json', (fonts) => {
-        console.log(fonts, fontFamily, fonts[fontFamily])
-        if (fonts[fontFamily]) {
+        for (let fontFamily of Object.keys(fonts)) {
             for (const source of fonts[fontFamily].src) {
                 fontImport += "@font-face {";
-                fontImport += "font-family: 'OpenDyslexic';";
+                fontImport += `font-family: '${fonts[fontFamily].name}';`;
 
                 if (source.style) fontImport += `font-style: ${source.style};`;
                 if (source.weight) fontImport += `font-weight: ${source.weight};`;
@@ -75,6 +74,7 @@ export function loadSettings() {
             }
 
             .map-marker .map-marker-text {
+                font-family: "${mapFontFamily}";
                 color: ${textColor} !important;
                 background-color: ${hex2rgba(backgroundTextColor, backgroundTextColorOpacity / 100)} !important;
             }
