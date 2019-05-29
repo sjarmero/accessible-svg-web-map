@@ -85,11 +85,16 @@ $(document).ready(function() {
         $('#settingsForm').find('input:not([type="submit"]):not([type="reset"]):not([type="radio"]):not([type=checkbox]), select').each(function() {
             let name = $(this).attr('name');
             let value = Cookies.get($(this).attr('name'));
+
             console.log(name, value);
             if (value) {
                 $(this).val(value);
             }
         });
+
+        $('.colorpicker-group').each((i, e) => {
+            (<any>$(e)).colorpicker('setValue', $(e).find('input').val());
+        })
 
         $('#settingsForm').find('input[type=radio]').each(function() {
             let value = Cookies.get($(this).attr('name'));
