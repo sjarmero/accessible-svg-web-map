@@ -14,50 +14,60 @@ $(document).ready(function() {
         Map Events
     */
     var altk = false;
+    var ctrlk = false;
 
     // Navigation keyboard shortcuts
     $("body").not("input").not("textarea").not(".btn").keydown(function(e) {   
-        altk = altk || (e.which == 18);
-        if (!altk) return;
-
         var mode = '';
-        switch (e.which) {
-            case 189:
-            case 109:
-            case 171: // -
-                mode = 'zoom-out';
-                break;
 
-            case 187:
-            case 107:
-            case 173: // +
-                mode = 'zoom-in';
-                break;
+        altk = altk || (e.altKey);
+        ctrlk = ctrlk || (e.ctrlKey);
+        
+        if (altk) {
+            switch (e.which) {
+                case 189:
+                case 173: // -
+                    mode = 'zoom-out';
+                    break;
 
-            case 38: // Up arrow
-                mode = 'up';
-                break;
+                case 187:
+                case 171: // +
+                    mode = 'zoom-in';
+                    break;
+            }
+        }
 
-            case 40: // Down arrow
-                mode = 'down';
-                break;
+        if (ctrlk) {
+            switch (e.which) {
+                case 38: // Up arrow
+                    mode = 'up';
+                    break;
 
-            case 37:
-                mode = 'left';
-                break;
+                case 40: // Down arrow
+                    mode = 'down';
+                    break;
 
-            case 39:
-                mode = 'right';
-                break;
+                case 37:
+                    mode = 'left';
+                    break;
+
+                case 39:
+                    mode = 'right';
+                    break;
+            }
         }
 
         SVGControls.instance.navigationHandler(mode);
     });
 
-    // Alt key release
+    // Key release
     $("body").not("input").not("textarea").not(".btn").keyup(function(e) {
-        if (e.which == 18) {
+        if (e.altKey) {
             altk = false;
+        }
+
+        if (e.ctrlKey) {
+            ctrlk = false;
         }
     });
 
