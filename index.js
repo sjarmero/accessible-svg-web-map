@@ -135,14 +135,14 @@ app.get('/settings', (request, response) => {
 });
 
 // HTTP Server setup
-https.createServer({
+/*https.createServer({
     key: fs.readFileSync('./ssl/localhost.key'),
     cert: fs.readFileSync('./ssl/localhost.cert'),
     requestCert: false,
     rejectUnauthorized: false
-}, app).listen(3000);
+}, app).listen(3000);*/
 
 app.listen(3001);
 
-console.log("[HTTPS] Listening on :3000");
-console.log("[HTTP] Listening on :3001");
+//console.log("[HTTPS] Listening on :3000");
+//console.log("[HTTP] Listening on :3001");

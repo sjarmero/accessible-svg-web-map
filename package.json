@@ -1,0 +1,35 @@
+{
+  "name": "map",
+  "version": "0.0.1",
+  "description": "\"Using SVG to develop web maps for people with visual disabilities. Sergio Luján-Mora, Sergio Juan-Armero\"",
+  "main": "index.js",
+  "dependencies": {
+    "@types/bootstrap": "^4.3.2",
+    "@types/jquery": "^3.3.38",
+    "bootstrap-colorpicker": "^3.2.0",
+    "express": "^4.17.1",
+    "jquery": "^3.5.1",
+    "jquery-mousewheel": "^3.1.13",
+    "js-cookie": "^2.2.1",
+    "leaflet": "^1.6.0",
+    "leaflet.markercluster": "^1.4.1",
+    "pg": "^8.2.0",
+    "proj4": "^2.6.1",
+    "rotating-file-stream": "^2.1.1",
+    "svg.js": "^2.7.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sjarmero/accessible-svg-web-map.git"
+  },
+  "author": "Sergio Juan-Armero",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sjarmero/accessible-svg-web-map/issues"
+  },
+  "homepage": "https://github.com/sjarmero/accessible-svg-web-map#readme"
+}
