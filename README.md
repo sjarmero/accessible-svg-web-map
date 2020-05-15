@@ -12,6 +12,13 @@ This project is provided as a Docker container with a default `docker-compose.ya
 docker-compose up -d
 ```
 
+If by any means the execution of that command is not successful, you can manually build and run the Docker container:
+
+```
+docker build -t map .
+docker run --name map -p 8080:8080 -p 8081:8081 -d map
+```
+
 You will be able to access the web interface on http://localhost:8080/map and https://localhost:8081/map. Please note that for HTTPS to work, self-generated certificates are provided. Your browser is most likely to report them to you as invalid. HTTPS is necessary when using voice commands, due to browser API limitations.
 
 ## Citation
